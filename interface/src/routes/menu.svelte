@@ -44,11 +44,23 @@
 
 	let menuItems = [
 		{
-			title: 'Demo App',
-			icon: Control,
-			href: '/demo',
+			title: 'MoonBase',
+			icon: Settings,
 			feature: true,
-			
+			submenu: [
+				{
+					title: 'Files',
+					icon: Health,
+					href: '/moonbase/files',
+					feature: true,
+				},
+				{
+					title: 'Demo App',
+					icon: Control,
+					href: '/moonbase/demo',
+					feature: true,
+				},
+			]
 		},
 		{
 			title: 'Connections',

@@ -10,28 +10,27 @@
 	<div class="card md:card-side bg-base-200 shadow-primary shadow-2xl">
 		<figure class="bg-base-200"><img src={logo} alt="Logo" class="h-auto w-64" /></figure>
 		<div class="card-body w-80">
-			<h2 class="card-title text-center text-2xl">Welcome to ESP32-SvelteKit</h2>
+			<h2 class="card-title text-center text-2xl">Welcome to MoonBase</h2>
 			<p class="py-6 text-center">
-				A simple, secure and extensible framework for IoT projects for ESP32 platforms with
-				responsive <a
-					href="https://kit.svelte.dev/"
+				MoonBase is made by MoonModules, a group of LED enthusiasts who also made WLED MM 
+				and contribute to WLED and can be found on 
+				<a
+					href="https://discord.gg/TC8NSUSCdV"
 					class="link"
 					target="_blank"
-					rel="noopener noreferrer">SvelteKit</a
-				>
-				front-end built with
-				<a href="https://tailwindcss.com/" class="link" target="_blank" rel="noopener noreferrer"
-					>TailwindCSS</a
-				>
-				and
-				<a href="https://daisyui.com/" class="link" target="_blank" rel="noopener noreferrer"
-					>DaisyUI</a
+					rel="noopener noreferrer">Discord WLEDM MM 2D & Audio</a
+				> and 
+				<a
+					href="https://moonmodules.org"
+					class="link"
+					target="_blank"
+					rel="noopener noreferrer">MoonModules.org</a
 				>.
 			</p>
 			<a
 				class="btn btn-primary"
 				href="/demo"
-				on:click={() => notifications.success('You did it!', 1000)}>Start Demo</a
+				on:click={() => notifications.success('You did it!', 1000)}>Start MoonBase</a
 			>
 		</div>
 	</div>
