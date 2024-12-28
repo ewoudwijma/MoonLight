@@ -2,6 +2,8 @@
 
 <img width="500" alt="MoonBase" src="https://github.com/user-attachments/assets/de0ab735-d547-462e-b7e3-c3f819bf9283" />
 
+Documentation has been setup (but not customized), see [MoonBaseDocs](https://ewowi.github.io/MoonBase/)
+
 Moonbase is a fork of:
 
 # ESP32 SvelteKit - Create Amazing IoT Projects
