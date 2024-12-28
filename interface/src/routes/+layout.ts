@@ -9,9 +9,9 @@ export const load = (async ({ fetch }) => {
 	const item = await result.json();
 	return {
 		features: item,
-		title: 'ESP32-SvelteKit',
-		github: 'theelims/ESP32-sveltekit',
-		copyright: '2024 theelims',
-		appName: 'ESP32 SvelteKit'
+		title: 'MoonBase',
+		github: 'ewowi/MoonBase',
+		copyright: '2024 MoonModules ⚖️ GPL-v3',
+		appName: 'MoonBase'
 	};
 }) satisfies LayoutLoad;
