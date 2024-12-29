@@ -29,7 +29,7 @@
 			</p>
 			<a
 				class="btn btn-primary"
-				href="/demo"
+				href="/"
 				on:click={() => notifications.success('You did it!', 1000)}>Start MoonBase</a
 			>
 		</div>

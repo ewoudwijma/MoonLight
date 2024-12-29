@@ -4,6 +4,7 @@
 	import Discord from '~icons/tabler/brand-discord';
 	import Users from '~icons/tabler/users';
 	import Settings from '~icons/tabler/settings';
+	import FilesIcon from '~icons/tabler/files';
 	import Health from '~icons/tabler/stethoscope';
 	import Update from '~icons/tabler/refresh-alert';
 	import WiFi from '~icons/tabler/wifi';
@@ -23,7 +24,7 @@
 
 	const github = { href: 'https://github.com/' + $page.data.github, active: true };
 
-	const discord = { href: '.', active: false };
+	const discord = { href: 'https://discord.gg/TC8NSUSCdV', active: true };
 
 	type menuItem = {
 		title: string;
@@ -50,7 +51,7 @@
 			submenu: [
 				{
 					title: 'Files',
-					icon: Health,
+					icon: FilesIcon,
 					href: '/moonbase/files',
 					feature: true,
 				},

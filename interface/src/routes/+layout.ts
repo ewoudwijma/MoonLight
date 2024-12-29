@@ -11,7 +11,7 @@ export const load = (async ({ fetch }) => {
 		features: item,
 		title: 'MoonBase',
 		github: 'ewowi/MoonBase',
-		copyright: '2024 MoonModules ⚖️ GPL-v3',
+		copyright: '2024 MoonModules ⚖️ GPL-3.0',
 		appName: 'MoonBase'
 	};
 }) satisfies LayoutLoad;
