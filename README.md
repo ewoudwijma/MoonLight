@@ -2,9 +2,11 @@
 
 <img width="500" alt="MoonBase" src="https://github.com/user-attachments/assets/de0ab735-d547-462e-b7e3-c3f819bf9283" />
 
-Documentation has been setup (but not customized), see [MoonBaseDocs](https://ewowi.github.io/MoonBase/)
+* Documentation has been setup (but not customized), see [MoonBaseDocs](https://ewowi.github.io/MoonBase/).
+* MoonBase is a [MoonModules](https://moonmodules.org) project.
+* MoonBase is a POC to see if StarBase and StarLight can be ported to the ESP32 SvelteKit ecosystem. Check [Discord/StarLight](https://discord.gg/TC8NSUSCdV) to discuss.
 
-Moonbase is a fork of:
+MoonBase is a fork of:
 
 # ESP32 SvelteKit - Create Amazing IoT Projects
 
