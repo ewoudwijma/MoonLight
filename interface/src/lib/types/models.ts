@@ -144,3 +144,10 @@ export type MQTTSettings = {
 	keep_alive: number;
 	clean_session: boolean;
 };
+
+export type FilesState = {
+	name: string;
+	size: number;
+	time: number;
+	files: FilesState[];
+};

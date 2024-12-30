@@ -15,6 +15,7 @@
 #include <ESP32SvelteKit.h>
 #include <LightMqttSettingsService.h>
 #include <LightStateService.h>
+#include <FilesService.h>
 #include <PsychicHttpServer.h>
 
 #define SERIAL_BAUD_RATE 115200
@@ -33,6 +34,10 @@ LightStateService lightStateService = LightStateService(&server,
                                                         esp32sveltekit.getMqttClient(),
                                                         &lightMqttSettingsService);
 
+FilesService filesService = FilesService(&server,
+                                                        esp32sveltekit.getSocket(),
+                                                        esp32sveltekit.getSecurityManager());
+
 void setup()
 {
     // start serial and filesystem
@@ -45,6 +50,8 @@ void setup()
     lightStateService.begin();
     // start the light service
     lightMqttSettingsService.begin();
+
+    filesService.begin();
 }
 
 void loop()

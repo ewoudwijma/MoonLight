@@ -5,6 +5,7 @@
 	import Users from '~icons/tabler/users';
 	import Settings from '~icons/tabler/settings';
 	import FilesIcon from '~icons/tabler/files';
+	import ComputerIcon from '~icons/tabler/cpu';
 	import Health from '~icons/tabler/stethoscope';
 	import Update from '~icons/tabler/refresh-alert';
 	import WiFi from '~icons/tabler/wifi';
@@ -53,6 +54,12 @@
 					title: 'Files',
 					icon: FilesIcon,
 					href: '/moonbase/files',
+					feature: true,
+				},
+				{
+					title: 'Instances',
+					icon: ComputerIcon,
+					href: '/moonbase/instances',
 					feature: true,
 				},
 				{

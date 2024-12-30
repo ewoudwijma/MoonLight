@@ -11,7 +11,7 @@
 	import SettingsCard from '$lib/components/SettingsCard.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
-	import FilesIcon from '~icons/tabler/files';
+	import ComputerIcon from '~icons/tabler/cpu';
 	import Add from '~icons/tabler/circle-plus';
 	import Edit from '~icons/tabler/pencil';
 	import Delete from '~icons/tabler/trash';
@@ -155,7 +155,7 @@
 	function checkItemList() {
 		if (itemsList.length >= 10) {
 			openModal(InfoDialog, {
-				title: 'Reached Maximum Items',
+				title: 'Reached Maximum items',
 				message:
 					'You have reached the maximum number of items. Please delete one to add another.',
 				dismiss: { label: 'OK', icon: Check },
@@ -180,7 +180,7 @@
 </script>
 
 <SettingsCard collapsible={false}>
-	<FilesIcon slot="icon" class="lex-shrink-0 mr-2 h-6 w-6 self-end" />
+	<ComputerIcon slot="icon" class="lex-shrink-0 mr-2 h-6 w-6 self-end" />
 	<span slot="title">Files info</span>
 	<div class="w-full overflow-x-auto">
 	</div>
@@ -221,7 +221,7 @@
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
 							<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
 								<div class="mask mask-hexagon bg-primary h-auto w-10 shrink-0">
-									<FilesIcon class="text-primary-content h-auto w-full scale-75" />
+									<ComputerIcon class="text-primary-content h-auto w-full scale-75" />
 								</div>
 								<div>
 									<div class="font-bold">{itemsList[index].name}</div>
