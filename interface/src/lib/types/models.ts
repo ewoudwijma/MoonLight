@@ -92,6 +92,7 @@ export type Analytics = {
 	fs_total: number;
 	fs_used: number;
 	uptime: number;
+	cpuPerc: number;
 };
 
 export type RSSI = {

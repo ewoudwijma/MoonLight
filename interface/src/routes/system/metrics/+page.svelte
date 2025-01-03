@@ -5,7 +5,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
-	export let data: PageData;
+	// export let data: PageData;
 
 	if (!$page.data.features.analytics) {
 		goto('/');

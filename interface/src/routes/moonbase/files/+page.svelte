@@ -2,7 +2,7 @@
 	import type { PageData } from '../$types';
 	import Files from './Files.svelte';
 
-	export let data: PageData;
+	// export let data: PageData;
 </script>
 
 <div

@@ -53,7 +53,8 @@ ESP32SvelteKit::ESP32SvelteKit(PsychicHttpServer *server, unsigned int numberEnd
 #endif
                                                                                           _restartService(server, &_securitySettingsService),
                                                                                           _factoryResetService(server, &ESPFS, &_securitySettingsService),
-                                                                                          _systemStatus(server, &_securitySettingsService)
+                                                                                          _systemStatus(server, &_securitySettingsService),
+                                                                                          _filesService(server, &_socket, &_securitySettingsService)
 {
 }
 
@@ -177,6 +178,8 @@ void ESP32SvelteKit::begin()
     _batteryService.begin();
 #endif
 
+    _filesService.begin();
+
     // Start the loop task
     ESP_LOGV("ESP32SvelteKit", "Starting loop task");
     xTaskCreatePinnedToCore(
@@ -194,6 +197,8 @@ void ESP32SvelteKit::_loop()
 {
     while (1)
     {
+        uint32_t cycles = ESP.getCycleCount();
+
         _wifiSettingsService.loop(); // 30 seconds
         _apSettingsService.loop();   // 10 seconds
 #if FT_ENABLED(FT_MQTT)
@@ -204,6 +209,12 @@ void ESP32SvelteKit::_loop()
         {
             function();
         }
+
+        cycles =  (ESP.getCycleCount() - cycles) / (ESP.getCpuFreqMHz() * 1000); //add the new cycles (converted to ms) to the total cpu time
+        cpuTime += cycles;
+        _systemStatus.cpuPerc = 100 * cpuTime / millis();
+        _analyticsService.cpuPerc = _systemStatus.cpuPerc;
+        // Serial.printf("Cycles: %d - %d / %d -> %d\n", cycles, cpuTime, millis(), _systemStatus.cpuPerc);
 
         vTaskDelay(20 / portTICK_PERIOD_MS);
     }

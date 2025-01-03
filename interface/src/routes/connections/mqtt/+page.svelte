@@ -3,7 +3,7 @@
 	import MQTT from './MQTT.svelte';
 	import MqttConfig from './MQTTConfig.svelte';
 
-	export let data: PageData;
+	// export let data: PageData;
 </script>
 
 <div

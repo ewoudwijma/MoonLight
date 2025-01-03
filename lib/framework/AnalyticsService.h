@@ -18,13 +18,15 @@
 #include <ESPFS.h>
 #include <EventSocket.h>
 
-#define MAX_ESP_ANALYTICS_SIZE 1024
+// #define MAX_ESP_ANALYTICS_SIZE 1024
 #define EVENT_ANALYTICS "analytics"
 #define ANALYTICS_INTERVAL 2000
 
 class AnalyticsService
 {
 public:
+    uint8_t cpuPerc = 0;
+
     AnalyticsService(EventSocket *socket) : _socket(socket){};
 
     void begin()
@@ -60,6 +62,9 @@ protected:
             doc["fs_used"] = ESPFS.usedBytes();
             doc["fs_total"] = ESPFS.totalBytes();
             doc["core_temp"] = temperatureRead();
+            doc["cpuPerc"] = cpuPerc;
+            doc["free_psram"] = ESP.getFreePsram();
+            doc["psram_size"] = ESP.getPsramSize();
 
             JsonObject jsonObject = doc.as<JsonObject>();
             _socket->emitEvent(EVENT_ANALYTICS, jsonObject);

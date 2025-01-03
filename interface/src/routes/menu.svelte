@@ -6,6 +6,7 @@
 	import Settings from '~icons/tabler/settings';
 	import FilesIcon from '~icons/tabler/files';
 	import ComputerIcon from '~icons/tabler/cpu';
+	import MoonIcon from '~icons/tabler/moon';
 	import Health from '~icons/tabler/stethoscope';
 	import Update from '~icons/tabler/refresh-alert';
 	import WiFi from '~icons/tabler/wifi';
@@ -47,7 +48,7 @@
 	let menuItems = [
 		{
 			title: 'MoonBase',
-			icon: Settings,
+			icon: MoonIcon,
 			feature: true,
 			submenu: [
 				{

@@ -2,7 +2,7 @@
 	import type { PageData } from '../$types';
 	import NTP from './NTP.svelte';
 
-	export let data: PageData;
+	// export let data: PageData;
 </script>
 
 <div

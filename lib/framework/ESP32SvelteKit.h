@@ -45,6 +45,8 @@
 #include <PsychicHttp.h>
 #include <vector>
 
+#include <FilesService.h>
+
 #ifdef EMBED_WWW
 #include <WWWData.h>
 #endif
@@ -219,7 +221,12 @@ private:
 
     String _appName = APP_NAME;
 
+FilesService _filesService;
+
 protected:
+
+    uint32_t cpuTime = 0;
+
     static void _loopImpl(void *_this) { static_cast<ESP32SvelteKit *>(_this)->_loop(); }
     void _loop();
 

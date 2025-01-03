@@ -19,6 +19,7 @@
 #include <HttpEndpoint.h>
 #include <EventEndpoint.h>
 #include <WebSocketServer.h>
+#include <PsychicHttp.h>
 
 class FilesState
 {

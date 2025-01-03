@@ -139,6 +139,7 @@ esp_err_t SystemStatus::systemStatus(PsychicRequest *request)
     root["core_temp"] = temperatureRead();
     root["cpu_reset_reason"] = verbosePrintResetReason(rtc_get_reset_reason(0));
     root["uptime"] = millis() / 1000;
+    root["cpuPerc"] = cpuPerc;
 
     return response.send();
 }

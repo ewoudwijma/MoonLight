@@ -48,7 +48,7 @@
 			});
 			itemsState = await response.json();
 			itemsState = itemsState.files[0]; //temp, only show the first folder (which is config)
-			console.log("itemsState", itemsState);
+			// console.log("itemsState", itemsState);
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -155,7 +155,7 @@
 	function checkItemList() {
 		if (itemsList.length >= 10) {
 			openModal(InfoDialog, {
-				title: 'Reached Maximum Items',
+				title: 'Reached Maximum items',
 				message:
 					'You have reached the maximum number of items. Please delete one to add another.',
 				dismiss: { label: 'OK', icon: Check },

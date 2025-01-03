@@ -5,7 +5,7 @@
 	import { user } from '$lib/stores/user';
 	import { page } from '$app/stores';
 
-	export let data: PageData;
+	// export let data: PageData;
 </script>
 
 <div

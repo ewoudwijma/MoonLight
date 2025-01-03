@@ -164,52 +164,28 @@
 				class="flex w-full flex-col space-y-1"
 				transition:slide|local={{ duration: 300, easing: cubicOut }}
 			>
+				<!-- Reordered base on dynamics -->
+				 
 				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<CPU class="text-primary-content h-auto w-full scale-75" />
+					<div class="mask mask-hexagon bg-primary h-auto w-10">
+						<Stopwatch class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
-						<div class="font-bold">Chip</div>
+						<div class="font-bold">Uptime</div>
 						<div class="text-sm opacity-75">
-							{systemInformation.cpu_type} Rev {systemInformation.cpu_rev}
+							{convertSeconds(systemInformation.uptime)}
 						</div>
 					</div>
 				</div>
 
 				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
 					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<SDK class="text-primary-content h-auto w-full scale-75" />
+						<Power class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
-						<div class="font-bold">SDK Version</div>
+						<div class="font-bold">CPU %</div>
 						<div class="text-sm opacity-75">
-							ESP-IDF {systemInformation.sdk_version} / Arduino {systemInformation.arduino_version}
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<CPP class="text-primary-content h-auto w-full scale-75" />
-					</div>
-					<div>
-						<div class="font-bold">Firmware Version</div>
-						<div class="text-sm opacity-75">
-							{systemInformation.firmware_version}
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<Speed class="text-primary-content h-auto w-full scale-75" />
-					</div>
-					<div>
-						<div class="font-bold">CPU Frequency</div>
-						<div class="text-sm opacity-75">
-							{systemInformation.cpu_freq_mhz} MHz {systemInformation.cpu_cores == 2
-								? 'Dual Core'
-								: 'Single Core'}
+							{systemInformation.cpuPerc}
 						</div>
 					</div>
 				</div>
@@ -219,7 +195,7 @@
 						<Heap class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
-						<div class="font-bold">Heap (Free / Max Alloc)</div>
+						<div class="font-bold">Memory (Free / Max Alloc)</div>
 						<div class="text-sm opacity-75">
 							{systemInformation.free_heap.toLocaleString('en-US')} / {systemInformation.max_alloc_heap.toLocaleString(
 								'en-US'
@@ -238,45 +214,6 @@
 							{systemInformation.psram_size.toLocaleString('en-US')} / {systemInformation.psram_size.toLocaleString(
 								'en-US'
 							)} bytes
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<Sketch class="text-primary-content h-auto w-full scale-75" />
-					</div>
-					<div>
-						<div class="font-bold">Sketch (Used / Free)</div>
-						<div class="flex flex-wrap justify-start gap-1 text-sm opacity-75">
-							<span>
-								{(
-									(systemInformation.sketch_size / systemInformation.free_sketch_space) *
-									100
-								).toFixed(1)} % of
-								{(systemInformation.free_sketch_space / 1000000).toLocaleString('en-US')} MB used
-							</span>
-
-							<span>
-								({(
-									(systemInformation.free_sketch_space - systemInformation.sketch_size) /
-									1000000
-								).toLocaleString('en-US')} MB free)
-							</span>
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<Flash class="text-primary-content h-auto w-full scale-75" />
-					</div>
-					<div>
-						<div class="font-bold">Flash Chip (Size / Speed)</div>
-						<div class="text-sm opacity-75">
-							{(systemInformation.flash_chip_size / 1000000).toLocaleString('en-US')} MB / {(
-								systemInformation.flash_chip_speed / 1000000
-							).toLocaleString('en-US')} MHz
 						</div>
 					</div>
 				</div>
@@ -320,18 +257,6 @@
 				</div>
 
 				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10">
-						<Stopwatch class="text-primary-content h-auto w-full scale-75" />
-					</div>
-					<div>
-						<div class="font-bold">Uptime</div>
-						<div class="text-sm opacity-75">
-							{convertSeconds(systemInformation.uptime)}
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
 					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
 						<Power class="text-primary-content h-auto w-full scale-75" />
 					</div>
@@ -342,6 +267,96 @@
 						</div>
 					</div>
 				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<Sketch class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">Sketch (Used / Free)</div>
+						<div class="flex flex-wrap justify-start gap-1 text-sm opacity-75">
+							<span>
+								{(
+									(systemInformation.sketch_size / systemInformation.free_sketch_space) *
+									100
+								).toFixed(1)} % of
+								{(systemInformation.free_sketch_space / 1000000).toLocaleString('en-US')} MB used
+							</span>
+
+							<span>
+								({(
+									(systemInformation.free_sketch_space - systemInformation.sketch_size) /
+									1000000
+								).toLocaleString('en-US')} MB free)
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<CPP class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">Firmware Version</div>
+						<div class="text-sm opacity-75">
+							{systemInformation.firmware_version}
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<CPU class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">Chip</div>
+						<div class="text-sm opacity-75">
+							{systemInformation.cpu_type} Rev {systemInformation.cpu_rev}
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<SDK class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">SDK Version</div>
+						<div class="text-sm opacity-75">
+							ESP-IDF {systemInformation.sdk_version} / Arduino {systemInformation.arduino_version}
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<Speed class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">CPU Frequency</div>
+						<div class="text-sm opacity-75">
+							{systemInformation.cpu_freq_mhz} MHz {systemInformation.cpu_cores == 2
+								? 'Dual Core'
+								: 'Single Core'}
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<Flash class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">Flash Chip (Size / Speed)</div>
+						<div class="text-sm opacity-75">
+							{(systemInformation.flash_chip_size / 1000000).toLocaleString('en-US')} MB / {(
+								systemInformation.flash_chip_speed / 1000000
+							).toLocaleString('en-US')} MHz
+						</div>
+					</div>
+				</div>
+
 			</div>
 		{/await}
 	</div>

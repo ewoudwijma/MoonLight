@@ -11,8 +11,14 @@
 
 	Chart.register(...registerables);
 
+	let cpuChartElement: HTMLCanvasElement;
+	let cpuChart: Chart;
+
 	let heapChartElement: HTMLCanvasElement;
 	let heapChart: Chart;
+
+	let psramChartElement: HTMLCanvasElement;
+	let psramChart: Chart;
 
 	let filesystemChartElement: HTMLCanvasElement;
 	let filesystemChart: Chart;
@@ -21,6 +27,79 @@
 	let temperatureChart: Chart;
 
 	onMount(() => {
+		cpuChart = new Chart(cpuChartElement, {
+			type: 'line',
+			data: {
+				labels: $analytics.uptime,
+				datasets: [
+					{
+						label: 'CPU%',
+						borderColor: daisyColor('--p'),
+						backgroundColor: daisyColor('--p', 50),
+						borderWidth: 2,
+						data: $analytics.cpuPerc,
+						yAxisID: 'y'
+					},
+					{
+						label: 'Max service',
+						borderColor: daisyColor('--s'),
+						backgroundColor: daisyColor('--s', 50),
+						borderWidth: 2,
+						data: $analytics.cpuPerc,
+						yAxisID: 'y'
+					}
+				]
+			},
+			options: {
+				maintainAspectRatio: false,
+				responsive: true,
+				plugins: {
+					legend: {
+						display: true
+					},
+					tooltip: {
+						mode: 'index',
+						intersect: false
+					}
+				},
+				elements: {
+					point: {
+						radius: 1
+					}
+				},
+				scales: {
+					x: {
+						grid: {
+							color: daisyColor('--bc', 10)
+						},
+						ticks: {
+							color: daisyColor('--bc')
+						},
+						display: false
+					},
+					y: {
+						type: 'linear',
+						title: {
+							display: true,
+							text: 'CPU [%]',
+							color: daisyColor('--bc'),
+							font: {
+								size: 16,
+								weight: 'bold'
+							}
+						},
+						position: 'left',
+						min: 0,
+						max: 100,
+						grid: { color: daisyColor('--bc', 10) },
+						ticks: {
+							color: daisyColor('--bc')
+						},
+						border: { color: daisyColor('--bc', 10) }
+					}
+				}
+			}
+		}); //cpuChart
 		heapChart = new Chart(heapChartElement, {
 			type: 'line',
 			data: {
@@ -75,7 +154,7 @@
 						type: 'linear',
 						title: {
 							display: true,
-							text: 'Heap [kb]',
+							text: 'Memory [kb]',
 							color: daisyColor('--bc'),
 							font: {
 								size: 16,
@@ -93,7 +172,80 @@
 					}
 				}
 			}
-		});
+		}); //psramChart
+		psramChart = new Chart(psramChartElement, {
+			type: 'line',
+			data: {
+				labels: $analytics.uptime,
+				datasets: [
+					{
+						label: 'Free PSRAM',
+						borderColor: daisyColor('--p'),
+						backgroundColor: daisyColor('--p', 50),
+						borderWidth: 2,
+						data: $analytics.free_psram,
+						yAxisID: 'y'
+					},
+					{
+						label: 'Used PSRAM',
+						borderColor: daisyColor('--s'),
+						backgroundColor: daisyColor('--s', 50),
+						borderWidth: 2,
+						data: $analytics.free_psram,
+						yAxisID: 'y'
+					}
+				]
+			},
+			options: {
+				maintainAspectRatio: false,
+				responsive: true,
+				plugins: {
+					legend: {
+						display: true
+					},
+					tooltip: {
+						mode: 'index',
+						intersect: false
+					}
+				},
+				elements: {
+					point: {
+						radius: 1
+					}
+				},
+				scales: {
+					x: {
+						grid: {
+							color: daisyColor('--bc', 10)
+						},
+						ticks: {
+							color: daisyColor('--bc')
+						},
+						display: false
+					},
+					y: {
+						type: 'linear',
+						title: {
+							display: true,
+							text: 'PSRAM [kb]',
+							color: daisyColor('--bc'),
+							font: {
+								size: 16,
+								weight: 'bold'
+							}
+						},
+						position: 'left',
+						min: 0,
+						max: Math.round($analytics.psram_size[0]),
+						grid: { color: daisyColor('--bc', 10) },
+						ticks: {
+							color: daisyColor('--bc')
+						},
+						border: { color: daisyColor('--bc', 10) }
+					}
+				}
+			}
+		});//psram chart
 		filesystemChart = new Chart(filesystemChartElement, {
 			type: 'line',
 			data: {
@@ -230,10 +382,20 @@
 	});
 
 	function updateData() {
+		cpuChart.data.labels = $analytics.uptime;
+		cpuChart.data.datasets[0].data = $analytics.cpuPerc;
+		cpuChart.data.datasets[1].data = $analytics.cpuPerc;
+		cpuChart.update('none');
+
 		heapChart.data.labels = $analytics.uptime;
 		heapChart.data.datasets[0].data = $analytics.free_heap;
 		heapChart.data.datasets[1].data = $analytics.max_alloc_heap;
 		heapChart.update('none');
+
+		psramChart.data.labels = $analytics.uptime;
+		psramChart.data.datasets[0].data = $analytics.free_psram;
+		psramChart.data.datasets[1].data = $analytics.free_psram;
+		psramChart.update('none');
 
 		filesystemChart.data.labels = $analytics.uptime;
 		filesystemChart.data.datasets[0].data = $analytics.fs_used;
@@ -281,7 +443,23 @@
 			class="flex w-full flex-col space-y-1 h-60"
 			transition:slide|local={{ duration: 300, easing: cubicOut }}
 		>
+			<canvas bind:this={cpuChartElement} />
+		</div>
+	</div>
+	<div class="w-full overflow-x-auto">
+		<div
+			class="flex w-full flex-col space-y-1 h-60"
+			transition:slide|local={{ duration: 300, easing: cubicOut }}
+		>
 			<canvas bind:this={heapChartElement} />
+		</div>
+	</div>
+	<div class="w-full overflow-x-auto">
+		<div
+			class="flex w-full flex-col space-y-1 h-60"
+			transition:slide|local={{ duration: 300, easing: cubicOut }}
+		>
+			<canvas bind:this={psramChartElement} />
 		</div>
 	</div>
 	<div class="w-full overflow-x-auto">

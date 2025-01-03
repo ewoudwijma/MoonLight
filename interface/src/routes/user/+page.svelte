@@ -23,7 +23,7 @@
 	import Cancel from '~icons/tabler/x';
 	import Check from '~icons/tabler/check';
 
-	export let data: PageData;
+	// export let data: PageData;
 
 	type userSetting = {
 		username: string;

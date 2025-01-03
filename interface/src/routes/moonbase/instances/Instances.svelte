@@ -48,7 +48,7 @@
 			});
 			itemsState = await response.json();
 			itemsState = itemsState.files[0]; //temp, only show the first folder (which is config)
-			console.log("itemsState", itemsState);
+			// console.log("itemsState", itemsState);
 		} catch (error) {
 			console.error('Error:', error);
 		}

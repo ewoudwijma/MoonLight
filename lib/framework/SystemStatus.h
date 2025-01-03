@@ -27,6 +27,8 @@
 class SystemStatus
 {
 public:
+    uint8_t cpuPerc = 0;
+    
     SystemStatus(PsychicHttpServer *server, SecurityManager *securityManager);
 
     void begin();
