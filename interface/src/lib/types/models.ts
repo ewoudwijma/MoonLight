@@ -152,3 +152,8 @@ export type FilesState = {
 	time: number;
 	files: FilesState[];
 };
+
+export type EffectsState = {
+	name: string;
+	effects: EffectsState[];
+};

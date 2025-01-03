@@ -7,6 +7,8 @@
 	import FilesIcon from '~icons/tabler/files';
 	import ComputerIcon from '~icons/tabler/cpu';
 	import MoonIcon from '~icons/tabler/moon';
+	import EffectsIcon from '~icons/tabler/torii';
+	import StarIcon from '~icons/tabler/star';
 	import Health from '~icons/tabler/stethoscope';
 	import Update from '~icons/tabler/refresh-alert';
 	import WiFi from '~icons/tabler/wifi';
@@ -46,6 +48,19 @@
 	};
 
 	let menuItems = [
+		{
+			title: 'MoonLight',
+			icon: StarIcon,
+			feature: true,
+			submenu: [
+				{
+					title: 'Effects',
+					icon: EffectsIcon,
+					href: '/moonlight/effects',
+					feature: true,
+				},
+			]
+		},
 		{
 			title: 'MoonBase',
 			icon: MoonIcon,

@@ -54,7 +54,8 @@ ESP32SvelteKit::ESP32SvelteKit(PsychicHttpServer *server, unsigned int numberEnd
                                                                                           _restartService(server, &_securitySettingsService),
                                                                                           _factoryResetService(server, &ESPFS, &_securitySettingsService),
                                                                                           _systemStatus(server, &_securitySettingsService),
-                                                                                          _filesService(server, &_socket, &_securitySettingsService)
+                                                                                          _filesService(server, &_socket, &_securitySettingsService),
+                                                                                          _effectsService(server, &_socket, &_securitySettingsService)
 {
 }
 
@@ -179,6 +180,7 @@ void ESP32SvelteKit::begin()
 #endif
 
     _filesService.begin();
+    _effectsService.begin();
 
     // Start the loop task
     ESP_LOGV("ESP32SvelteKit", "Starting loop task");
@@ -210,6 +212,7 @@ void ESP32SvelteKit::_loop()
             function();
         }
 
+        _effectsService.loop();
         cycles =  (ESP.getCycleCount() - cycles) / (ESP.getCpuFreqMHz() * 1000); //add the new cycles (converted to ms) to the total cpu time
         cpuTime += cycles;
         _systemStatus.cpuPerc = 100 * cpuTime / millis();
