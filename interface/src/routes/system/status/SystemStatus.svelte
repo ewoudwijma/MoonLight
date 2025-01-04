@@ -195,28 +195,31 @@
 						<Heap class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
-						<div class="font-bold">Memory (Free / Max Alloc)</div>
+						<div class="font-bold">Memory (Total / Free / Max Alloc)</div>
 						<div class="text-sm opacity-75">
-							{systemInformation.free_heap.toLocaleString('en-US')} / {systemInformation.max_alloc_heap.toLocaleString(
+							{systemInformation.total_heap.toLocaleString('en-US')} / {systemInformation.free_heap.toLocaleString('en-US')} / {systemInformation.max_alloc_heap.toLocaleString(
 								'en-US'
 							)} bytes
 						</div>
 					</div>
 				</div>
 
-				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<Pyramid class="text-primary-content h-auto w-full scale-75" />
-					</div>
-					<div>
-						<div class="font-bold">PSRAM (Size / Free)</div>
-						<div class="text-sm opacity-75">
-							{systemInformation.psram_size.toLocaleString('en-US')} / {systemInformation.psram_size.toLocaleString(
-								'en-US'
-							)} bytes
+				<!-- if psramFound -->
+				{#if (systemInformation.psram_size)}
+					<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+						<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+							<Pyramid class="text-primary-content h-auto w-full scale-75" />
+						</div>
+						<div>
+							<div class="font-bold">PSRAM (Size / Free)</div>
+							<div class="text-sm opacity-75">
+								{systemInformation.psram_size.toLocaleString('en-US')} / {systemInformation.free_psram.toLocaleString(
+									'en-US'
+								)} bytes
+							</div>
 						</div>
 					</div>
-				</div>
+				{/if}
 
 				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
 					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">

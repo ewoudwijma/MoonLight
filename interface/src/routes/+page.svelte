@@ -18,7 +18,7 @@
 					href="https://discord.gg/TC8NSUSCdV"
 					class="link"
 					target="_blank"
-					rel="noopener noreferrer">Discord WLEDM MM 2D & Audio</a
+					rel="noopener noreferrer">Discord WLED MM 2D & Audio</a
 				> and 
 				<a
 					href="https://moonmodules.org"

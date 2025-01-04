@@ -20,7 +20,7 @@
 
 // #define MAX_ESP_ANALYTICS_SIZE 1024
 #define EVENT_ANALYTICS "analytics"
-#define ANALYTICS_INTERVAL 2000
+#define ANALYTICS_INTERVAL 1000 //every second is more intuitive
 
 class AnalyticsService
 {
@@ -63,8 +63,10 @@ protected:
             doc["fs_total"] = ESPFS.totalBytes();
             doc["core_temp"] = temperatureRead();
             doc["cpuPerc"] = cpuPerc;
-            doc["free_psram"] = ESP.getFreePsram();
-            doc["psram_size"] = ESP.getPsramSize();
+            if (psramFound()) {
+                doc["free_psram"] = ESP.getFreePsram();
+                doc["psram_size"] = ESP.getPsramSize();
+            }
 
             JsonObject jsonObject = doc.as<JsonObject>();
             _socket->emitEvent(EVENT_ANALYTICS, jsonObject);

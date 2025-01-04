@@ -120,12 +120,15 @@ esp_err_t SystemStatus::systemStatus(PsychicRequest *request)
     root["esp_platform"] = ESP_PLATFORM;
     root["firmware_version"] = APP_VERSION;
     root["max_alloc_heap"] = ESP.getMaxAllocHeap();
-    root["psram_size"] = ESP.getPsramSize();
-    root["free_psram"] = ESP.getFreePsram();
+    if (psramFound()) {
+        root["psram_size"] = ESP.getPsramSize();
+        root["free_psram"] = ESP.getFreePsram();
+    }
     root["cpu_freq_mhz"] = ESP.getCpuFreqMHz();
     root["cpu_type"] = ESP.getChipModel();
     root["cpu_rev"] = ESP.getChipRevision();
     root["cpu_cores"] = ESP.getChipCores();
+    root["total_heap"] = ESP.getHeapSize();
     root["free_heap"] = ESP.getFreeHeap();
     root["min_free_heap"] = ESP.getMinFreeHeap();
     root["sketch_size"] = ESP.getSketchSize();

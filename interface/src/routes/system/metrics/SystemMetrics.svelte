@@ -172,80 +172,83 @@
 					}
 				}
 			}
-		}); //psramChart
-		psramChart = new Chart(psramChartElement, {
-			type: 'line',
-			data: {
-				labels: $analytics.uptime,
-				datasets: [
-					{
-						label: 'Free PSRAM',
-						borderColor: daisyColor('--p'),
-						backgroundColor: daisyColor('--p', 50),
-						borderWidth: 2,
-						data: $analytics.free_psram,
-						yAxisID: 'y'
-					},
-					{
-						label: 'Used PSRAM',
-						borderColor: daisyColor('--s'),
-						backgroundColor: daisyColor('--s', 50),
-						borderWidth: 2,
-						data: $analytics.free_psram,
-						yAxisID: 'y'
-					}
-				]
-			},
-			options: {
-				maintainAspectRatio: false,
-				responsive: true,
-				plugins: {
-					legend: {
-						display: true
-					},
-					tooltip: {
-						mode: 'index',
-						intersect: false
-					}
+		}); //heapChart
+		// psramFound
+		if ($analytics.psram_size[0]) {
+			psramChart = new Chart(psramChartElement, {
+				type: 'line',
+				data: {
+					labels: $analytics.uptime,
+					datasets: [
+						{
+							label: 'Total PSRAM',
+							borderColor: daisyColor('--p'),
+							backgroundColor: daisyColor('--p', 50),
+							borderWidth: 2,
+							data: $analytics.psram_size,
+							yAxisID: 'y'
+						},
+						{
+							label: 'Free PSRAM',
+							borderColor: daisyColor('--s'),
+							backgroundColor: daisyColor('--s', 50),
+							borderWidth: 2,
+							data: $analytics.free_psram,
+							yAxisID: 'y'
+						}
+					]
 				},
-				elements: {
-					point: {
-						radius: 1
-					}
-				},
-				scales: {
-					x: {
-						grid: {
-							color: daisyColor('--bc', 10)
+				options: {
+					maintainAspectRatio: false,
+					responsive: true,
+					plugins: {
+						legend: {
+							display: true
 						},
-						ticks: {
-							color: daisyColor('--bc')
-						},
-						display: false
+						tooltip: {
+							mode: 'index',
+							intersect: false
+						}
 					},
-					y: {
-						type: 'linear',
-						title: {
-							display: true,
-							text: 'PSRAM [kb]',
-							color: daisyColor('--bc'),
-							font: {
-								size: 16,
-								weight: 'bold'
-							}
+					elements: {
+						point: {
+							radius: 1
+						}
+					},
+					scales: {
+						x: {
+							grid: {
+								color: daisyColor('--bc', 10)
+							},
+							ticks: {
+								color: daisyColor('--bc')
+							},
+							display: false
 						},
-						position: 'left',
-						min: 0,
-						max: Math.round($analytics.psram_size[0]),
-						grid: { color: daisyColor('--bc', 10) },
-						ticks: {
-							color: daisyColor('--bc')
-						},
-						border: { color: daisyColor('--bc', 10) }
+						y: {
+							type: 'linear',
+							title: {
+								display: true,
+								text: 'PSRAM [kb]',
+								color: daisyColor('--bc'),
+								font: {
+									size: 16,
+									weight: 'bold'
+								}
+							},
+							position: 'left',
+							min: 0,
+							max: Math.round($analytics.psram_size[0]),
+							grid: { color: daisyColor('--bc', 10) },
+							ticks: {
+								color: daisyColor('--bc')
+							},
+							border: { color: daisyColor('--bc', 10) }
+						}
 					}
 				}
-			}
-		});//psram chart
+			});//psram chart
+		}
 		filesystemChart = new Chart(filesystemChartElement, {
 			type: 'line',
 			data: {
@@ -392,10 +395,13 @@
 		heapChart.data.datasets[1].data = $analytics.max_alloc_heap;
 		heapChart.update('none');
 
-		psramChart.data.labels = $analytics.uptime;
-		psramChart.data.datasets[0].data = $analytics.free_psram;
-		psramChart.data.datasets[1].data = $analytics.free_psram;
-		psramChart.update('none');
+		// psramFound
+		if ($analytics.psram_size[0]) {
+			psramChart.data.labels = $analytics.uptime;
+			psramChart.data.datasets[0].data = $analytics.psram_size;
+			psramChart.data.datasets[1].data = $analytics.free_psram;
+			psramChart.update('none');
+		}
 
 		filesystemChart.data.labels = $analytics.uptime;
 		filesystemChart.data.datasets[0].data = $analytics.fs_used;
@@ -454,14 +460,17 @@
 			<canvas bind:this={heapChartElement} />
 		</div>
 	</div>
-	<div class="w-full overflow-x-auto">
-		<div
-			class="flex w-full flex-col space-y-1 h-60"
-			transition:slide|local={{ duration: 300, easing: cubicOut }}
-		>
-			<canvas bind:this={psramChartElement} />
+	<!-- if psramFound -->
+	{#if ($analytics.psram_size[0])}
+		<div class="w-full overflow-x-auto">
+			<div
+				class="flex w-full flex-col space-y-1 h-60"
+				transition:slide|local={{ duration: 300, easing: cubicOut }}
+			>
+				<canvas bind:this={psramChartElement} />
+			</div>
 		</div>
-	</div>
+	{/if}
 	<div class="w-full overflow-x-auto">
 		<div
 			class="flex w-full flex-col space-y-1 h-52"
