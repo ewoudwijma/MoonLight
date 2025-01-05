@@ -58,13 +58,13 @@ void FilesState::read(FilesState &settings, JsonObject &root)
     folder.close();
 }
 
-StateUpdateResult FilesState::update(JsonObject &root, FilesState &filesService)
+StateUpdateResult FilesState::update(JsonObject &root, FilesState &filesState)
 {
     //this must be changed to make it files specific
     boolean newState = root["files_on"] | DEFAULT_LED_STATE;
-    if (filesService.filesOn != newState)
+    if (filesState.filesOn != newState)
     {
-        filesService.filesOn = newState;
+        filesState.filesOn = newState;
         return StateUpdateResult::CHANGED;
     }
     return StateUpdateResult::UNCHANGED;
@@ -93,7 +93,7 @@ FilesService::FilesService(PsychicHttpServer *server,
                                                                                                             AuthenticationPredicates::IS_AUTHENTICATED)
 {
 
-    // configure settings service update handler to update LED state
+    // configure settings service update handler to update state
     addUpdateHandler([&](const String &originId)
                      { onConfigUpdated(); },
                      false);
@@ -109,5 +109,6 @@ void FilesService::begin()
 
 void FilesService::onConfigUpdated()
 {
+    Serial.printf("FilesService::onConfigUpdated\n");
     // digitalWrite(LED_BUILTIN, _state.filesOn ? 1 : 0);
 }

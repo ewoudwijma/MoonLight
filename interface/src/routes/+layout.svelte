@@ -15,10 +15,12 @@
 	import Menu from './menu.svelte';
 	import Statusbar from './statusbar.svelte';
 	import Login from './login.svelte';
+	import Monitor from './monitor/Monitor.svelte';
 	import type { Analytics } from '$lib/types/models';
 	import type { RSSI } from '$lib/types/models';
 	import type { Battery } from '$lib/types/models';
 	import type { DownloadOTA } from '$lib/types/models';
+
 
 	//export let data: LayoutData;
 
@@ -82,7 +84,7 @@
 	};
 
 	const handleClose = () => {
-		notifications.error('Connection to device lost', 5000);
+		// notifications.error('Connection to device lost', 5000);
 		telemetry.setRSSI({ rssi: 0, ssid: '' });
 	};
 
@@ -120,16 +122,32 @@
 
 <svelte:head>
 	<title>{$page.data.title}</title>
+	<script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+	<script type="importmap">
+		{
+		  "imports": {
+			"three": "https://unpkg.com/three@0.156.1/build/three.module.js",
+			"three/addons/": "https://unpkg.com/three@0.156.1/examples/jsm/"
+		  }
+		}
+	</script>
 </svelte:head>
 
 {#if $page.data.features.security && $user.bearer_token === ''}
 	<Login />
 {:else}
+
 	<div class="drawer lg:drawer-open">
 		<input id="main-menu" type="checkbox" class="drawer-toggle" bind:checked={menuOpen} />
 		<div class="drawer-content flex flex-col">
 			<!-- Status bar content here -->
 			<Statusbar />
+
+			<!-- Don't show if captive portal -->
+			{#if (!window.location.href.includes("192.168.4.1"))}
+				<br>
+				<Monitor />
+			{/if}
 
 			<!-- Main page content here -->
 			<slot />
@@ -148,11 +166,14 @@
 
 <Modals>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
+	<!-- role/tabindex: A11y: <div> with click handler must have an ARIA role-->
 	<div
 		slot="backdrop"
 		class="fixed inset-0 z-40 max-h-full max-w-full bg-black/20 backdrop-blur"
 		transition:fade
 		on:click={closeModal}
+		role="button"
+		tabindex="0"
 	/>
 </Modals>
 

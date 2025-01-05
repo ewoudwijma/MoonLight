@@ -20,20 +20,14 @@
 #include <EventEndpoint.h>
 #include <WebSocketServer.h>
 #include <PsychicHttp.h>
-
-#include "FastLED.h"
-#define STARLIGHT_MAXLEDS 1024//*8
+#include "FixtureService.h"
 
 class EffectsState
 {
 public:
-    bool filesOn;
-    CRGB ledsP[STARLIGHT_MAXLEDS];
-
     static void read(EffectsState &settings, JsonObject &root);
 
-    static StateUpdateResult update(JsonObject &root, EffectsState &effectsService);
-
+    static StateUpdateResult update(JsonObject &root, EffectsState &effectsState);
 };
 
 class EffectsService : public StatefulService<EffectsState>
@@ -41,7 +35,7 @@ class EffectsService : public StatefulService<EffectsState>
 public:
     EffectsService(PsychicHttpServer *server,
                       EventSocket *socket,
-                      SecurityManager *securityManager);
+                      SecurityManager *securityManager, FixtureService *fixtureService);
 
     void begin();
     void loop();
@@ -53,6 +47,8 @@ private:
     HttpEndpoint<EffectsState> _httpEndpoint;
     EventEndpoint<EffectsState> _eventEndpoint;
     WebSocketServer<EffectsState> _webSocketServer;
+
+    FixtureService *_fixtureService;
 
     void onConfigUpdated();
 };

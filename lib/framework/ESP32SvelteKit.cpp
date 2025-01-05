@@ -55,7 +55,8 @@ ESP32SvelteKit::ESP32SvelteKit(PsychicHttpServer *server, unsigned int numberEnd
                                                                                           _factoryResetService(server, &ESPFS, &_securitySettingsService),
                                                                                           _systemStatus(server, &_securitySettingsService),
                                                                                           _filesService(server, &_socket, &_securitySettingsService),
-                                                                                          _effectsService(server, &_socket, &_securitySettingsService)
+                                                                                          _effectsService(server, &_socket, &_securitySettingsService, &_fixtureService),
+                                                                                          _fixtureService(server, &_socket, &_securitySettingsService)
 {
 }
 
@@ -85,6 +86,7 @@ void ESP32SvelteKit::begin()
                 response.addHeader("Content-Encoding", "gzip");
                 // commented cache control to avoid caching (temp should be develop mode)
                 // response.addHeader("Cache-Control", "public, immutable, max-age=31536000");
+                // response.addHeader("Cache-Control", "public, immutable, max-age=300");
                 response.setContent(content, len);
                 return response.send();
             };
@@ -181,6 +183,7 @@ void ESP32SvelteKit::begin()
 
     _filesService.begin();
     _effectsService.begin();
+    _fixtureService.begin();
 
     // Start the loop task
     ESP_LOGV("ESP32SvelteKit", "Starting loop task");
@@ -212,7 +215,9 @@ void ESP32SvelteKit::_loop()
             function();
         }
 
+        _fixtureService.loop();
         _effectsService.loop();
+        
         cycles =  (ESP.getCycleCount() - cycles) / (ESP.getCpuFreqMHz() * 1000); //add the new cycles (converted to ms) to the total cpu time
         cpuTime += cycles;
         _systemStatus.cpuPerc = 100 * cpuTime / millis();

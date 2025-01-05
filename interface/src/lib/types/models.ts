@@ -157,3 +157,19 @@ export type EffectsState = {
 	name: string;
 	effects: EffectsState[];
 };
+
+export type FixtureState = {
+	name: string;
+	lightsOn:boolean;
+	brightness: number;
+	width: number;
+	height: number;
+	depth: number;
+	driverOn:boolean;
+	monitorOn:boolean;
+	pin:number
+};
+
+export type MonitorData = {
+	uptime: number[];
+};

@@ -9,6 +9,7 @@
 	import MoonIcon from '~icons/tabler/moon';
 	import EffectsIcon from '~icons/tabler/torii';
 	import StarIcon from '~icons/tabler/star';
+	import BulbIcon from '~icons/tabler/bulb';
 	import Health from '~icons/tabler/stethoscope';
 	import Update from '~icons/tabler/refresh-alert';
 	import WiFi from '~icons/tabler/wifi';
@@ -54,6 +55,12 @@
 			feature: true,
 			submenu: [
 				{
+					title: 'Fixture',
+					icon: BulbIcon,
+					href: '/moonlight/fixture',
+					feature: true,
+				},
+				{
 					title: 'Effects',
 					icon: EffectsIcon,
 					href: '/moonlight/effects',
@@ -78,12 +85,12 @@
 					href: '/moonbase/instances',
 					feature: true,
 				},
-				{
-					title: 'Demo App',
-					icon: Control,
-					href: '/moonbase/demo',
-					feature: true,
-				},
+				// {
+				// 	title: 'Demo App',
+				// 	icon: Control,
+				// 	href: '/moonbase/demo',
+				// 	feature: true,
+				// },
 			]
 		},
 		{

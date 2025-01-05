@@ -25,6 +25,8 @@
 			fill="none"
 			stroke-linecap="round"
 			stroke-linejoin="round"
+			role="button"
+			tabindex="0"
 		>
 			<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 			<path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
@@ -47,6 +49,8 @@
 			fill="none"
 			stroke-linecap="round"
 			stroke-linejoin="round"
+			role="button"
+			tabindex="0"
 		>
 			<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 			<path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />

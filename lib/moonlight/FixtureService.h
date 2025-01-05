@@ -1,5 +1,5 @@
-#ifndef FilesService_h
-#define FilesService_h
+#ifndef FixtureService_h
+#define FixtureService_h
 
 /**
  *   ESP32 SvelteKit
@@ -21,30 +21,46 @@
 #include <WebSocketServer.h>
 #include <PsychicHttp.h>
 
-class FilesState
+#include "FastLED.h"
+#define STARLIGHT_MAXLEDS 1024*4
+
+class FixtureState
 {
 public:
-    bool filesOn;
+    CRGB ledsP[STARLIGHT_MAXLEDS];
 
-    static void read(FilesState &settings, JsonObject &root);
+    bool lightsOn;
+    uint8_t brightness;
+    uint8_t width;
+    uint8_t height;
+    uint8_t depth;
+    bool driverOn;
+    bool monitorOn;
+    uint8_t pin;
 
-    static StateUpdateResult update(JsonObject &root, FilesState &filesState);
+    static void read(FixtureState &fixtureState, JsonObject &root);
+
+    static StateUpdateResult update(JsonObject &root, FixtureState &fixtureState);
 
 };
 
-class FilesService : public StatefulService<FilesState>
+class FixtureService : public StatefulService<FixtureState>
 {
 public:
-    FilesService(PsychicHttpServer *server,
+    FixtureService(PsychicHttpServer *server,
                       EventSocket *socket,
                       SecurityManager *securityManager);
 
     void begin();
+    void loop();
+
+protected:
+    EventSocket *_socket;
 
 private:
-    HttpEndpoint<FilesState> _httpEndpoint;
-    EventEndpoint<FilesState> _eventEndpoint;
-    WebSocketServer<FilesState> _webSocketServer;
+    HttpEndpoint<FixtureState> _httpEndpoint;
+    EventEndpoint<FixtureState> _eventEndpoint;
+    WebSocketServer<FixtureState> _webSocketServer;
 
     void onConfigUpdated();
 };
