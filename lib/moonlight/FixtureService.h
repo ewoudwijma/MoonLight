@@ -20,9 +20,10 @@
 #include <EventEndpoint.h>
 #include <WebSocketServer.h>
 #include <PsychicHttp.h>
+#include <FSPersistence.h>
 
 #include "FastLED.h"
-#define STARLIGHT_MAXLEDS 1024*4
+#define STARLIGHT_MAXLEDS 1024*8
 
 class FixtureState
 {
@@ -49,18 +50,20 @@ class FixtureService : public StatefulService<FixtureState>
 public:
     FixtureService(PsychicHttpServer *server,
                       EventSocket *socket,
-                      SecurityManager *securityManager);
+                      SecurityManager *securityManager, FS *fs);
 
     void begin();
     void loop();
 
 protected:
     EventSocket *_socket;
+    uint16_t nrOfFrames = 0;
 
 private:
     HttpEndpoint<FixtureState> _httpEndpoint;
     EventEndpoint<FixtureState> _eventEndpoint;
     WebSocketServer<FixtureState> _webSocketServer;
+    FSPersistence<FixtureState> _fsPersistence;
 
     void onConfigUpdated();
 };

@@ -56,7 +56,7 @@ ESP32SvelteKit::ESP32SvelteKit(PsychicHttpServer *server, unsigned int numberEnd
                                                                                           _systemStatus(server, &_securitySettingsService),
                                                                                           _filesService(server, &_socket, &_securitySettingsService),
                                                                                           _effectsService(server, &_socket, &_securitySettingsService, &_fixtureService),
-                                                                                          _fixtureService(server, &_socket, &_securitySettingsService)
+                                                                                          _fixtureService(server, &_socket, &_securitySettingsService, &ESPFS)
 {
 }
 

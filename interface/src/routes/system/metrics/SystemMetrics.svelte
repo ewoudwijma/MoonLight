@@ -106,11 +106,11 @@
 				labels: $analytics.uptime,
 				datasets: [
 					{
-						label: 'Free Heap',
+						label: 'Used Heap',
 						borderColor: daisyColor('--p'),
 						backgroundColor: daisyColor('--p', 50),
 						borderWidth: 2,
-						data: $analytics.free_heap,
+						data: $analytics.used_heap,
 						yAxisID: 'y'
 					},
 					{
@@ -189,11 +189,11 @@
 							yAxisID: 'y'
 						},
 						{
-							label: 'Free PSRAM',
+							label: 'Used PSRAM',
 							borderColor: daisyColor('--s'),
 							backgroundColor: daisyColor('--s', 50),
 							borderWidth: 2,
-							data: $analytics.free_psram,
+							data: $analytics.used_psram,
 							yAxisID: 'y'
 						}
 					]
@@ -391,7 +391,7 @@
 		cpuChart.update('none');
 
 		heapChart.data.labels = $analytics.uptime;
-		heapChart.data.datasets[0].data = $analytics.free_heap;
+		heapChart.data.datasets[0].data = $analytics.used_heap;
 		heapChart.data.datasets[1].data = $analytics.max_alloc_heap;
 		heapChart.update('none');
 
@@ -399,7 +399,7 @@
 		if ($analytics.psram_size[0]) {
 			psramChart.data.labels = $analytics.uptime;
 			psramChart.data.datasets[0].data = $analytics.psram_size;
-			psramChart.data.datasets[1].data = $analytics.free_psram;
+			psramChart.data.datasets[1].data = $analytics.used_psram;
 			psramChart.update('none');
 		}
 

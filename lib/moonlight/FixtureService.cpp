@@ -49,7 +49,7 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &fixtureSt
 
 FixtureService::FixtureService(PsychicHttpServer *server,
                                      EventSocket *socket,
-                                     SecurityManager *securityManager) : _httpEndpoint(FixtureState::read,
+                                     SecurityManager *securityManager, FS *fs) : _httpEndpoint(FixtureState::read,
                                                                                                          FixtureState::update,
                                                                                                          this,
                                                                                                          server,
@@ -68,7 +68,12 @@ FixtureService::FixtureService(PsychicHttpServer *server,
                                                                                                             "/ws/fixtureState",
                                                                                                             securityManager,
                                                                                                             AuthenticationPredicates::IS_AUTHENTICATED),
-                                                                                            _socket(socket)
+                                                                                            _socket(socket),
+                                                                                             _fsPersistence(FixtureState::read,
+                                                                                                      FixtureState::update,
+                                                                                                      this,
+                                                                                                      fs,
+                                                                                                      "/config/fixtureState.json")
 {
 
     // configure settings service update handler to update state
@@ -81,15 +86,7 @@ void FixtureService::begin()
 {
     _httpEndpoint.begin();
     _eventEndpoint.begin();
-
-    _state.lightsOn = true;
-    _state.brightness = 50;
-    _state.width = 16;
-    _state.height = 16;
-    _state.depth = 16;
-    _state.monitorOn = true;
-    _state.driverOn = true;
-    _state.pin = 16;
+    _fsPersistence.readFromFS();
 
     onConfigUpdated();
 
@@ -109,21 +106,10 @@ void FixtureService::onConfigUpdated()
 
 void FixtureService::loop()
 {
+    nrOfFrames++;
     if (_state.driverOn)
         FastLED.show();
 
-    if (_state.monitorOn) {
-        JsonDocument doc;
-        JsonArray array = doc["uptime"].to<JsonArray>();
-
-        for (int i = 0; i < min(_state.width*_state.height*_state.depth, 1024); i++) //max 1024 for now
-        {
-            array.add(_state.ledsP[i].r);
-            array.add(_state.ledsP[i].g);
-            array.add(_state.ledsP[i].b);
-        }
-
-        JsonObject jsonObject = doc.as<JsonObject>();
-        _socket->emitEvent(EVENT_MONITOR, jsonObject);
-    }
+    if (_state.monitorOn)
+        _socket->emitEvent(EVENT_MONITOR, (char *)_state.ledsP, min(_state.width*_state.height*_state.depth, STARLIGHT_MAXLEDS) * sizeof(CRGB)); // * sizeof(CRGB)
 }

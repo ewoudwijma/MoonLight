@@ -54,6 +54,7 @@ function createWebSocket() {
 			listeners.get('json')?.forEach((listener) => listener(payload));
 			const { event, data } = payload;
 			if (event) listeners.get(event)?.forEach((listener) => listener(data));
+			else listeners.get("monitor")?.forEach((listener) => listener(new Uint8Array(message.data))); //if no event, assume monitor data (see emitEvent char * output)
 		};
 		ws.onerror = (ev) => disconnect('error', ev);
 		ws.onclose = (ev) => disconnect('close', ev);

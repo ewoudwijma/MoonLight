@@ -15,7 +15,7 @@ import {
   const scene = new Scene();
   
   const camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 500);
-  camera.position.z = 5;
+  camera.position.z = 15;
 //   camera.lookAt(5, 5, 5);
   
   const geometry = new BoxGeometry();

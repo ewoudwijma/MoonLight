@@ -106,22 +106,6 @@ esp_err_t EventSocket::onFrame(PsychicWebSocketRequest *request, httpd_ws_frame 
 
 void EventSocket::emitEvent(String event, JsonObject &jsonObject, const char *originId, bool onlyToSameOrigin)
 {
-    // Only process valid events
-    if (!isEventValid(String(event)))
-    {
-        ESP_LOGW("EventSocket", "Method tried to emit unregistered event: %s", event);
-        return;
-    }
-
-    int originSubscriptionId = originId[0] ? atoi(originId) : -1;
-    xSemaphoreTake(clientSubscriptionsMutex, portMAX_DELAY);
-    auto &subscriptions = client_subscriptions[event];
-    if (subscriptions.empty())
-    {
-        xSemaphoreGive(clientSubscriptionsMutex);
-        return;
-    }
-
     JsonDocument doc;
     doc["event"] = event;
     doc["data"] = jsonObject;
@@ -142,6 +126,29 @@ void EventSocket::emitEvent(String event, JsonObject &jsonObject, const char *or
 
     // null terminate the string
     output[len] = '\0';
+
+    emitEvent(event, output, len, originId, onlyToSameOrigin);
+
+    delete[] output;
+}
+
+void EventSocket::emitEvent(String event, char *output, size_t len, const char *originId, bool onlyToSameOrigin)
+{
+    // Only process valid events
+    if (!isEventValid(String(event)))
+    {
+        ESP_LOGW("EventSocket", "Method tried to emit unregistered event: %s", event);
+        return;
+    }
+
+    int originSubscriptionId = originId[0] ? atoi(originId) : -1;
+    xSemaphoreTake(clientSubscriptionsMutex, portMAX_DELAY);
+    auto &subscriptions = client_subscriptions[event];
+    if (subscriptions.empty())
+    {
+        xSemaphoreGive(clientSubscriptionsMutex);
+        return;
+    }
 
     // if onlyToSameOrigin == true, send the message back to the origin
     if (onlyToSameOrigin && originSubscriptionId > 0)
@@ -179,7 +186,6 @@ void EventSocket::emitEvent(String event, JsonObject &jsonObject, const char *or
         }
     }
 
-    delete[] output;
     xSemaphoreGive(clientSubscriptionsMutex);
 }
 

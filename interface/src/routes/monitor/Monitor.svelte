@@ -3,8 +3,8 @@
 	import { addLed, colorLed, createScene } from './monitor';
 	import SettingsCard from '$lib/components/SettingsCard.svelte';
 	import { socket } from '$lib/stores/socket';
-	import type { MonitorData } from '$lib/types/models';
 	import type { FixtureState } from '$lib/types/models';
+	import ControlIcon from '~icons/tabler/adjustments';
 
 	let el:HTMLCanvasElement;
 
@@ -32,9 +32,9 @@
 		});
 
 		//on receive data
-		socket.on<MonitorData>('monitor', (data) => {
+		socket.on<Uint8Array>('monitor', (data) => {
 			if (!done)
-				console.log("monitor data", data.uptime);
+				console.log("monitor data", data);
 
 			let index2:any = 0	
 			for (let x = 0; x < fixtureState.width; x++) {
@@ -42,10 +42,10 @@
 					for (let z = 0; z < fixtureState.depth; z++) {
 						let index = x + y * fixtureState.width + z * fixtureState.width * fixtureState.height;
 
-						// if (!done) console.log("rgb", data.uptime[index2], data.uptime[index2+1], data.uptime[index2+2]);
+						// if (!done) console.log("rgb", data[index2], data[index2+1], data[index2+2]);
 
-						if (index2+2 < data.uptime.length)
-							colorLed(index, data.uptime[index2]/255, data.uptime[index2+1]/255, data.uptime[index2+2]/255);
+						if (index2+2 < data.length)
+							colorLed(index, data[index2]/255, data[index2+1]/255, data[index2+2]/255);
 						else
 							colorLed(index, 0,0,0);
 						index2 += 3;
@@ -60,13 +60,13 @@
 
 </script>
 
-<SettingsCard collapsible={true}>
+<SettingsCard collapsible={false}>
 
+	<ControlIcon slot="icon" class="lex-shrink-0 mr-2 h-6 w-6 self-end" />
 	<span slot="title">Monitor</span>
 	<!-- <div class="w-full overflow-x-auto"> -->
 	 <div>
 		<canvas bind:this={el}/>
-		<!-- {$monitor.uptime} -->
 	</div>
 
 </SettingsCard>

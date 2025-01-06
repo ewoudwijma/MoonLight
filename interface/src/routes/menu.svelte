@@ -5,7 +5,7 @@
 	import Users from '~icons/tabler/users';
 	import Settings from '~icons/tabler/settings';
 	import FilesIcon from '~icons/tabler/files';
-	import ComputerIcon from '~icons/tabler/cpu';
+	import CPUIcon from '~icons/tabler/cpu';
 	import MoonIcon from '~icons/tabler/moon';
 	import EffectsIcon from '~icons/tabler/torii';
 	import StarIcon from '~icons/tabler/star';
@@ -16,7 +16,6 @@
 	import Router from '~icons/tabler/router';
 	import AP from '~icons/tabler/access-point';
 	import Remote from '~icons/tabler/network';
-	import Control from '~icons/tabler/adjustments';
 	import Avatar from '~icons/tabler/user-circle';
 	import Logout from '~icons/tabler/logout';
 	import Copyright from '~icons/tabler/copyright';
@@ -81,7 +80,7 @@
 				},
 				{
 					title: 'Instances',
-					icon: ComputerIcon,
+					icon: CPUIcon,
 					href: '/moonbase/instances',
 					feature: true,
 				},

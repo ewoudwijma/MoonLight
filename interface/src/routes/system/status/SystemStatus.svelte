@@ -183,9 +183,9 @@
 						<Power class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
-						<div class="font-bold">CPU %</div>
+						<div class="font-bold">CPU Usage</div>
 						<div class="text-sm opacity-75">
-							{systemInformation.cpuPerc}
+							{systemInformation.cpuPerc} %
 						</div>
 					</div>
 				</div>
@@ -195,11 +195,10 @@
 						<Heap class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
-						<div class="font-bold">Memory (Total / Free / Max Alloc)</div>
+						<div class="font-bold">Memory</div>
 						<div class="text-sm opacity-75">
-							{systemInformation.total_heap.toLocaleString('en-US')} / {systemInformation.free_heap.toLocaleString('en-US')} / {systemInformation.max_alloc_heap.toLocaleString(
-								'en-US'
-							)} bytes
+							{(((systemInformation.total_heap-systemInformation.free_heap) / systemInformation.total_heap) * 100).toFixed(1)} % of {(systemInformation.total_heap / 1000).toFixed(0)} KB used
+							<span>({((systemInformation.free_heap) / 1000).toFixed(0)} KB free, Max alloc {(systemInformation.max_alloc_heap/1000).toFixed(0)} KB)</span>
 						</div>
 					</div>
 				</div>
@@ -211,11 +210,10 @@
 							<Pyramid class="text-primary-content h-auto w-full scale-75" />
 						</div>
 						<div>
-							<div class="font-bold">PSRAM (Size / Free)</div>
+							<div class="font-bold">PSRAM</div>
 							<div class="text-sm opacity-75">
-								{systemInformation.psram_size.toLocaleString('en-US')} / {systemInformation.free_psram.toLocaleString(
-									'en-US'
-								)} bytes
+								{(((systemInformation.used_psram) / systemInformation.psram_size) * 100).toFixed(1)} % of {(systemInformation.psram_size / 1000).toFixed(0)} KB used
+								<span>({((systemInformation.free_psram) / 1000).toFixed(0)} KB free)</span>
 							</div>
 						</div>
 					</div>
@@ -226,20 +224,17 @@
 						<Folder class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
-						<div class="font-bold">File System (Used / Total)</div>
+						<div class="font-bold">File System</div>
 						<div class="flex flex-wrap justify-start gap-1 text-sm opacity-75">
-							<span
-								>{((systemInformation.fs_used / systemInformation.fs_total) * 100).toFixed(1)} % of {(
-									systemInformation.fs_total / 1000000
-								).toLocaleString('en-US')} MB used</span
-							>
+							<span>
+								{((systemInformation.fs_used / systemInformation.fs_total) * 100).toFixed(1)} % of {(systemInformation.fs_total / 1000).toFixed(0)} KB used
+							</span>
 
-							<span
-								>({(
+							<span>({(
 									(systemInformation.fs_total - systemInformation.fs_used) /
-									1000000
-								).toLocaleString('en-US')}
-								MB free)</span
+									1000
+								).toFixed(0)}
+								KB free)</span
 							>
 						</div>
 					</div>
@@ -273,31 +268,6 @@
 
 				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
 					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<Sketch class="text-primary-content h-auto w-full scale-75" />
-					</div>
-					<div>
-						<div class="font-bold">Sketch (Used / Free)</div>
-						<div class="flex flex-wrap justify-start gap-1 text-sm opacity-75">
-							<span>
-								{(
-									(systemInformation.sketch_size / systemInformation.free_sketch_space) *
-									100
-								).toFixed(1)} % of
-								{(systemInformation.free_sketch_space / 1000000).toLocaleString('en-US')} MB used
-							</span>
-
-							<span>
-								({(
-									(systemInformation.free_sketch_space - systemInformation.sketch_size) /
-									1000000
-								).toLocaleString('en-US')} MB free)
-							</span>
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
 						<CPP class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
@@ -310,24 +280,24 @@
 
 				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
 					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-						<CPU class="text-primary-content h-auto w-full scale-75" />
-					</div>
-					<div>
-						<div class="font-bold">Chip</div>
-						<div class="text-sm opacity-75">
-							{systemInformation.cpu_type} Rev {systemInformation.cpu_rev}
-						</div>
-					</div>
-				</div>
-
-				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
 						<SDK class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
 						<div class="font-bold">SDK Version</div>
 						<div class="text-sm opacity-75">
 							ESP-IDF {systemInformation.sdk_version} / Arduino {systemInformation.arduino_version}
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<CPU class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">Chip</div>
+						<div class="text-sm opacity-75">
+							{systemInformation.cpu_type} Rev {systemInformation.cpu_rev}
 						</div>
 					</div>
 				</div>
@@ -351,11 +321,36 @@
 						<Flash class="text-primary-content h-auto w-full scale-75" />
 					</div>
 					<div>
-						<div class="font-bold">Flash Chip (Size / Speed)</div>
+						<div class="font-bold">Flash Chip</div>
 						<div class="text-sm opacity-75">
 							{(systemInformation.flash_chip_size / 1000000).toLocaleString('en-US')} MB / {(
 								systemInformation.flash_chip_speed / 1000000
 							).toLocaleString('en-US')} MHz
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<Sketch class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">Sketch</div>
+						<div class="flex flex-wrap justify-start gap-1 text-sm opacity-75">
+							<span>
+								{(
+									(systemInformation.sketch_size / systemInformation.free_sketch_space) *
+									100
+								).toFixed(1)} % of
+								{(systemInformation.free_sketch_space / 1000000).toLocaleString('en-US')} MB used
+							</span>
+
+							<span>
+								({(
+									(systemInformation.free_sketch_space - systemInformation.sketch_size) /
+									1000000
+								).toLocaleString('en-US')} MB free)
+							</span>
 						</div>
 					</div>
 				</div>

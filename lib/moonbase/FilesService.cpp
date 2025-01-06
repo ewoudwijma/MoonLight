@@ -32,7 +32,7 @@ void addFolder(File folder, JsonArray fileArray)
 		{
             JsonObject fileObject = fileArray.add<JsonObject>();
             fileObject["name"] = (char *)file.name(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
-            Serial.printf("file name %s\n", file.name());
+            Serial.printf("file name %s (%d) ", file.name(), file.size());
 			if (file.isDirectory())
 			{
                 // JsonArray filesArray = fileObject["files"].to<JsonArray>();
@@ -46,6 +46,8 @@ void addFolder(File folder, JsonArray fileArray)
                 fileObject["time"] = file.getLastWrite();
                 fileObject["contents"] = file.readString();
 			}
+            // serializeJson(fileObject, Serial);
+            Serial.printf("\n");
 		}
 	}
 }
@@ -110,5 +112,4 @@ void FilesService::begin()
 void FilesService::onConfigUpdated()
 {
     Serial.printf("FilesService::onConfigUpdated\n");
-    // digitalWrite(LED_BUILTIN, _state.filesOn ? 1 : 0);
 }

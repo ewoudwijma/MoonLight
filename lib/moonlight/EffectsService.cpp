@@ -124,11 +124,13 @@ void EffectsService::loop()
                     // uint8_t pixely = beatsin8(60, 0, fixtureState.height-1); //between 0 and fixtureState.height
                     // uint8_t pixely = map((millis()/200)%10, 0, 9, 0, fixtureState.height-1); 
 
-                    if (pixely == pos_y)
-                        fixtureState.ledsP[index] = CHSV( millis()/50 + random8(64), 200, 255);// ColorFromPalette(leds.palette,call, bri);
-                    else
-                        fixtureState.ledsP[index] = CRGB::Black;
-                    // fixtureState.ledsP[index] = CRGB(pos_x, pos_y, pos_z);
+                    if (index < STARLIGHT_MAXLEDS) {
+                        if (pixely == pos_y)
+                            fixtureState.ledsP[index] = CHSV( millis()/50 + random8(64), 200, 255);// ColorFromPalette(leds.palette,call, bri);
+                        else
+                            fixtureState.ledsP[index] = CRGB::Black;
+                        // fixtureState.ledsP[index] = CRGB(pos_x, pos_y, pos_z);
+                    }
                 }
             }
             }
@@ -155,7 +157,8 @@ void EffectsService::loop()
                 locn_y = (fixtureState.height < 2) ? 1 : (map(2*locn_y, 0,511, 0,2*(fixtureState.height-1)) +1) /2;    // "fixtureState.height > 2" is needed to avoid div/0 in map()
                 // leds.setPixelColor((uint8_t)xlocn, (uint8_t)ylocn, leds.color_from_palette(millis()/100+i, false, PALETTE_SOLID_WRAP, 0));
                 uint16_t index = locn_x + locn_y * fixtureState.width + locn_z * fixtureState.width * fixtureState.height;
-                fixtureState.ledsP[index] = ColorFromPalette(RainbowColors_p, millis()/100+i);
+                if (index < STARLIGHT_MAXLEDS)
+                    fixtureState.ledsP[index] = ColorFromPalette(RainbowColors_p, millis()/100+i);
             }        
         }
 

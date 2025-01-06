@@ -56,6 +56,7 @@ protected:
         {
             doc["uptime"] = millis() / 1000;
             doc["free_heap"] = ESP.getFreeHeap();
+            doc["used_heap"] = ESP.getHeapSize() - ESP.getFreeHeap();
             doc["total_heap"] = ESP.getHeapSize();
             doc["min_free_heap"] = ESP.getMinFreeHeap();
             doc["max_alloc_heap"] = ESP.getMaxAllocHeap();
@@ -65,6 +66,7 @@ protected:
             doc["cpuPerc"] = cpuPerc;
             if (psramFound()) {
                 doc["free_psram"] = ESP.getFreePsram();
+                doc["used_psram"] = ESP.getPsramSize() - ESP.getFreePsram();
                 doc["psram_size"] = ESP.getPsramSize();
             }
 
