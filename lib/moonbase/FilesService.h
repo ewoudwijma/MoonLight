@@ -45,6 +45,7 @@ private:
     HttpEndpoint<FilesState> _httpEndpoint;
     EventEndpoint<FilesState> _eventEndpoint;
     WebSocketServer<FilesState> _webSocketServer;
+    PsychicHttpServer *_server;
 
     void onConfigUpdated();
 };

@@ -39,6 +39,7 @@
 				}
 			});
 			systemInformation = await response.json();
+			console.log(systemInformation)
 		} catch (error) {
 			console.log('Error:', error);
 		}
@@ -164,7 +165,7 @@
 				class="flex w-full flex-col space-y-1"
 				transition:slide|local={{ duration: 300, easing: cubicOut }}
 			>
-				<!-- Reordered base on dynamics -->
+				<!-- Reordered based on dynamics -->
 				 
 				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
 					<div class="mask mask-hexagon bg-primary h-auto w-10">
@@ -186,6 +187,18 @@
 						<div class="font-bold">CPU Usage</div>
 						<div class="text-sm opacity-75">
 							{systemInformation.cpuPerc} %
+						</div>
+					</div>
+				</div>
+
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<Power class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">Loops</div>
+						<div class="text-sm opacity-75">
+							{systemInformation.loopsPerSecond} /s
 						</div>
 					</div>
 				</div>

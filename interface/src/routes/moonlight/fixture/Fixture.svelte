@@ -120,6 +120,11 @@
 			bind:value={state.monitorOn}
 			onChange = {socket.sendEvent('fixture', state)}
 		></Checkbox>
+		<Number 
+			label="Pin" 
+			bind:value={state.pin} 
+			onChange = {socket.sendEvent('fixture', state)}
+		></Number>
 	
 	</div>
 </SettingsCard>

@@ -200,30 +200,59 @@ void ESP32SvelteKit::begin()
 
 void ESP32SvelteKit::_loop()
 {
+
     while (1)
     {
         uint32_t cycles = ESP.getCycleCount();
+        loopsPerSecond++;
 
-        _wifiSettingsService.loop(); // 30 seconds
-        _apSettingsService.loop();   // 10 seconds
-#if FT_ENABLED(FT_MQTT)
-        _mqttSettingsService.loop(); // 5 seconds
-#endif
-        // iterate over all loop functions
-        for (auto &function : _loopFunctions)
-        {
-            function();
+        //every 20ms
+        if (millis() - twentyMsMillis >= 20) {
+            twentyMsMillis = millis();
+
+            _wifiSettingsService.loop(); // 30 seconds
+            _apSettingsService.loop();   // 10 seconds
+    #if FT_ENABLED(FT_MQTT)
+            _mqttSettingsService.loop(); // 5 seconds
+    #endif
+            // iterate over all loop functions
+            for (auto &function : _loopFunctions)
+            {
+                function();
+            }
+
+        }
+
+        //every 50ms, 20 lps
+        if (millis() - fiftyMsMillis >= 50) {
+            fiftyMsMillis = millis();
+
+            _fixtureService.loop50ms();
         }
 
         _fixtureService.loop();
         _effectsService.loop();
-        
-        cycles =  (ESP.getCycleCount() - cycles) / (ESP.getCpuFreqMHz() * 1000); //add the new cycles (converted to ms) to the total cpu time
-        cpuTime += cycles;
-        _systemStatus.cpuPerc = 100 * cpuTime / millis();
-        _analyticsService.cpuPerc = _systemStatus.cpuPerc;
-        // Serial.printf("Cycles: %d - %d / %d -> %d\n", cycles, cpuTime, millis(), _systemStatus.cpuPerc);
 
-        vTaskDelay(20 / portTICK_PERIOD_MS);
-    }
+        cycles =  (ESP.getCycleCount() - cycles); //add the new cycles (converted to ms) to the total cpu time
+        cyclesPerSecond += cycles;
+
+        //every second (add analytics here instead of a seperate task with its own stack ?)
+        if (millis() - oneSecondMillis >= 1000) {
+            oneSecondMillis = millis();
+
+            _analyticsService.cpuPerc = cyclesPerSecond / (ESP.getCpuFreqMHz() * 10000); //1 sec
+            _analyticsService.loopsPerSecond = loopsPerSecond;
+            // _systemStatus.cpuPerc = _analyticsService.cpuPerc;
+            // _systemStatus.loopsPerSecond = _analyticsService.loopsPerSecond;
+            Serial.printf("Cycles: %d - %d / %d -> %d lps:%d\n", cycles/1000000, cyclesPerSecond/1000000, ESP.getCpuFreqMHz(), _analyticsService.cpuPerc, _analyticsService.loopsPerSecond);
+
+            cyclesPerSecond = 0;
+            loopsPerSecond = 0;
+
+        }
+
+        vTaskDelay(1 / portTICK_PERIOD_MS); // feed the watchdog (this sets the loop to a max of 1000 loops per second!), otherwise 10000 fps measured (but watchdog crash)
+        //can be removed if there is always enough to do in this loop
+
+    } //while 1
 }

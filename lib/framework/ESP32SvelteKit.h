@@ -229,7 +229,12 @@ private:
 
 protected:
 
-    uint32_t cpuTime = 0;
+    uint32_t cyclesPerSecond = 0;
+    uint16_t loopsPerSecond = 0;
+    unsigned long twentyMsMillis = millis() - random(1000); //random so not all 1s are fired at once
+    unsigned long fiftyMsMillis = millis() - random(1000); //random so not all 1s are fired at once
+    unsigned long oneSecondMillis = millis() - random(1000); //random so not all 1s are fired at once
+    unsigned long tenSecondMillis = millis() - random(10000); //random within a second
 
     static void _loopImpl(void *_this) { static_cast<ESP32SvelteKit *>(_this)->_loop(); }
     void _loop();

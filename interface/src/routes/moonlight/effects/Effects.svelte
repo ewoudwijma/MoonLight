@@ -19,6 +19,7 @@
 	import Check from '~icons/tabler/check';
 	import InfoDialog from '$lib/components/InfoDialog.svelte';
 	import type { EffectsState } from '$lib/types/models';
+	import Select from '$lib/components/Select.svelte';
 
 	let itemsState: EffectsState;
 	let itemsList: EffectsState[] = [];
@@ -34,6 +35,21 @@
 		name: false
 	};
 	let formErrorFilename = false;
+
+	let effectList = [
+		{
+			id: 0,
+			text: `Lissajous`
+		},
+		{
+			id: 1,
+			text: `Ripples`
+		},
+		{
+			id: 2,
+			text: `Paintbrush`
+		}
+	];
 
 	async function getState() {
 		try {
@@ -287,6 +303,15 @@
 											>Name must be between 3 and 32 characters long</span
 										>
 									</label>
+								</div>
+								<div>
+									<Select label="Source" bind:value={editableItem.name} onChange={()=>{}}>
+										{#each effectList as mode}
+										<option value={mode.id}>
+											{mode.text}
+										</option>
+										{/each}
+									</Select>
 								</div>
 							</div>
 						{/if}

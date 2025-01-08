@@ -32,6 +32,7 @@ void addFolder(File folder, JsonArray fileArray)
 		{
             JsonObject fileObject = fileArray.add<JsonObject>();
             fileObject["name"] = (char *)file.name(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
+            fileObject["path"] = (char *)file.path(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
             Serial.printf("file name %s (%d) ", file.name(), file.size());
 			if (file.isDirectory())
 			{
@@ -44,7 +45,7 @@ void addFolder(File folder, JsonArray fileArray)
 				//delete the file				
                 fileObject["size"] = file.size();
                 fileObject["time"] = file.getLastWrite();
-                fileObject["contents"] = file.readString();
+                // fileObject["contents"] = file.readString();
 			}
             // serializeJson(fileObject, Serial);
             Serial.printf("\n");
@@ -92,7 +93,8 @@ FilesService::FilesService(PsychicHttpServer *server,
                                                                                                             server,
                                                                                                             "/ws/filesState",
                                                                                                             securityManager,
-                                                                                                            AuthenticationPredicates::IS_AUTHENTICATED)
+                                                                                                            AuthenticationPredicates::IS_AUTHENTICATED),
+                                                                                             _server(server)
 {
 
     // configure settings service update handler to update state
@@ -107,6 +109,10 @@ void FilesService::begin()
     _eventEndpoint.begin();
     _state.filesOn = DEFAULT_LED_STATE;
     onConfigUpdated();
+
+    //setup the file server (easy peasy!)
+    _server->serveStatic("/rest/file", LittleFS, "/");
+
 }
 
 void FilesService::onConfigUpdated()

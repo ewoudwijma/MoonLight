@@ -26,6 +26,7 @@ class AnalyticsService
 {
 public:
     uint8_t cpuPerc = 0;
+    uint16_t loopsPerSecond = 0;
 
     AnalyticsService(EventSocket *socket) : _socket(socket){};
 
@@ -64,6 +65,7 @@ protected:
             doc["fs_total"] = ESPFS.totalBytes();
             doc["core_temp"] = temperatureRead();
             doc["cpuPerc"] = cpuPerc;
+            doc["loopsPerSecond"] = loopsPerSecond;
             if (psramFound()) {
                 doc["free_psram"] = ESP.getFreePsram();
                 doc["used_psram"] = ESP.getPsramSize() - ESP.getFreePsram();

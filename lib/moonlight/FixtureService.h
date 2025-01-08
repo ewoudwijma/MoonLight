@@ -54,10 +54,10 @@ public:
 
     void begin();
     void loop();
+    void loop50ms();
 
 protected:
     EventSocket *_socket;
-    uint16_t nrOfFrames = 0;
 
 private:
     HttpEndpoint<FixtureState> _httpEndpoint;

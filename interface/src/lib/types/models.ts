@@ -95,6 +95,7 @@ export type Analytics = {
 	fs_used: number;
 	uptime: number;
 	cpuPerc: number;
+	loopsPerSecond: number;
 };
 
 export type RSSI = {
@@ -150,8 +151,10 @@ export type MQTTSettings = {
 
 export type FilesState = {
 	name: string;
+	path: string;
 	size: number;
 	time: number;
+	contents: string;
 	files: FilesState[];
 };
 
