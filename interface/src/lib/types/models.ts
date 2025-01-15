@@ -160,7 +160,8 @@ export type FilesState = {
 
 export type EffectsState = {
 	name: string;
-	effects: EffectsState[];
+	effect: number;
+	nodes: EffectsState[];
 };
 
 export type FixtureState = {

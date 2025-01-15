@@ -130,6 +130,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 
       renderer = new WebGLRenderer({ antialias: true, canvas: el });
       renderer.setClearColor( 0xffffff, 0); //clear background see https://stackoverflow.com/questions/16177056/changing-three-js-background-to-transparent-or-other-color
+      renderer.render(scene, camera); //show a clear screen ...
 
       let controls = new OrbitControls( camera, renderer.domElement );
 

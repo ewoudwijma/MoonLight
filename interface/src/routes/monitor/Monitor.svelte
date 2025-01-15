@@ -56,7 +56,10 @@
 		});
 	});
 
-	onDestroy(() => socket.off("monitor"));
+	onDestroy(() => {
+		socket.off("fixture");
+		socket.off("monitor");
+	});
 
 </script>
 

@@ -39,9 +39,9 @@ public:
     bool monitorOn;
     uint8_t pin;
 
-    static void read(FixtureState &fixtureState, JsonObject &root);
+    static void read(FixtureState &state, JsonObject &root);
 
-    static StateUpdateResult update(JsonObject &root, FixtureState &fixtureState);
+    static StateUpdateResult update(JsonObject &root, FixtureState &state);
 
 };
 

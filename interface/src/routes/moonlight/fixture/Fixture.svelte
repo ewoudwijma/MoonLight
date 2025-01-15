@@ -14,6 +14,7 @@
 	let state: FixtureState = { name: "test", lightsOn:true, brightness: 50, width: 16, height:16, depth:16, driverOn: true, monitorOn: true, pin: 16 };
 
 	//state is now via socket and not rest api ...
+	let dataLoaded = false;
 	
 	async function getState() {
 		try {
@@ -33,6 +34,7 @@
 			state.driverOn = fixtureState.driverOn;
 			state.monitorOn = fixtureState.monitorOn;
 			state.pin = fixtureState.pin;
+			dataLoaded = true;
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -42,11 +44,17 @@
 	onMount(() => {
 		socket.on<FixtureState>('fixture', (data) => {
 			state = data;
+			dataLoaded = true;
 		});
 		// getState();
 	});
 
 	onDestroy(() => socket.off('fixture'));
+
+	function sendSocket() {
+		if (dataLoaded) 
+			socket.sendEvent('fixture', state)
+	}
 
 	async function postState() {
 		try {
@@ -85,7 +93,7 @@
 		<Checkbox 
 			label="On" 
 			bind:value={state.lightsOn}
-			onChange = {socket.sendEvent('fixture', state)}
+			onChange = {sendSocket}
 		></Checkbox>
 		<Slider 
 			label="Brightness" 
@@ -93,37 +101,37 @@
 			min={0} 
 			max={255} 
 			step={1}
-			onChange={socket.sendEvent('fixture', state)}
+			onChange = {sendSocket}
 		></Slider>
 		<Number 
 			label="Width" 
 			bind:value={state.width} 
-			onChange = {socket.sendEvent('fixture', state)}
+			onChange = {sendSocket}
 		></Number>
 		<Number 
 			label="Height" 
 			bind:value={state.height} 
-			onChange = {socket.sendEvent('fixture', state)}
+			onChange = {sendSocket}
 		></Number>
 		<Number 
 			label="Depth" 
 			bind:value={state.depth} 
-			onChange = {socket.sendEvent('fixture', state)}
+			onChange = {sendSocket}
 		></Number>
 		<Checkbox 
 			label="Driver on" 
 			bind:value={state.driverOn}
-			onChange = {socket.sendEvent('fixture', state)}
+			onChange = {sendSocket}
 		></Checkbox>
 		<Checkbox 
 			label="Monitor on" 
 			bind:value={state.monitorOn}
-			onChange = {socket.sendEvent('fixture', state)}
+			onChange = {sendSocket}
 		></Checkbox>
 		<Number 
 			label="Pin" 
 			bind:value={state.pin} 
-			onChange = {socket.sendEvent('fixture', state)}
+			onChange = {sendSocket}
 		></Number>
 	
 	</div>

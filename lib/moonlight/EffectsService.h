@@ -20,14 +20,18 @@
 #include <EventEndpoint.h>
 #include <WebSocketServer.h>
 #include <PsychicHttp.h>
+#include <FSPersistence.h>
 #include "FixtureService.h"
 
 class EffectsState
 {
 public:
-    static void read(EffectsState &settings, JsonObject &root);
 
-    static StateUpdateResult update(JsonObject &root, EffectsState &effectsState);
+    uint16_t effect;
+
+    static void read(EffectsState &state, JsonObject &root);
+
+    static StateUpdateResult update(JsonObject &root, EffectsState &state);
 };
 
 class EffectsService : public StatefulService<EffectsState>
@@ -35,7 +39,7 @@ class EffectsService : public StatefulService<EffectsState>
 public:
     EffectsService(PsychicHttpServer *server,
                       EventSocket *socket,
-                      SecurityManager *securityManager, FixtureService *fixtureService);
+                      SecurityManager *securityManager, FS *fs, FixtureService *fixtureService);
 
     void begin();
     void loop();
@@ -47,6 +51,7 @@ private:
     HttpEndpoint<EffectsState> _httpEndpoint;
     EventEndpoint<EffectsState> _eventEndpoint;
     WebSocketServer<EffectsState> _webSocketServer;
+    FSPersistence<EffectsState> _fsPersistence;
 
     FixtureService *_fixtureService;
 

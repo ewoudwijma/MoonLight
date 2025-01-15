@@ -16,9 +16,11 @@
 
 #define DEFAULT_LED_STATE false
 
-void EffectsState::read(EffectsState &settings, JsonObject &root)
+void EffectsState::read(EffectsState &state, JsonObject &root)
 {
-    JsonArray array = root["effects"].to<JsonArray>();
+    root["effect"] = state.effect;
+
+    JsonArray array = root["nodes"].to<JsonArray>();
     JsonObject object = array.add<JsonObject>();
     object["name"] = "Ripples effect";
     array.add(object);
@@ -30,12 +32,17 @@ void EffectsState::read(EffectsState &settings, JsonObject &root)
     // array.add(object);
 }
 
-StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &effectsState)
+StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
 {
     bool changed = false;
 
-    // boolean newState = root["files_on"];
-    // if (effectsState.filesOn != newState) {effectsState.filesOn = newState; changed = true;}
+    if (state.effect != root["effect"]) {
+        state.effect = root["effect"]; changed = true;
+
+        Serial.printf("Effects.effect.update task: %s", pcTaskGetTaskName(nullptr));
+        Serial.printf(" e:%d\n", state.effect);
+
+    }
 
     if (changed)
         Serial.printf("EffectsState::update");
@@ -45,7 +52,7 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &effectsSt
 
 EffectsService::EffectsService(PsychicHttpServer *server,
                                      EventSocket *socket,
-                                     SecurityManager *securityManager, FixtureService *fixtureService) : _httpEndpoint(EffectsState::read,
+                                     SecurityManager *securityManager, FS *fs, FixtureService *fixtureService) : _httpEndpoint(EffectsState::read,
                                                                                                          EffectsState::update,
                                                                                                          this,
                                                                                                          server,
@@ -65,6 +72,11 @@ EffectsService::EffectsService(PsychicHttpServer *server,
                                                                                                             securityManager,
                                                                                                             AuthenticationPredicates::IS_AUTHENTICATED),
                                                                                             _socket(socket),
+                                                                                             _fsPersistence(EffectsState::read,
+                                                                                                      EffectsState::update,
+                                                                                                      this,
+                                                                                                      fs,
+                                                                                                      "/config/effectsState.json"),
                                                                                             _fixtureService(fixtureService)
 {
 
@@ -72,12 +84,14 @@ EffectsService::EffectsService(PsychicHttpServer *server,
     addUpdateHandler([&](const String &originId)
                      { onConfigUpdated(); },
                      false);
+
 }
 
 void EffectsService::begin()
 {
     _httpEndpoint.begin();
     _eventEndpoint.begin();
+    _fsPersistence.readFromFS();
 
     onConfigUpdated();
 }
@@ -98,7 +112,7 @@ void EffectsService::loop()
     _fixtureService->read([&](FixtureState &fixtureState) {
         //run an effect
 
-        if (fixtureState.depth > 1) {
+        if (_state.effect == 0) {
             //ripples effect
 
             uint8_t speed = 50;

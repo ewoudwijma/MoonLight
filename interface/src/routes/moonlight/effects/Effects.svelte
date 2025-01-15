@@ -20,12 +20,15 @@
 	import InfoDialog from '$lib/components/InfoDialog.svelte';
 	import type { EffectsState } from '$lib/types/models';
 	import Select from '$lib/components/Select.svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { socket } from '$lib/stores/socket';
 
 	let itemsState: EffectsState;
 	let itemsList: EffectsState[] = [];
 	let editableItem: EffectsState = {
 		name: '',
-		effects: []
+		effect: -1,
+		nodes: []
 	};
 
 	let newItem: boolean = true;
@@ -51,6 +54,9 @@
 		}
 	];
 
+	let state: EffectsState = { name: "test", effect:-1, nodes: []};
+	let dataLoaded = false;
+
 	async function getState() {
 		try {
 			const response = await fetch('/rest/effectsState', {
@@ -61,11 +67,11 @@
 				}
 			});
 			itemsState = await response.json();
-			// console.log("itemsState", itemsState);
+			console.log("itemsState", itemsState);
 		} catch (error) {
 			console.error('Error:', error);
 		}
-		itemsList = itemsState.effects;
+		itemsList = itemsState.nodes;
 		return itemsState;
 	}
 
@@ -96,7 +102,7 @@
 		} else {
 			formErrorFilename = false;
 			// Update global itemsState object
-			itemsState.effects = itemsList;
+			itemsState.nodes = itemsList;
 			// Post to REST API
 			postSettings(itemsState);
 			console.log(itemsState);
@@ -131,7 +137,8 @@
 		newItem = true;
 		editableItem = {
 			name: '',
-			effects: []
+			effect: -1,
+			nodes: []
 		};
 	}
 
@@ -188,6 +195,23 @@
 		itemsList = reorder(itemsList, from.index, to.index);
 		console.log(itemsList);
 	}
+
+	onMount(() => {
+		socket.on<EffectsState>('effects', (data) => {
+			state = data;
+			dataLoaded = true;
+		});
+		// getState();
+	});
+
+	onDestroy(() => socket.off('effects'));
+
+	function sendSocket() {
+		console.log("sendSocket", state);
+		if (dataLoaded) 
+			socket.sendEvent('effects', state)
+	}
+
 </script>
 
 <SettingsCard collapsible={false}>
@@ -261,6 +285,17 @@
 							</div>
 						</DragDropList>
 					</div>
+					<div>
+
+						<Select label="Effect" bind:value={state.effect} onChange={sendSocket}>
+							{#each effectList as mode}
+								<option value={mode.id}>
+									{mode.text}
+								</option>
+							{/each}
+						</Select>
+
+					</div>
 				</div>
 
 				<div
@@ -305,7 +340,7 @@
 									</label>
 								</div>
 								<div>
-									<Select label="Source" bind:value={editableItem.name} onChange={()=>{}}>
+									<Select label="Source" bind:value={editableItem.effect} onChange={()=>{}}>
 										{#each effectList as mode}
 										<option value={mode.id}>
 											{mode.text}
