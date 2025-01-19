@@ -44,6 +44,8 @@ public:
   // if onlyToSameOrigin == true, the message will be sent to the originId only, otherwise it will be broadcasted to all clients except the originId
   void emitEvent(String event, char *output, size_t len, const char *originId = "", bool onlyToSameOrigin = false);
 
+  unsigned int getConnectedClients();
+
 private:
   PsychicHttpServer *_server;
   PsychicWebSocketHandler _socket;

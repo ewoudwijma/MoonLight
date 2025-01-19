@@ -10,10 +10,13 @@ All notable changes to this project will be documented in this file.
 - Added Arduino Log Colors
 - Possibility to add a loop callback to ESP32-Sveltekit to leverage its loop threat. Meant to include custom services so no separate task is needed for them.
 - Change wake-up pin in SleepService during runtime. It is also possible to use the internal pull-up or pull-down resistors now.
+- Get current connection status from ESP32-SvelteKit. Useful for status LED or displays.
+- Battery history graph to gauge battery consumption and device life.
 
 ### Changed
 
 - Updated platform espressif32 to 6.8.1
+- Lightstate example uses simpler, less explicit constructor
 
 ### Fixed
 
