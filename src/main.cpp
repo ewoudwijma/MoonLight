@@ -33,10 +33,17 @@ LightStateService lightStateService = LightStateService(&server,
                                                         esp32sveltekit.getMqttClient(),
                                                         &lightMqttSettingsService);
 
+
+#include "mainStar.h"
+
 void setup()
 {
     // start serial and filesystem
     Serial.begin(SERIAL_BAUD_RATE);
+
+    // delay(500); //see WLED/StarLight / Serial needs time to init ..., add ifdef?
+
+    setupStar(); //before ESK as ESK loop uses star stuff
 
     // start ESP32-SvelteKit
     esp32sveltekit.begin();
@@ -50,5 +57,7 @@ void setup()
 void loop()
 {
     // Delete Arduino loop task, as it is not needed in this example
-    vTaskDelete(NULL);
+    // vTaskDelete(NULL);
+
+    loopStar();
 }

@@ -14,7 +14,7 @@
 
 #include <EffectsService.h>
 
-#define DEFAULT_LED_STATE false
+#include "App/LedModEffects.h" // set processEffectNr
 
 void EffectsState::read(EffectsState &state, JsonObject &root)
 {
@@ -36,12 +36,20 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
 {
     bool changed = false;
 
+    print->printJson("EffectsState::update", root);
+
     if (state.effect != root["effect"]) {
         state.effect = root["effect"]; changed = true;
 
-        Serial.printf("Effects.effect.update task: %s", pcTaskGetTaskName(nullptr));
-        Serial.printf(" e:%d\n", state.effect);
+        ppf("Effects.effect.update task: %s", pcTaskGetTaskName(nullptr));
+        ppf(" e:%d\n", state.effect);
 
+        //send update effect to star service / loop (no call to star service here as causes httpd stack full (run in own task))
+        switch (state.effect) {
+            case 0: eff->processEffectNr = 16; break; //lissajous
+            case 1: eff->processEffectNr = 28; break; //ripple
+            case 2: eff->processEffectNr = 12; break; //gol
+        }
     }
 
     if (changed)
@@ -100,82 +108,3 @@ void EffectsService::onConfigUpdated()
 {
     Serial.printf("EffectsService::onConfigUpdated\n");
 }
-
-//utility function
-float distance(float x1, float y1, float z1, float x2, float y2, float z2) {
-  return sqrtf((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2));
-}
-
-void EffectsService::loop()
-{
-    //use the fixtureState to set it's ledsP array
-    _fixtureService->read([&](FixtureState &fixtureState) {
-        //run an effect
-
-        if (_state.effect == 0) {
-            //ripples effect
-
-            uint8_t speed = 50;
-            uint8_t interval = 128;
-
-            float ripple_interval = 1.3f * ((255.0f - interval)/128.0f) * sqrtf(fixtureState.height);
-            float time_interval = millis()/(100.0 - speed)/((256.0f-128.0f)/20.0f);
-
-            // leds.fill_solid(CRGB::Black);
-
-            uint8_t pos_x = 0;
-            uint8_t pos_y = 0;
-            uint8_t pos_z = 0;
-            for (pos_z=0; pos_z<fixtureState.depth; pos_z++) {
-            for (pos_x=0; pos_x<fixtureState.width; pos_x++) {
-
-                float d = distance(fixtureState.width/2.0f, fixtureState.depth/2.0f, 0.0f, (float)pos_x, (float)pos_z, 0.0f) / 9.899495f * fixtureState.height;
-
-                for (pos_y=0; pos_y<fixtureState.height; pos_y++) {
-                    uint16_t index = pos_x + pos_y * fixtureState.width + pos_z * fixtureState.width * fixtureState.height;
-
-                    uint8_t pixely = floor(fixtureState.height/2.0f * (1 + sinf(d/ripple_interval + time_interval))); //between 0 and fixtureState.height-1
-                    // uint8_t pixely = beatsin8(60, 0, fixtureState.height-1); //between 0 and fixtureState.height
-                    // uint8_t pixely = map((millis()/200)%10, 0, 9, 0, fixtureState.height-1); 
-
-                    if (index < STARLIGHT_MAXLEDS) {
-                        if (pixely == pos_y)
-                            fixtureState.ledsP[index] = CHSV( millis()/50 + random8(64), 200, 255);// ColorFromPalette(leds.palette,call, bri);
-                        else
-                            fixtureState.ledsP[index] = CRGB::Black;
-                        // fixtureState.ledsP[index] = CRGB(pos_x, pos_y, pos_z);
-                    }
-                }
-            }
-            }
-        }
-        else { //lissajous effect
-            uint8_t xFrequency = 64;
-            uint8_t fadeRate = 128;
-            uint8_t speed = 128;
-            bool smooth = false; 
-
-            // leds.fadeToBlackBy(fadeRate);
-            fadeToBlackBy(fixtureState.ledsP, fixtureState.width*fixtureState.height*fixtureState.depth, fadeRate);
-
-            uint_fast16_t phase = millis() * speed / 256;  // allow user to control rotation speed, speed between 0 and 255!
-
-            uint8_t locn_x = 0;
-            uint8_t locn_y = 0;
-            uint8_t locn_z = 0;
-            for (int i=0; i < 256; i ++) {
-                //WLEDMM: stick to the original calculations of xlocn and ylocn
-                locn_x = sin8(phase/2 + (i*xFrequency)/64);
-                locn_y = cos8(phase/2 + i*2);
-                locn_x = (fixtureState.width < 2) ? 1 : (map(2*locn_x, 0,511, 0,2*(fixtureState.width-1)) +1) /2;    // softhack007: "*2 +1" for proper rounding
-                locn_y = (fixtureState.height < 2) ? 1 : (map(2*locn_y, 0,511, 0,2*(fixtureState.height-1)) +1) /2;    // "fixtureState.height > 2" is needed to avoid div/0 in map()
-                // leds.setPixelColor((uint8_t)xlocn, (uint8_t)ylocn, leds.color_from_palette(millis()/100+i, false, PALETTE_SOLID_WRAP, 0));
-                uint16_t index = locn_x + locn_y * fixtureState.width + locn_z * fixtureState.width * fixtureState.height;
-                if (index < STARLIGHT_MAXLEDS)
-                    fixtureState.ledsP[index] = ColorFromPalette(RainbowColors_p, millis()/100+i);
-            }        
-        }
-
-    });
-}
-

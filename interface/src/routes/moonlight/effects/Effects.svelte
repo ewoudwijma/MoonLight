@@ -50,7 +50,7 @@
 		},
 		{
 			id: 2,
-			text: `Paintbrush`
+			text: `Game of life`
 		}
 	];
 
@@ -68,10 +68,11 @@
 			});
 			itemsState = await response.json();
 			console.log("itemsState", itemsState);
+			if (itemsState.nodes) //sometimes error null...
+				itemsList = itemsState.nodes;
 		} catch (error) {
 			console.error('Error:', error);
 		}
-		itemsList = itemsState.nodes;
 		return itemsState;
 	}
 

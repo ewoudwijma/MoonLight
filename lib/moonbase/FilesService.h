@@ -24,7 +24,7 @@
 class FilesState
 {
 public:
-    bool filesOn;
+    bool filesOn = false;
 
     static void read(FilesState &settings, JsonObject &root);
 

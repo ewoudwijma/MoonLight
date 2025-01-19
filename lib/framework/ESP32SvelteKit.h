@@ -46,8 +46,8 @@
 #include <vector>
 
 #include <FilesService.h>
-#include <EffectsService.h>
 #include <FixtureService.h>
+#include <EffectsService.h>
 
 #ifdef EMBED_WWW
 #include <WWWData.h>
@@ -224,8 +224,8 @@ private:
     String _appName = APP_NAME;
 
     FilesService _filesService;
-    EffectsService _effectsService;
     FixtureService _fixtureService;
+    EffectsService _effectsService;
 
 protected:
 

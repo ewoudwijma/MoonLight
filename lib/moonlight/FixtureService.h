@@ -22,22 +22,18 @@
 #include <PsychicHttp.h>
 #include <FSPersistence.h>
 
-#include "FastLED.h"
-#define STARLIGHT_MAXLEDS 1024*8
-
 class FixtureState
 {
 public:
-    CRGB ledsP[STARLIGHT_MAXLEDS];
 
     bool lightsOn;
-    uint8_t brightness;
-    uint8_t width;
-    uint8_t height;
-    uint8_t depth;
+    uint8_t brightness = UINT8_MAX;
+    uint16_t width = UINT16_MAX;
+    uint16_t height = UINT16_MAX;
+    uint16_t depth = UINT16_MAX;
     bool driverOn;
     bool monitorOn;
-    uint8_t pin;
+    uint8_t pin = UINT8_MAX;
 
     static void read(FixtureState &state, JsonObject &root);
 
@@ -53,7 +49,6 @@ public:
                       SecurityManager *securityManager, FS *fs);
 
     void begin();
-    void loop();
     void loop50ms();
 
 protected:

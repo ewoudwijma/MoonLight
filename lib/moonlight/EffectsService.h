@@ -27,7 +27,7 @@ class EffectsState
 {
 public:
 
-    uint16_t effect;
+    uint16_t effect = UINT16_MAX;
 
     static void read(EffectsState &state, JsonObject &root);
 
@@ -42,7 +42,6 @@ public:
                       SecurityManager *securityManager, FS *fs, FixtureService *fixtureService);
 
     void begin();
-    void loop();
 
 protected:
     EventSocket *_socket;

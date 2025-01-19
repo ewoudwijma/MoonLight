@@ -16,8 +16,6 @@
 
 #include <LittleFS.h>
 
-#define DEFAULT_LED_STATE false
-
 void addFolder(File folder, JsonArray fileArray)
 {
 	folder.rewindDirectory();
@@ -64,7 +62,7 @@ void FilesState::read(FilesState &settings, JsonObject &root)
 StateUpdateResult FilesState::update(JsonObject &root, FilesState &filesState)
 {
     //this must be changed to make it files specific
-    boolean newState = root["files_on"] | DEFAULT_LED_STATE;
+    boolean newState = root["files_on"];
     if (filesState.filesOn != newState)
     {
         filesState.filesOn = newState;
@@ -107,7 +105,6 @@ void FilesService::begin()
 {
     _httpEndpoint.begin();
     _eventEndpoint.begin();
-    _state.filesOn = DEFAULT_LED_STATE;
     onConfigUpdated();
 
     //setup the file server (easy peasy!)

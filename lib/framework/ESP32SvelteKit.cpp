@@ -182,8 +182,8 @@ void ESP32SvelteKit::begin()
 #endif
 
     _filesService.begin();
+    _fixtureService.begin(); //before effectservice!
     _effectsService.begin();
-    _fixtureService.begin();
 
     // Start the loop task
     ESP_LOGV("ESP32SvelteKit", "Starting loop task");
@@ -229,9 +229,6 @@ void ESP32SvelteKit::_loop()
 
             _fixtureService.loop50ms();
         }
-
-        _fixtureService.loop();
-        _effectsService.loop();
 
         cycles =  (ESP.getCycleCount() - cycles); //add the new cycles (converted to ms) to the total cpu time
         cyclesPerSecond += cycles;

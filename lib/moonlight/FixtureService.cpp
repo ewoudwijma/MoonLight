@@ -14,6 +14,8 @@
 
 #include <FixtureService.h>
 
+#include "App/LedModFixture.h" // use fix->
+
 #define EVENT_MONITOR "monitor"
 
 void FixtureState::read(FixtureState &state, JsonObject &root)
@@ -31,53 +33,59 @@ void FixtureState::read(FixtureState &state, JsonObject &root)
 StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
 {
     bool changed = false;
-    bool reInitDriver = false;
+    bool sizeChanged = false;
+    bool pinChanged = false;
+
+    print->printJson("FixtureState::update", root);
 
     if (state.lightsOn != root["lightsOn"]) {state.lightsOn = root["lightsOn"]; changed = true;}
     if (state.brightness != root["brightness"]) {
         state.brightness = root["brightness"]; changed = true;
 
-        FastLED.setBrightness(state.lightsOn?state.brightness/8:0);
+        FastLED.setBrightness(state.lightsOn?state.brightness/8:0); //todo: ask starlight to do it
 
         Serial.printf("Fixture.brightness.update %d\n", state.brightness);
     }
     if (state.width != root["width"]) {
         state.width = root["width"]; changed = true;
-        reInitDriver = true;
+        sizeChanged = true;
     }
     if (state.height != root["height"]) {
         state.height = root["height"]; changed = true;
-        reInitDriver = true;
+        sizeChanged = true;
     }
     if (state.depth != root["depth"]) {
         state.depth = root["depth"]; changed = true;
-        reInitDriver = true;
+        sizeChanged = true;
     }
     if (state.driverOn != root["driverOn"]) {
         state.driverOn = root["driverOn"]; changed = true;
+        fix->showDriver = state.driverOn;
     }
     if (state.monitorOn != root["monitorOn"]) {state.monitorOn = root["monitorOn"]; changed = true;}
     if (state.pin != root["pin"]) {
         state.pin = root["pin"]; changed = true;
-        reInitDriver = true;
+        pinChanged = true;
+        fix->doAllocPins = true;
+        fix->currPin = state.pin;
         Serial.printf("Fixture.pin.update %d\n", state.pin);
     }
 
-    if (changed)
-        Serial.printf("FixtureState::update o:%d b:%d\n", state.lightsOn, state.brightness);
+    // if (changed)
+    //     Serial.printf("FixtureState::update o:%d b:%d\n", state.lightsOn, state.brightness);
 
-    if (reInitDriver) {
-        Serial.printf("FixtureState::reInitDriver o:%d b:%d\n", state.lightsOn, state.brightness);
-        uint16_t nrOfLeds = min(state.width * state.height * state.depth, STARLIGHT_MAXLEDS);
+    if (sizeChanged) {
+        Serial.printf("FixtureState::sizeChanged %dx%dx%d\n", state.width, state.height, state.depth);
 
-        switch (state.pin) {
-            case 11: FastLED.addLeds<NEOPIXEL, 11>(state.ledsP, 0, nrOfLeds).setCorrection(TypicalLEDStrip); break;
-            case 12: FastLED.addLeds<NEOPIXEL, 12>(state.ledsP, 0, nrOfLeds).setCorrection(TypicalLEDStrip); break;
-            case 13: FastLED.addLeds<NEOPIXEL, 13>(state.ledsP, 0, nrOfLeds).setCorrection(TypicalLEDStrip); break;
-            case 14: FastLED.addLeds<NEOPIXEL, 14>(state.ledsP, 0, nrOfLeds).setCorrection(TypicalLEDStrip); break;
-            case 15: FastLED.addLeds<NEOPIXEL, 15>(state.ledsP, 0, nrOfLeds).setCorrection(TypicalLEDStrip); break;
-            case 16: FastLED.addLeds<NEOPIXEL, 16>(state.ledsP, 0, nrOfLeds).setCorrection(TypicalLEDStrip); break;
+        if (state.width > 0 && state.height > 0 && state.depth > 0) {
+            fix->fixSize.x = state.width;
+            fix->fixSize.y = state.height;
+            fix->fixSize.z = state.depth;
         }
+    }
+
+    if (sizeChanged || pinChanged) {
+        fix->mappingStatus = 1; // ask starlight to recalculate mapping (including pins)
     }
 
     return changed?StateUpdateResult::CHANGED:StateUpdateResult::UNCHANGED;
@@ -128,8 +136,6 @@ void FixtureService::begin()
 
     onConfigUpdated();
 
-    FastLED.setMaxPowerInMilliWatts(10 * 1000); // 5v, 2000mA
-
     _socket->registerEvent(EVENT_MONITOR);
 }
 
@@ -138,15 +144,8 @@ void FixtureService::onConfigUpdated()
     Serial.printf("FixtureService::onConfigUpdated o:%d b:%d\n", _state.lightsOn, _state.brightness);
 }
 
-void FixtureService::loop()
-{
-    if (_state.driverOn)
-        FastLED.show();
-
-}
-
 void FixtureService::loop50ms()
 {
     if (_state.monitorOn)
-        _socket->emitEvent(EVENT_MONITOR, (char *)_state.ledsP, min(_state.width*_state.height*_state.depth, STARLIGHT_MAXLEDS) * sizeof(CRGB)); // * sizeof(CRGB)
+        _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, min(_state.width*_state.height*_state.depth, STARLIGHT_MAXLEDS) * sizeof(CRGB)); // * sizeof(CRGB)
 }
