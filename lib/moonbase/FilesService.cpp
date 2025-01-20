@@ -51,7 +51,7 @@ void addFolder(File folder, JsonArray fileArray)
 	}
 }
 
-void FilesState::read(FilesState &settings, JsonObject &root)
+void FilesState::read(FilesState &state, JsonObject &root)
 {
     File folder = LittleFS.open("/");
     root["name"] = "/";
@@ -59,13 +59,13 @@ void FilesState::read(FilesState &settings, JsonObject &root)
     folder.close();
 }
 
-StateUpdateResult FilesState::update(JsonObject &root, FilesState &filesState)
+StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
 {
     //this must be changed to make it files specific
-    boolean newState = root["files_on"];
-    if (filesState.filesOn != newState)
+    boolean newState = root["xxx"];
+    if (state.filesOn != newState)
     {
-        filesState.filesOn = newState;
+        state.filesOn = newState;
         return StateUpdateResult::CHANGED;
     }
     return StateUpdateResult::UNCHANGED;

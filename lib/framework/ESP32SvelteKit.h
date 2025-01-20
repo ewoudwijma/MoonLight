@@ -45,6 +45,7 @@
 #include <PsychicHttp.h>
 #include <vector>
 
+#include <StarService.h>
 #include <FilesService.h>
 #include <FixtureService.h>
 #include <EffectsService.h>
@@ -239,6 +240,7 @@ private:
 
     String _appName = APP_NAME;
 
+    StarService _starService;
     FilesService _filesService;
     FixtureService _fixtureService;
     EffectsService _effectsService;

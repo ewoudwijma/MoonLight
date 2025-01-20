@@ -19,13 +19,17 @@
 	import Check from '~icons/tabler/check';
 	import InfoDialog from '$lib/components/InfoDialog.svelte';
 	import type { FilesState } from '$lib/types/models';
+	import Text from '$lib/components/Text.svelte';
+	import Textarea from '$lib/components/Textarea.svelte';
 
-	let itemsState: FilesState;
+	let itemState: FilesState;
 	let itemsList: FilesState[] = [];
 	let editableItem: FilesState = {
 		name: '',
+		path: '',
 		size: 0,
 		time: 0,
+		contents: 'wait',
 		files: []
 	};
 
@@ -46,14 +50,14 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			itemsState = await response.json();
-			itemsState = itemsState.files[0]; //temp, only show the first folder (which is config)
-			// console.log("itemsState", itemsState);
+			itemState = await response.json();
+			itemState = itemState.files[0]; //temp, only show the first folder (which is config)
+			// console.log("itemState", itemState);
 		} catch (error) {
 			console.error('Error:', error);
 		}
-		itemsList = itemsState.files;
-		return itemsState;
+		itemsList = itemState.files;
+		return itemState;
 	}
 
 	async function postSettings(data: FilesState) {
@@ -68,7 +72,7 @@
 			});
 			if (response.status == 200) {
 				notifications.success('Settings updated.', 3000);
-				itemsState = await response.json();
+				itemState = await response.json();
 			} else {
 				notifications.error('User not authorized.', 3000);
 			}
@@ -78,15 +82,15 @@
 	}
 
 	function validateItem() {
-		if (itemsState.name.length < 3 || itemsState.name.length > 32) {
+		if (itemState.name.length < 3 || itemState.name.length > 32) {
 			formErrorFilename = true;
 		} else {
 			formErrorFilename = false;
-			// Update global itemsState object
-			itemsState.files = itemsList;
+			// Update global itemState object
+			itemState.files = itemsList;
 			// Post to REST API
-			postSettings(itemsState);
-			console.log(itemsState);
+			postSettings(itemState);
+			console.log(itemState);
 		}
 	}
 
@@ -118,16 +122,28 @@
 		newItem = true;
 		editableItem = {
 			name: '',
+			path: '',
 			size: 0,
 			time: 0,
+			contents: 'add',
 			files: []
 		};
 	}
 
-	function handleEdit(index: number) {
+	async function handleEdit(index: number) {
 		newItem = false;
 		showEditor = true;
 		editableItem = itemsList[index];
+		try {
+			const response = await fetch('/rest/file/config/' + editableItem.name, {
+					method: 'GET',
+				headers: {'Content-Type': 'text/plain'}
+			});
+			editableItem.contents = await response.text();
+			console.log("handleEdit", editableItem.contents)
+		} catch (error) {
+			console.error('Error:', error);
+		}
 	}
 
 	function confirmDelete(index: number) {
@@ -268,32 +284,25 @@
 							<div class="h-16 flex w-full items-center justify-between space-x-3 p-0 text-xl font-medium">
 								Edit
 							</div>
-							<div
-								class="grid w-full grid-cols-1 content-center gap-x-4 px-4 sm:grid-cols-2"
-								transition:slide|local={{ duration: 300, easing: cubicOut }}
-							>
-								<div>
-									<label class="label" for="name">
-										<span class="label-text text-md">Name</span>
-									</label>
-									<input
-										type="text"
-										class="input input-bordered invalid:border-error w-full invalid:border-2 {formErrors.name
-											? 'border-error border-2'
-											: ''}"
-										bind:value={editableItem.name}
-										id="name"
-										min="2"
-										max="32"
-										required
-									/>
-									<label class="label" for="name">
-										<span class="label-text-alt text-error {formErrors.name ? '' : 'hidden'}"
-											>Name must be between 3 and 32 characters long</span
-										>
-									</label>
+
+								<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+									<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+										<ComputerIcon class="text-primary-content h-auto w-full scale-75" />
+									</div>
+									<div>
+										<div class="font-bold">File</div>
+										<div class="text-sm opacity-75">
+											{editableItem.path} {editableItem.size} 
+										</div>
+									</div>
 								</div>
-							</div>
+			
+								<div>
+									<Textarea 
+										label="Contents" 
+										bind:value={editableItem.contents} 
+									></Textarea>
+								</div>
 						{/if}
 
 						<div class="divider mb-2 mt-0" />

@@ -158,10 +158,9 @@ export type FilesState = {
 	files: FilesState[];
 };
 
-export type EffectsState = {
-	name: string;
-	effect: number;
-	nodes: EffectsState[];
+export type StarState = {
+	effects: string[];
+	projections: string[];
 };
 
 export type FixtureState = {
@@ -174,4 +173,11 @@ export type FixtureState = {
 	driverOn:boolean;
 	monitorOn:boolean;
 	pin:number
+};
+
+export type EffectsState = {
+	name: string;
+	effect: number;
+	projection: number;
+	nodes: EffectsState[];
 };

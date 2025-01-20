@@ -19,6 +19,7 @@
 void EffectsState::read(EffectsState &state, JsonObject &root)
 {
     root["effect"] = state.effect;
+    root["projection"] = state.projection;
 
     JsonArray array = root["nodes"].to<JsonArray>();
     JsonObject object = array.add<JsonObject>();
@@ -28,7 +29,7 @@ void EffectsState::read(EffectsState &state, JsonObject &root)
     array.add(object);
     object["name"] = "Blender";
     array.add(object);
-    object["name"] = "PinWheel projection";
+    object["name"] = "Game of life";
     // array.add(object);
 }
 
@@ -49,6 +50,19 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
             case 0: eff->processEffectNr = 16; break; //lissajous
             case 1: eff->processEffectNr = 28; break; //ripple
             case 2: eff->processEffectNr = 12; break; //gol
+        }
+    }
+    if (state.projection != root["projection"]) {
+        state.projection = root["projection"]; changed = true;
+
+        ppf("Effects.projection.update task: %s", pcTaskGetTaskName(nullptr));
+        ppf(" e:%d\n", state.projection);
+
+        //send update effect to star service / loop (no call to star service here as causes httpd stack full (run in own task))
+        switch (state.projection) {
+            // case 0: eff->processEffectNr = 16; break; //lissajous
+            // case 1: eff->processEffectNr = 28; break; //ripple
+            // case 2: eff->processEffectNr = 12; break; //gol
         }
     }
 

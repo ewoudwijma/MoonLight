@@ -10,8 +10,9 @@
 	import Slider from '$lib/components/Slider.svelte';
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import Number from '$lib/components/Number.svelte';
+	import Spinner from '$lib/components/Spinner.svelte';
 
-	let state: FixtureState = { name: "test", lightsOn:true, brightness: 50, width: 16, height:16, depth:16, driverOn: true, monitorOn: true, pin: 16 };
+	let state: FixtureState;
 
 	//state is now via socket and not rest api ...
 	let dataLoaded = false;
@@ -25,15 +26,7 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			const fixtureState = await response.json();
-			state.lightsOn = fixtureState.lightsOn;
-			state.brightness = fixtureState.brightness;
-			state.width = fixtureState.width;
-			state.height = fixtureState.height;
-			state.depth = fixtureState.depth;
-			state.driverOn = fixtureState.driverOn;
-			state.monitorOn = fixtureState.monitorOn;
-			state.pin = fixtureState.pin;
+			state = await response.json();
 			dataLoaded = true;
 		} catch (error) {
 			console.error('Error:', error);
@@ -46,7 +39,7 @@
 			state = data;
 			dataLoaded = true;
 		});
-		// getState();
+		// getState(); //done in settingscard
 	});
 
 	onDestroy(() => socket.off('fixture'));
@@ -68,15 +61,7 @@
 			});
 			if (response.status == 200) {
 				notifications.success('Light state updated.', 3000);
-				const fixtureState = await response.json();
-				state.lightsOn = fixtureState.lightsOn;
-				state.brightness = fixtureState.brightness;
-				state.width = fixtureState.width;
-				state.height = fixtureState.height;
-				state.depth = fixtureState.depth;
-				state.driverOn = fixtureState.driverOn;
-				state.monitorOn = fixtureState.monitorOn;
-				state.pin = fixtureState.pin;
+				state = await response.json();
 			} else {
 				notifications.error('User not authorized.', 3000);
 			}
@@ -89,6 +74,9 @@
 <SettingsCard collapsible={false}>
 	<LightIcon slot="icon" class="lex-shrink-0 mr-2 h-6 w-6 self-end" />
 	<span slot="title">Fixture</span>
+	{#await getState()}
+		<Spinner />
+	{:then nothing}
 	<div class="w-full">
 		<Checkbox 
 			label="On" 
@@ -135,4 +123,5 @@
 		></Number>
 	
 	</div>
+	{/await}
 </SettingsCard>

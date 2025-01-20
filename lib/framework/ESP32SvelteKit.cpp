@@ -54,9 +54,10 @@ ESP32SvelteKit::ESP32SvelteKit(PsychicHttpServer *server, unsigned int numberEnd
                                                                                           _restartService(server, &_securitySettingsService),
                                                                                           _factoryResetService(server, &ESPFS, &_securitySettingsService),
                                                                                           _systemStatus(server, &_securitySettingsService),
+                                                                                          _starService(server, &_socket, &_securitySettingsService),
                                                                                           _filesService(server, &_socket, &_securitySettingsService),
-                                                                                          _effectsService(server, &_socket, &_securitySettingsService, &ESPFS, &_fixtureService),
-                                                                                          _fixtureService(server, &_socket, &_securitySettingsService, &ESPFS)
+                                                                                          _fixtureService(server, &_socket, &_securitySettingsService, &ESPFS),
+                                                                                          _effectsService(server, &_socket, &_securitySettingsService, &ESPFS, &_fixtureService)
 {
 }
 
@@ -181,6 +182,7 @@ void ESP32SvelteKit::begin()
     _batteryService.begin();
 #endif
 
+    _starService.begin();
     _filesService.begin();
     _fixtureService.begin(); //before effectservice!
     _effectsService.begin();

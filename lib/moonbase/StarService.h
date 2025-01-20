@@ -1,5 +1,5 @@
-#ifndef EffectsService_h
-#define EffectsService_h
+#ifndef StarService_h
+#define StarService_h
 
 /**
  *   ESP32 SvelteKit
@@ -20,27 +20,24 @@
 #include <EventEndpoint.h>
 #include <WebSocketServer.h>
 #include <PsychicHttp.h>
-#include <FSPersistence.h>
-#include "FixtureService.h"
 
-class EffectsState
+class StarState
 {
 public:
+    bool filesOn = false;
 
-    uint16_t effect = UINT16_MAX;
-    uint16_t projection = UINT16_MAX;
+    static void read(StarState &settings, JsonObject &root);
 
-    static void read(EffectsState &state, JsonObject &root);
+    static StateUpdateResult update(JsonObject &root, StarState &filesState);
 
-    static StateUpdateResult update(JsonObject &root, EffectsState &state);
 };
 
-class EffectsService : public StatefulService<EffectsState>
+class StarService : public StatefulService<StarState>
 {
 public:
-    EffectsService(PsychicHttpServer *server,
+    StarService(PsychicHttpServer *server,
                       EventSocket *socket,
-                      SecurityManager *securityManager, FS *fs, FixtureService *fixtureService);
+                      SecurityManager *securityManager);
 
     void begin();
 
@@ -48,12 +45,10 @@ protected:
     EventSocket *_socket;
 
 private:
-    HttpEndpoint<EffectsState> _httpEndpoint;
-    EventEndpoint<EffectsState> _eventEndpoint;
-    WebSocketServer<EffectsState> _webSocketServer;
-    FSPersistence<EffectsState> _fsPersistence;
-
-    FixtureService *_fixtureService;
+    HttpEndpoint<StarState> _httpEndpoint;
+    EventEndpoint<StarState> _eventEndpoint;
+    WebSocketServer<StarState> _webSocketServer;
+    PsychicHttpServer *_server;
 
     void onConfigUpdated();
 };

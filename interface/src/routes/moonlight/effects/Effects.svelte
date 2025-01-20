@@ -22,12 +22,15 @@
 	import Select from '$lib/components/Select.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { socket } from '$lib/stores/socket';
+	import type { StarState } from '$lib/types/models';
 
-	let itemsState: EffectsState;
+	let itemState: EffectsState;
+	let starState: StarState;
 	let itemsList: EffectsState[] = [];
 	let editableItem: EffectsState = {
 		name: '',
 		effect: -1,
+		projection: -1,
 		nodes: []
 	};
 
@@ -39,23 +42,8 @@
 	};
 	let formErrorFilename = false;
 
-	let effectList = [
-		{
-			id: 0,
-			text: `Lissajous`
-		},
-		{
-			id: 1,
-			text: `Ripples`
-		},
-		{
-			id: 2,
-			text: `Game of life`
-		}
-	];
-
-	let state: EffectsState = { name: "test", effect:-1, nodes: []};
 	let dataLoaded = false;
+	let starLoaded = false;
 
 	async function getState() {
 		try {
@@ -66,14 +54,30 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			itemsState = await response.json();
-			console.log("itemsState", itemsState);
-			if (itemsState.nodes) //sometimes error null...
-				itemsList = itemsState.nodes;
+			itemState = await response.json();
+			console.log("itemState", itemState);
+			if (itemState.nodes) //sometimes error null...
+				itemsList = itemState.nodes;
+			dataLoaded = true;
 		} catch (error) {
 			console.error('Error:', error);
 		}
-		return itemsState;
+
+		try {
+			const response = await fetch('/rest/starState', {
+				method: 'GET',
+				headers: {
+					Authorization: $page.data.features.security ? 'Bearer ' + $user.bearer_token : 'Basic',
+					'Content-Type': 'application/json'
+				}
+			});
+			starState = await response.json();
+			console.log("starState", starState);
+			starLoaded = true;
+		} catch (error) {
+			console.error('Error:', error);
+		}
+		return itemState;
 	}
 
 	async function postSettings(data: EffectsState) {
@@ -88,7 +92,7 @@
 			});
 			if (response.status == 200) {
 				notifications.success('Settings updated.', 3000);
-				itemsState = await response.json();
+				itemState = await response.json();
 			} else {
 				notifications.error('User not authorized.', 3000);
 			}
@@ -98,15 +102,15 @@
 	}
 
 	function validateItem() {
-		if (itemsState.name.length < 3 || itemsState.name.length > 32) {
+		if (itemState.name.length < 3 || itemState.name.length > 32) {
 			formErrorFilename = true;
 		} else {
 			formErrorFilename = false;
-			// Update global itemsState object
-			itemsState.nodes = itemsList;
+			// Update global itemState object
+			itemState.nodes = itemsList;
 			// Post to REST API
-			postSettings(itemsState);
-			console.log(itemsState);
+			postSettings(itemState);
+			console.log(itemState);
 		}
 	}
 
@@ -139,6 +143,7 @@
 		editableItem = {
 			name: '',
 			effect: -1,
+			projection: -1,
 			nodes: []
 		};
 	}
@@ -199,18 +204,26 @@
 
 	onMount(() => {
 		socket.on<EffectsState>('effects', (data) => {
-			state = data;
+			itemState = data;
 			dataLoaded = true;
 		});
-		// getState();
+		socket.on<StarState>('stars', (data) => {
+			console.log("star", data);
+			starState = data;
+			starLoaded = true;
+		});
+		// getState(); //done in settingscard
 	});
 
-	onDestroy(() => socket.off('effects'));
+	onDestroy(() => {
+		socket.off("effects");
+		socket.off("stars");
+	});
 
 	function sendSocket() {
-		console.log("sendSocket", state);
+		console.log("sendSocket", itemState);
 		if (dataLoaded) 
-			socket.sendEvent('effects', state)
+			socket.sendEvent('effects', itemState)
 	}
 
 </script>
@@ -223,12 +236,29 @@
 
 	{#if !$page.data.features.security || $user.admin}
 		<div class="bg-base-200 shadow-lg relative grid w-full max-w-2xl self-center overflow-hidden">
-			<div class="h-16 flex w-full items-center justify-between space-x-3 p-0 text-xl font-medium">
-				Effects and Projections
-			</div>
 			{#await getState()}
 				<Spinner />
 			{:then nothing}
+				<div>
+					<Select label="Effect" bind:value={itemState.effect} onChange={sendSocket}>
+						{#each starState.effects as effect, i}
+							<option value={i}>
+								{effect}
+							</option>
+						{/each}
+					</Select>
+					<Select label="Projection" bind:value={itemState.projection} onChange={sendSocket}>
+						{#each starState.projections as projection, i}
+							<option value={i}>
+								{projection}
+							</option>
+						{/each}
+					</Select>
+				</div>
+
+				<div class="h-16 flex w-full items-center justify-between space-x-3 p-0 text-xl font-medium">
+					Effects and Projections
+				</div>
 				<div class="relative w-full overflow-visible">
 					<button
 						class="btn btn-primary text-primary-content btn-md absolute -top-14 right-16"
@@ -286,17 +316,6 @@
 							</div>
 						</DragDropList>
 					</div>
-					<div>
-
-						<Select label="Effect" bind:value={state.effect} onChange={sendSocket}>
-							{#each effectList as mode}
-								<option value={mode.id}>
-									{mode.text}
-								</option>
-							{/each}
-						</Select>
-
-					</div>
 				</div>
 
 				<div
@@ -342,10 +361,10 @@
 								</div>
 								<div>
 									<Select label="Source" bind:value={editableItem.effect} onChange={()=>{}}>
-										{#each effectList as mode}
-										<option value={mode.id}>
-											{mode.text}
-										</option>
+										{#each starState.projections as projection, i}
+											<option value={i}>
+												{projection}
+											</option>
 										{/each}
 									</Select>
 								</div>
