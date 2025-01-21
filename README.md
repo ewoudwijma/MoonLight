@@ -79,4 +79,4 @@ The code runs on many variants of the ESP32 chip family. From the plain old ESP3
 
 ESP32 SvelteKit is distributed with two licenses for different sections of the code. The back end code inherits the GNU LESSER GENERAL PUBLIC LICENSE Version 3 and is therefore distributed with said license. The front end code is distributed under the MIT License. 
 
-MoonBase is licensed under GPL-3.0. See the [LICENSE](LICENSE) for a full text.
+MoonBase back and front end is licensed under GPL-3.0. See the [LICENSE](LICENSE) for a full text.
