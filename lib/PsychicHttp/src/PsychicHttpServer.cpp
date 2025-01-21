@@ -19,6 +19,7 @@ PsychicHttpServer::PsychicHttpServer() :
   
   //for a regular server
   config = HTTPD_DEFAULT_CONFIG();
+  config.stack_size = 8192; //Star: double it!
   config.open_fn = PsychicHttpServer::openCallback;
   config.close_fn = PsychicHttpServer::closeCallback;
   config.uri_match_fn = httpd_uri_match_wildcard;

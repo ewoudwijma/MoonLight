@@ -38,11 +38,13 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
 
     print->printJson("FixtureState::update", root);
 
-    if (state.lightsOn != root["lightsOn"]) {state.lightsOn = root["lightsOn"]; changed = true;}
+    if (state.lightsOn != root["lightsOn"]) {
+        state.lightsOn = root["lightsOn"]; changed = true;
+        Variable("Fixture", "on").setValue(state.lightsOn);
+    }
     if (state.brightness != root["brightness"]) {
         state.brightness = root["brightness"]; changed = true;
-
-        FastLED.setBrightness(state.lightsOn?state.brightness/8:0); //todo: ask starlight to do it
+        Variable("Fixture", "brightness").setValue(state.brightness);
 
         Serial.printf("Fixture.brightness.update %d\n", state.brightness);
     }
@@ -147,5 +149,6 @@ void FixtureService::onConfigUpdated()
 void FixtureService::loop50ms()
 {
     if (_state.monitorOn)
-        _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, min(_state.width*_state.height*_state.depth, STARLIGHT_MAXLEDS) * sizeof(CRGB)); // * sizeof(CRGB)
+        _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, min(_state.width*_state.height*_state.depth, STARLIGHT_MAXLEDS) * sizeof(CRGB));
+    //ran by httpd, is that okay or better to run in other task?
 }

@@ -45,12 +45,8 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
         ppf("Effects.effect.update task: %s", pcTaskGetTaskName(nullptr));
         ppf(" e:%d\n", state.effect);
 
-        //send update effect to star service / loop (no call to star service here as causes httpd stack full (run in own task))
-        switch (state.effect) {
-            case 0: eff->processEffectNr = 16; break; //lissajous
-            case 1: eff->processEffectNr = 28; break; //ripple
-            case 2: eff->processEffectNr = 12; break; //gol
-        }
+        Variable("layers", "effect").setValue(state.effect, 0);
+        Variable("layers", "effect").setValue(state.effect, 0); //twice to init var["value"]correctly - workaround !!!
     }
     if (state.projection != root["projection"]) {
         state.projection = root["projection"]; changed = true;
@@ -58,12 +54,8 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
         ppf("Effects.projection.update task: %s", pcTaskGetTaskName(nullptr));
         ppf(" e:%d\n", state.projection);
 
-        //send update effect to star service / loop (no call to star service here as causes httpd stack full (run in own task))
-        switch (state.projection) {
-            // case 0: eff->processEffectNr = 16; break; //lissajous
-            // case 1: eff->processEffectNr = 28; break; //ripple
-            // case 2: eff->processEffectNr = 12; break; //gol
-        }
+        Variable("layers", "projection").setValue(state.projection, 0);
+        Variable("layers", "projection").setValue(state.projection, 0); //twice to init var["value"]correctly - workaround !!!
     }
 
     if (changed)

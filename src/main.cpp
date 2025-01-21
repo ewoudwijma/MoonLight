@@ -49,6 +49,18 @@ void setup()
     lightStateService.begin();
     // start the light service
     lightMqttSettingsService.begin();
+
+    // ESP_LOGV("Star", "Starting loop task");
+    // xTaskCreateUniversal(
+    //     [](void * par) { loopStar(); },            // Function that should be called
+    //     "StarLoop",     // Name of the task (for debugging)
+    //     8192,                       // Stack size (bytes)
+    //     nullptr,                       // Pass reference to this class instance
+    //     (tskIDLE_PRIORITY + 1),     // task priority
+    //     NULL,                       // Task handle
+    //     ARDUINO_RUNNING_CORE // Pin to application core
+    // );
+
 }
 
 void loop()

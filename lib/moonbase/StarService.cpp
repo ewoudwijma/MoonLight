@@ -14,18 +14,12 @@
 
 #include <StarService.h>
 
+#include "Sys/SysModModel.h"
 
 void StarState::read(StarState &settings, JsonObject &root)
 {
-    JsonArray array = root["effects"].to<JsonArray>();
-    array.add("Lissajous");
-    array.add("Ripples");
-    array.add("Game of life");
-
-    array = root["projections"].to<JsonArray>();
-    array.add("Default");
-    array.add("Mirror");
-    array.add("Pinwheel");
+    root["effects"] = Variable("layers", "effect").getOptions();
+    root["projections"] = Variable("layers", "projection").getOptions();
 }
 
 StateUpdateResult StarState::update(JsonObject &root, StarState &state)
