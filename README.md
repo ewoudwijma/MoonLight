@@ -2,12 +2,15 @@
 
 <img width="500" alt="MoonBase" src="https://github.com/user-attachments/assets/de0ab735-d547-462e-b7e3-c3f819bf9283" />
 
-https://github.com/user-attachments/assets/78745b5f-48ce-4b53-a2ac-02659037309c
-
 * MoonBase is a [MoonModules](https://moonmodules.org) project.
-* MoonBase is ESP32 SvelteKit + StarLight as a Service. Check [Discord/StarLight](https://discord.gg/TC8NSUSCdV) to discuss.
-* see also [ESP32-sveltekit POC](https://github.com/theelims/ESP32-sveltekit/issues/68)
+* MoonBase = [ESP32 SvelteKit](https://github.com/theelims/ESP32-sveltekit) + [StarLight as a Service](https://github.com/MoonModules/StarLight/tree/StarAsAService). Check [Discord/StarLight](https://discord.gg/TC8NSUSCdV) to discuss.
+* Work in progress is shown in the [Kanban board](https://github.com/users/ewowi/projects/2). You are more then welcome to add issues, comment on issues or help with issues.
+* See also [ESP32-sveltekit POC](https://github.com/theelims/ESP32-sveltekit/issues/68)
 * Documentation has been setup (but not customized), see [MoonBaseDocs](https://ewowi.github.io/MoonBase/).
+
+[Release 0.5.2](https://github.com/ewowi/MoonBase/releases/tag/v0.5.2) (Jan 21, 2025): 
+
+https://github.com/user-attachments/assets/78745b5f-48ce-4b53-a2ac-02659037309c
 
 MoonBase is a fork of:
 
