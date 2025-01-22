@@ -10,7 +10,7 @@
 
 [Release 0.5.2](https://github.com/ewowi/MoonBase/releases/tag/v0.5.2) (Jan 21, 2025): 
 
-https://github.com/user-attachments/assets/78745b5f-48ce-4b53-a2ac-02659037309c
+https://github.com/user-attachments/assets/c655d610-53eb-4dd3-8e9e-0cfa23b97bb4
 
 MoonBase is a fork of:
 
