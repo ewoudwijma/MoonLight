@@ -10,6 +10,7 @@
 	import EffectsIcon from '~icons/tabler/torii';
 	import StarIcon from '~icons/tabler/star';
 	import BulbIcon from '~icons/tabler/bulb';
+	import ControlIcon from '~icons/tabler/adjustments';
 	import Health from '~icons/tabler/stethoscope';
 	import Update from '~icons/tabler/refresh-alert';
 	import WiFi from '~icons/tabler/wifi';
@@ -84,12 +85,12 @@
 					href: '/moonbase/instances',
 					feature: true,
 				},
-				// {
-				// 	title: 'Demo App',
-				// 	icon: Control,
-				// 	href: '/moonbase/demo',
-				// 	feature: true,
-				// },
+				{
+					title: 'Demo App',
+					icon: ControlIcon,
+					href: '/moonbase/demo',
+					feature: true,
+				},
 			]
 		},
 		{
