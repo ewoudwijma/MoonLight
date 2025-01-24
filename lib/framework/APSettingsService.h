@@ -29,7 +29,7 @@
 #endif
 
 #ifndef FACTORY_AP_SSID
-#define FACTORY_AP_SSID "MoonBase-#{unique_id}"
+#define FACTORY_AP_SSID "MoonLight-#{unique_id}"
 #endif
 
 #ifndef FACTORY_AP_PASSWORD

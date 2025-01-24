@@ -1,4 +1,4 @@
-site_name: ESP32 SvelteKit - MoonBase fork
+site_name: MoonLight
 
 nav:
   - Home: index.md
@@ -19,12 +19,12 @@ site_description: >-
   A simple, secure and extensible framework for IoT projects on ESP32 platforms with responsive Sveltekit front-end built with TailwindCSS and DaisyUI.
 
 # Repository
-repo_name: ewowi/MoonBase
-repo_url: https://github.com/ewowi/MoonBase
+repo_name: ewowi/MoonLight
+repo_url: https://github.com/ewowi/MoonLight
 
 theme:
   name: material
-  logo: media/moonbase-logo.png
+  logo: media/moonlight-logo.png
   favicon: media/favicon.png
   icon:
     repo: fontawesome/brands/github

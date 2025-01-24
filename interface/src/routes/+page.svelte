@@ -10,9 +10,9 @@
 	<div class="card md:card-side bg-base-200 shadow-primary shadow-2xl">
 		<figure class="bg-base-200"><img src={logo} alt="Logo" class="h-auto w-64" /></figure>
 		<div class="card-body w-80">
-			<h2 class="card-title text-center text-2xl">Welcome to MoonBase</h2>
+			<h2 class="card-title text-center text-2xl">Welcome to MoonLight</h2>
 			<p class="py-6 text-center">
-				MoonBase is made by MoonModules, a group of LED enthusiasts who also made WLED MM 
+				MoonLight is made by MoonModules, a group of LED enthusiasts who also made WLED MM 
 				and contribute to WLED and can be found on 
 				<a
 					href="https://discord.gg/TC8NSUSCdV"
@@ -30,7 +30,7 @@
 			<a
 				class="btn btn-primary"
 				href="/"
-				on:click={() => notifications.success('You did it!', 1000)}>Start MoonBase</a
+				on:click={() => notifications.success('You did it!', 1000)}>Start MoonLight</a
 			>
 		</div>
 	</div>
