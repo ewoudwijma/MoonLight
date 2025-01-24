@@ -19,8 +19,8 @@ site_description: >-
   A simple, secure and extensible framework for IoT projects on ESP32 platforms with responsive Sveltekit front-end built with TailwindCSS and DaisyUI.
 
 # Repository
-repo_name: ewowi/MoonLight
-repo_url: https://github.com/ewowi/MoonLight
+repo_name: MoonModules/MoonLight
+repo_url: https://github.com/MoonModules/MoonLight
 
 theme:
   name: material
@@ -96,4 +96,5 @@ plugins:
 copyright: |
   Copyright &copy; 2024 by <a href="https://github.com/theelims"  target="_blank" rel="noopener">elims</a> -
   Copyright &copy; 2025 by <a href="https://github.com/ewowi"  target="_blank" rel="noopener">ewowi</a> -
+  Copyright &copy; 2025 by <a href="https://github.com/MoonModules"  target="_blank" rel="noopener">MoonModules</a> -
   <a href="#__consent">Change cookie settings</a>
