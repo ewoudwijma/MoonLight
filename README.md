@@ -4,7 +4,7 @@
 
 * MoonLight is a [MoonModules](https://moonmodules.org) project.
 * MoonLight = [ESP32 SvelteKit](https://github.com/theelims/ESP32-sveltekit) + [StarLight as a Service](https://github.com/MoonModules/StarLight/tree/StarAsAService). Check [Discord/StarLight](https://discord.gg/TC8NSUSCdV) to discuss.
-* Work in progress is shown in the [Kanban board](https://github.com/users/MoonModules/projects/2). You are more then welcome to add issues, comment on issues or help with issues.
+* Work in progress is shown in the [Kanban board](https://github.com/users/ewowi/projects/2). You are more then welcome to add issues, comment on issues or help with issues.
 * See also [ESP32-sveltekit POC](https://github.com/theelims/ESP32-sveltekit/issues/68)
 * Documentation has been setup (but not customized), see [MoonLightDocs](https://MoonModules.github.io/MoonLight/).
 
