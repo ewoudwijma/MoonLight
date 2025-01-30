@@ -12,9 +12,9 @@
 	import Number from '$lib/components/Number.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
 
-	let state: FixtureState;
+	let fixtureState: FixtureState;
 
-	//state is now via socket and not rest api ...
+	//fixtureState is now via socket and not rest api ...
 	let dataLoaded = false;
 	
 	async function getState() {
@@ -26,7 +26,7 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			state = await response.json();
+			fixtureState = await response.json();
 			dataLoaded = true;
 		} catch (error) {
 			console.error('Error:', error);
@@ -36,7 +36,7 @@
 
 	onMount(() => {
 		socket.on<FixtureState>('fixture', (data) => {
-			state = data;
+			fixtureState = data;
 			dataLoaded = true;
 		});
 		// getState(); //done in settingscard
@@ -46,10 +46,10 @@
 
 	function sendSocket() {
 		if (dataLoaded) 
-			socket.sendEvent('fixture', state)
+			socket.sendEvent('fixture', fixtureState)
 	}
 
-	async function postState() {
+	async function postFixtureState() {
 		try {
 			const response = await fetch('/rest/fixtureState', {
 				method: 'POST',
@@ -57,11 +57,11 @@
 					Authorization: $page.data.features.security ? 'Bearer ' + $user.bearer_token : 'Basic',
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ brightness: state.brightness, lightsOn: state.lightsOn })
+				body: JSON.stringify({ brightness: fixtureState.brightness, lightsOn: fixtureState.lightsOn })
 			});
 			if (response.status == 200) {
-				notifications.success('Light state updated.', 3000);
-				state = await response.json();
+				notifications.success('fixtureState updated.', 3000);
+				fixtureState = await response.json();
 			} else {
 				notifications.error('User not authorized.', 3000);
 			}
@@ -80,46 +80,46 @@
 	<div class="w-full">
 		<Checkbox 
 			label="On" 
-			bind:value={state.lightsOn}
-			onChange = {sendSocket}
+			bind:value={fixtureState.lightsOn}
+			onChange={sendSocket}
 		></Checkbox>
 		<Slider 
 			label="Brightness" 
-			bind:value={state.brightness}
+			bind:value={fixtureState.brightness}
 			min={0} 
 			max={255} 
 			step={1}
-			onChange = {sendSocket}
+			onChange={sendSocket}
 		></Slider>
 		<Number 
 			label="Width" 
-			bind:value={state.width} 
-			onChange = {sendSocket}
+			bind:value={fixtureState.width} 
+			onChange={sendSocket}
 		></Number>
 		<Number 
 			label="Height" 
-			bind:value={state.height} 
-			onChange = {sendSocket}
+			bind:value={fixtureState.height} 
+			onChange={sendSocket}
 		></Number>
 		<Number 
 			label="Depth" 
-			bind:value={state.depth} 
-			onChange = {sendSocket}
+			bind:value={fixtureState.depth} 
+			onChange={sendSocket}
 		></Number>
 		<Checkbox 
 			label="Driver on" 
-			bind:value={state.driverOn}
-			onChange = {sendSocket}
+			bind:value={fixtureState.driverOn}
+			onChange={sendSocket}
 		></Checkbox>
 		<Checkbox 
 			label="Monitor on" 
-			bind:value={state.monitorOn}
-			onChange = {sendSocket}
+			bind:value={fixtureState.monitorOn}
+			onChange={sendSocket}
 		></Checkbox>
 		<Number 
 			label="Pin" 
-			bind:value={state.pin} 
-			onChange = {sendSocket}
+			bind:value={fixtureState.pin} 
+			onChange={sendSocket}
 		></Number>
 	
 	</div>

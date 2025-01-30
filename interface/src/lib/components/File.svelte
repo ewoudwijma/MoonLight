@@ -1,6 +1,5 @@
 <script lang="ts">
     export let label: string;
-    export let value: string;
     export let onChange = (event:any) => {console.log(event)};
 </script>
 
@@ -8,9 +7,7 @@
     <span class="mr-4">{label}</span>
 </label>
 <input 
-    type="text"
-    class="input"
+    type="file"
     id={label}
-    bind:value={value}
     on:change={onChange}
 />

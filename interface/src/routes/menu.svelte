@@ -80,12 +80,6 @@
 					feature: true,
 				},
 				{
-					title: 'Instances',
-					icon: CPUIcon,
-					href: '/moonbase/instances',
-					feature: true,
-				},
-				{
 					title: 'Demo App',
 					icon: ControlIcon,
 					href: '/moonbase/demo',

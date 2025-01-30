@@ -7,7 +7,8 @@
  *
  *   Copyright (C) 2018 - 2023 rjwats
  *   Copyright (C) 2023 - 2024 theelims
- *file
+ *   Copyright (C) 2025 - 2025 ewowi
+ *
  *   All Rights Reserved. This software may be modified and distributed under
  *   the terms of the LGPL v3 license. See the LICENSE file for details.
  **/
@@ -47,6 +48,8 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
 
         Variable("layers", "effect").setValue(state.effect, 0);
         Variable("layers", "effect").setValue(state.effect, 0); //twice to init var["value"]correctly - workaround !!!
+
+        Variable("Model", "saveModel").setValue(true);
     }
     if (state.projection != root["projection"]) {
         state.projection = root["projection"]; changed = true;

@@ -152,6 +152,7 @@ export type MQTTSettings = {
 export type FilesState = {
 	name: string;
 	path: string;
+	isFile: boolean;
 	size: number;
 	time: number;
 	contents: string;

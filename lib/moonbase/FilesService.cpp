@@ -7,15 +7,24 @@
  *
  *   Copyright (C) 2018 - 2023 rjwats
  *   Copyright (C) 2023 - 2024 theelims
- *file
+ *   Copyright (C) 2025 - 2025 ewowi
+ *
  *   All Rights Reserved. This software may be modified and distributed under
  *   the terms of the LGPL v3 license. See the LICENSE file for details.
  **/
 
+// Error (lowest)
+// Warning
+// Info
+// Debug
+// Verbose (highest)
+
+
 #include <FilesService.h>
 
-#include <LittleFS.h>
+#include <ESPFS.h>
 
+//recursively fill a fileArray with all files and folders on the FS
 void addFolder(File folder, JsonArray fileArray)
 {
 	folder.rewindDirectory();
@@ -31,44 +40,146 @@ void addFolder(File folder, JsonArray fileArray)
             JsonObject fileObject = fileArray.add<JsonObject>();
             fileObject["name"] = (char *)file.name(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
             fileObject["path"] = (char *)file.path(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
-            Serial.printf("file name %s (%d) ", file.name(), file.size());
+            fileObject["isFile"] = !file.isDirectory();
+            // Serial.printf("file %s (%d)\n", file.path(), file.size());
 			if (file.isDirectory())
 			{
-                // JsonArray filesArray = fileObject["files"].to<JsonArray>();
-
 				addFolder(file, fileObject["files"].to<JsonArray>());
 			}
 			else
 			{
-				//delete the file				
                 fileObject["size"] = file.size();
                 fileObject["time"] = file.getLastWrite();
-                // fileObject["contents"] = file.readString();
 			}
             // serializeJson(fileObject, Serial);
-            Serial.printf("\n");
+            // Serial.printf("\n");
+            file.close();
 		}
 	}
 }
 
 void FilesState::read(FilesState &state, JsonObject &root)
 {
-    File folder = LittleFS.open("/");
     root["name"] = "/";
+    //crashes for some reason: ???
+    // root["fs_total"] = ESPFS.totalBytes() / 1000;
+    // root["fs_used"] = ESPFS.usedBytes() / 1000;
+    File folder = ESPFS.open("/");
     addFolder(folder, root["files"].to<JsonArray>());
     folder.close();
+    // print->printJson("FilesState::read", root);
+    ESP_LOGD("Files", "FilesState::read");
+}
+
+//utility function
+void extractPath(const char *filepath, char *path) {
+    const char *lastSlash = strrchr(filepath, '/');
+    if (lastSlash != NULL) {
+        size_t pathLength = lastSlash - filepath;
+        strncpy(path, filepath, pathLength);
+        path[pathLength] = '\0';
+    } else {
+        // No directory separator found, the entire filepath is the filename
+        strcpy(path, "");
+    }
 }
 
 StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
 {
-    //this must be changed to make it files specific
-    boolean newState = root["xxx"];
-    if (state.filesOn != newState)
-    {
-        state.filesOn = newState;
-        return StateUpdateResult::CHANGED;
+    bool changed = false;
+
+    JsonArray deletes = root["deletes"].as<JsonArray>();
+    if (!deletes.isNull()) {
+        for (JsonObject var : deletes) {
+            ESP_LOGD("Files", "delete %s %s \n", var["name"].as<const char*>(), var["isFile"]?"File":"Folder");
+            // print->printJson("new file", var);
+            if (var["isFile"])
+                ESPFS.remove(var["path"].as<const char*>());
+            else
+                ESPFS.rmdir(var["path"].as<const char*>());
+
+            changed = true;
+        }
     }
-    return StateUpdateResult::UNCHANGED;
+
+    JsonArray news = root["news"].as<JsonArray>();
+    if (!news.isNull()) {
+        for (JsonObject var : news) {
+            ESP_LOGD("Files", "new %s %s \n", var["name"].as<const char*>(), var["isFile"]?"File":"Folder");
+            // print->printJson("new file", var);
+            if (var["isFile"]) {
+                File file = ESPFS.open(var["path"].as<const char*>(), FILE_WRITE);
+                const char *contents = var["contents"];
+                if (strlen(contents)) {
+                    if (!file.write((byte *)contents, strlen(contents))) { //changed not true as contents is not part of the state
+                        Serial.println("Write failed");
+                    }
+                }
+                file.close();
+            } else {
+                ESPFS.mkdir(var["path"].as<const char*>());
+            }
+            changed = true;
+        }
+    }
+
+    JsonArray updates = root["updates"].as<JsonArray>();
+    if (!updates.isNull()) {
+        for (JsonObject var : updates) {
+            ESP_LOGD("Files", "update %s %s \n", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
+            // print->printJson("update file", var);
+            File file = ESPFS.open(var["path"].as<const char*>(), FILE_WRITE);
+            if (!file) {
+                Serial.println("Failed to open file");
+            }
+            else {
+                const char *contents = var["contents"];
+                if (!file.write((byte *)contents, strlen(contents))) { //changed not true as contents is not part of the state
+                    Serial.println("Write failed");
+                }
+                file.close();
+
+                char newPath[64];
+                extractPath(var["path"], newPath);
+                strcat(newPath, "/");
+                strcat(newPath, var["name"]);
+
+                ESP_LOGD("Files", "rename %s to %s\n", var["path"].as<const char*>(), newPath);
+
+                if (strcmp(var["path"], newPath) != 0) {
+                    ESPFS.rename(var["path"].as<const char*>(), newPath);
+                }
+                changed = true;
+            }
+        }
+    }
+
+    // JsonDocument fileState;
+    // File folder = ESPFS.open("/");
+    // addFolder(folder, fileState["files"].to<JsonArray>());
+
+    // //check every file/folder in the filesystem (state) if it is still in root
+    // //id nor, delete the file/folder
+    // walkThroughJson([root, &changed](JsonObject , JsonObject varState) {
+    //     JsonObject foundVar =  walkThroughJson([varState, &changed](JsonObject , JsonObject varRoot) {
+    //         if (varRoot["path"] == varState["path"])
+    //             return varRoot;
+    //         return JsonObject();
+    //     }, root, "files");
+
+    //     if (foundVar.isNull()) {
+    //         ESP_LOGD("Files", "delete %s as not found in root\n", varState["path"].as<const char*>());
+    //         ESPFS.remove(varState["path"].as<const char*>());
+    //         changed = true;
+    //     }
+            
+    //     return JsonObject();
+    // }, fileState.as<JsonObject>(), "files");
+
+    // print->printJson("FilesState::update", root);
+    ESP_LOGD("Files", "FilesState:update %d\n", changed);
+
+    return changed?StateUpdateResult::CHANGED:StateUpdateResult::UNCHANGED;
 }
 
 FilesService::FilesService(PsychicHttpServer *server,
@@ -92,6 +203,7 @@ FilesService::FilesService(PsychicHttpServer *server,
                                                                                                             "/ws/filesState",
                                                                                                             securityManager,
                                                                                                             AuthenticationPredicates::IS_AUTHENTICATED),
+                                                                                            _socket(socket),
                                                                                              _server(server)
 {
 
@@ -107,9 +219,59 @@ void FilesService::begin()
     _eventEndpoint.begin();
     onConfigUpdated();
 
-    //setup the file server (easy peasy!)
-    _server->serveStatic("/rest/file", LittleFS, "/");
+    // uploadHandler = new PsychicUploadHandler();
 
+    // uploadHandler->onUpload([&](PsychicRequest *request, const String& filename, uint64_t index, uint8_t *data, size_t len, bool last) {
+    //     File file;
+    //     String path = "/" + filename;
+
+    //     Serial.printf("Writing %d/%d bytes to: %s\n", (int)index+(int)len, request->contentLength(), path.c_str());
+
+    //     if (last) {
+    //         Serial.printf("%s is finished. Total bytes: %d\n", path.c_str(), (int)index+(int)len);
+    //         update([&](FilesState& state) {
+    //             return StateUpdateResult::CHANGED; // notify StatefulService by returning CHANGED
+    //         }, "timer");
+    //     }
+
+    //     //our first call?
+    //     if (!index)
+    //         file = ESPFS.open(path, FILE_WRITE);
+    //     else
+    //         file = ESPFS.open(path, FILE_APPEND);
+        
+    //     if(!file) {
+    //         Serial.println("Failed to open file");
+    //         return ESP_FAIL;
+    //     }
+
+    //     if(!file.write(data, len)) {
+    //         Serial.println("Write failed");
+    //         return ESP_FAIL;
+    //     }
+
+    //     return ESP_OK;
+    // });
+
+    // //gets called after upload has been handled
+    // uploadHandler->onRequest([](PsychicRequest *request)
+    // {
+    //     String url = "/" + request->getFilename();
+    //     String output = "<a href=\"" + url + "\">" + url + "</a>";
+
+    //     Serial.printf("uploadHandler->onRequest\n", output.c_str());
+
+    //     return request->reply(output.c_str());
+    // });
+
+    // Serial.printf("server->on upload %d\n", _server->count());
+    // Serial.printf("server->on upload\n");
+
+    // //serve uploads
+    // _server->on("/rest/upload/*", HTTP_POST, uploadHandler);
+
+    //setup the file server
+    _server->serveStatic("/rest/file", ESPFS, "/");
 }
 
 void FilesService::onConfigUpdated()

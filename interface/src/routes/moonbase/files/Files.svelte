@@ -7,31 +7,37 @@
 	import { user } from '$lib/stores/user';
 	import { page } from '$app/stores';
 	import { notifications } from '$lib/components/toasts/notifications';
-	import DragDropList, { VerticalDropZone, reorder, type DropEvent } from 'svelte-dnd-list';
 	import SettingsCard from '$lib/components/SettingsCard.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import FilesIcon from '~icons/tabler/files';
+	import FileIcon from '~icons/tabler/file';
+	import FolderIcon from '~icons/tabler/folder';
 	import Add from '~icons/tabler/circle-plus';
 	import Edit from '~icons/tabler/pencil';
 	import Delete from '~icons/tabler/trash';
 	import Cancel from '~icons/tabler/x';
-	import Check from '~icons/tabler/check';
-	import InfoDialog from '$lib/components/InfoDialog.svelte';
 	import type { FilesState } from '$lib/types/models';
 	import Text from '$lib/components/Text.svelte';
 	import Textarea from '$lib/components/Textarea.svelte';
+	import File from '$lib/components/File.svelte';
+	import { onMount, onDestroy } from 'svelte';
+	import { socket } from '$lib/stores/socket';
+	import { tick } from 'svelte';
 
-	let itemState: FilesState;
-	let itemsList: FilesState[] = [];
-	let editableItem: FilesState = {
+	let filesState: FilesState;
+	let folderList: FilesState[] = [];
+	let editableFile: FilesState = {
 		name: '',
 		path: '',
+		isFile: true,
 		size: 0,
 		time: 0,
-		contents: 'wait',
+		contents: '',
 		files: []
 	};
+	let breadCrumbs:string[] = [];
+	let breadCrumbsString:string = ""; //as breadCrumbs.join("/") is not reactive for some reason
 
 	let newItem: boolean = true;
 	let showEditor: boolean = false;
@@ -39,7 +45,13 @@
 	let formErrors = {
 		name: false
 	};
-	let formErrorFilename = false;
+
+	const cookieValue = getCookie('breadCrumbs');
+	console.log("cookie", cookieValue);
+	if (cookieValue) {
+		breadCrumbs = JSON.parse(cookieValue);
+		breadCrumbsString = breadCrumbs.join("/");
+	}
 
 	async function getState() {
 		try {
@@ -50,17 +62,16 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			itemState = await response.json();
-			itemState = itemState.files[0]; //temp, only show the first folder (which is config)
-			// console.log("itemState", itemState);
+			filesState = await response.json();
+			console.log("filesState", filesState);
 		} catch (error) {
 			console.error('Error:', error);
 		}
-		itemsList = itemState.files;
-		return itemState;
+		folderListFromBreadCrumbs();
+		return filesState;
 	}
 
-	async function postSettings(data: FilesState) {
+	async function postFilesState(data: any) {
 		try {
 			const response = await fetch('/rest/filesState', {
 				method: 'POST',
@@ -72,7 +83,7 @@
 			});
 			if (response.status == 200) {
 				notifications.success('Settings updated.', 3000);
-				itemState = await response.json();
+				filesState = await response.json();
 			} else {
 				notifications.error('User not authorized.', 3000);
 			}
@@ -81,24 +92,12 @@
 		}
 	}
 
-	function validateItem() {
-		if (itemState.name.length < 3 || itemState.name.length > 32) {
-			formErrorFilename = true;
-		} else {
-			formErrorFilename = false;
-			// Update global itemState object
-			itemState.files = itemsList;
-			// Post to REST API
-			postSettings(itemState);
-			console.log(itemState);
-		}
-	}
-
 	function validateForm() {
+		console.log("validateForm", editableFile.isFile)
 		let valid = true;
 
 		// Validate Name
-		if (editableItem.name.length < 3 || editableItem.name.length > 32) {
+		if (editableFile.name.length < 3 || editableFile.name.length > 32) {
 			valid = false;
 			formErrors.name = true;
 		} else {
@@ -108,60 +107,140 @@
 		// Submit JSON to REST API
 		if (valid) {
 			if (newItem) {
-				itemsList.push(editableItem);
+				folderList.push(editableFile);
+				//order by name ...
+
+				//send newfile or folder to server
+
+				editableFile.path = "/" + breadCrumbs.join("/") + "/" + editableFile.name;
+				let response:any = {};
+				response.news = [];
+				response.news.push(editableFile);
+				console.log("new item", response)
+				//send the new itemstate to server
+				postFilesState(response);
+
 			} else {
-				itemsList.splice(itemsList.indexOf(editableItem), 1, editableItem);
+				console.log("update item", editableFile)
+				folderList.splice(folderList.indexOf(editableFile), 1, editableFile);
+
+				let response:any = {};
+				response.updates = [];
+				response.updates.push(editableFile);
+				postFilesState(response);
 			}
-			addItem();
-			itemsList = [...itemsList]; //Trigger reactivity
 			showEditor = false;
 		}
 	}
 
-	function addItem() {
+	function addFile() {
+		console.log("addFile")
 		newItem = true;
-		editableItem = {
+		editableFile = {
 			name: '',
 			path: '',
+			isFile: true,
 			size: 0,
 			time: 0,
-			contents: 'add',
+			contents: '',
+			files: []
+		};
+	}
+	function addFolder() {
+		console.log("addFolder")
+		newItem = true;
+		editableFile = {
+			name: '',
+			path: '',
+			isFile: false,
+			size: 0,
+			time: 0,
+			contents: '',
 			files: []
 		};
 	}
 
+	function folderListFromBreadCrumbs() {
+		folderList = filesState.files;
+		for (let indexF = 0; indexF < breadCrumbs.length; indexF++) {
+			let found = false;
+			for (let indexI = 0; indexI < folderList.length; indexI++) {
+				if (folderList[indexI].name === breadCrumbs[indexF]) {
+					console.log("handleEdit parent", folderList[indexI], breadCrumbs[indexF])
+					folderList = [folderList[indexI], ...folderList[indexI].files];
+					found = true;
+				}
+			}
+			if (!found) { //e.g. old coookie, reset
+				breadCrumbs = [];
+				breadCrumbsString = "";
+				folderList = filesState.files;
+				return;
+			}
+		}
+		console.log("folderListFromBreadCrumbs", filesState, breadCrumbs, folderList)
+	}
+
 	async function handleEdit(index: number) {
 		newItem = false;
-		showEditor = true;
-		editableItem = itemsList[index];
-		try {
-			const response = await fetch('/rest/file/config/' + editableItem.name, {
-					method: 'GET',
-				headers: {'Content-Type': 'text/plain'}
-			});
-			editableItem.contents = await response.text();
-			console.log("handleEdit", editableItem.contents)
-		} catch (error) {
-			console.error('Error:', error);
+		editableFile = folderList[index];
+
+		if (breadCrumbs.length > 0 && editableFile.name === breadCrumbs[breadCrumbs.length-1]) { //if parent folder
+			breadCrumbs.pop(); //remove last folder
+			breadCrumbsString = breadCrumbs.join("/");
+			folderListFromBreadCrumbs();
+
+			setCookie('breadCrumbs', JSON.stringify(breadCrumbs), 7);
+			showEditor = false;
+			console.log("handleEdit parent", folderList, breadCrumbs)
+		} else if (editableFile.isFile) { //if file
+			try {
+				const response = await fetch('/rest/file/' + editableFile.path, {
+						method: 'GET',
+					headers: {'Content-Type': 'text/plain'}
+				});
+				editableFile.contents = await response.text();
+			} catch (error) {
+				console.error('Error:', error);
+			}
+			console.log("handleEdit file", editableFile.contents)
+
+			showEditor = false; await tick(); showEditor = true; //Trigger reactivity
+		} else { //if folder, go to folder
+			breadCrumbs.push(editableFile.name);
+			breadCrumbsString = breadCrumbs.join("/");
+			setCookie('breadCrumbs', JSON.stringify(breadCrumbs), 7);
+			// folderList = [folderList[index], ...editableFile.files];
+			folderListFromBreadCrumbs();
+			// showEditor = true; await tick(); //wait for reactivity, not needed here
+			showEditor = false;
+
+			console.log("handleEdit go to folder", folderList, breadCrumbs)
 		}
 	}
 
 	function confirmDelete(index: number) {
 		openModal(ConfirmDialog, {
 			title: 'Delete item',
-			message: 'Are you sure you want to delete ' + itemsList[index].name + '?',
+			message: 'Are you sure you want to delete ' + folderList[index].name + '?',
 			labels: {
 				cancel: { label: 'Cancel', icon: Cancel },
 				confirm: { label: 'Delete', icon: Delete }
 			},
 			onConfirm: () => {
 				// Check if item is currently been edited and delete as well
-				if (itemsList[index].name === editableItem.name) {
-					addItem();
+				if (folderList[index].name === editableFile.name) {
+					// addFile();
 				}
-				// Remove item from array
-				itemsList.splice(index, 1);
-				itemsList = [...itemsList]; //Trigger reactivity
+
+				//update filesState
+				let response:any = {};
+				response.deletes = [];
+				response.deletes.push(folderList[index]);
+				console.log("confirmDelete", response)
+				//send the new itemstate to server
+				postFilesState(response);
+
 				showEditor = false;
 				closeModal();
 			}
@@ -169,30 +248,69 @@
 	}
 
 	function checkItemList() {
-		if (itemsList.length >= 10) {
-			openModal(InfoDialog, {
-				title: 'Reached Maximum items',
-				message:
-					'You have reached the maximum number of items. Please delete one to add another.',
-				dismiss: { label: 'OK', icon: Check },
-				onDismiss: () => {
-					closeModal();
-				}
-			});
-			return false;
-		} else {
-			return true;
-		}
+		return true;
 	}
 
-	function onDrop({ detail: { from, to } }: CustomEvent<DropEvent>) {
-		if (!to || from === to) {
-			return;
-		}
+	function uploadFile(event: any) {
+		let fileNode = event.target;
+        let file = fileNode.files[0]; // the first file uploaded (multiple files not supported yet)
+		// console.log("uploadFile", event, file)
+		if (file) {
+			// let fileContents: string | ArrayBuffer | null = null;
 
-		itemsList = reorder(itemsList, from.index, to.index);
-		console.log(itemsList);
+            const reader = new FileReader();
+			reader.onload = async (e) => {
+				const contents = e.target?.result;
+				editableFile.name = file.name;
+				editableFile.contents = typeof contents === 'string' ? contents : '';			
+
+				showEditor = false; await tick(); showEditor = true; //Trigger reactivity (folderList = [...folderList]; is not doing it)
+				console.log("uploadFileWithText", editableFile.contents)
+			};
+            reader.readAsText(file);
+        }
 	}
+
+	onMount(() => {
+		socket.on<FilesState>('files', (data) => {
+			console.log("socket update received");
+			filesState = data;
+			folderListFromBreadCrumbs();
+			// dataLoaded = true;
+		});
+		// getState(); //done in settingscard
+	});
+
+	onDestroy(() => socket.off('files'));
+
+	//uitility function...
+	function setCookie(name: string, value: string, days: number) {
+		let expires = "";
+		if (days) {
+			const date = new Date();
+			date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+			expires = "; expires=" + date.toUTCString();
+		}
+		document.cookie = name + "=" + (value || "") + expires + "; path=/";
+	}
+
+	//uitility funtcion...
+	function getCookie(name: string) {
+		const nameEQ = name + "=";
+		const ca = document.cookie.split(';');
+		for (let i = 0; i < ca.length; i++) {
+			let c = ca[i];
+			while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+			if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+		}
+		return null;
+	}
+
+	//uitility function...
+	function eraseCookie(name: string) {
+		document.cookie = name + '=; Max-Age=-99999999;';
+	}
+
 </script>
 
 <SettingsCard collapsible={false}>
@@ -204,7 +322,7 @@
 	{#if !$page.data.features.security || $user.admin}
 		<div class="bg-base-200 shadow-lg relative grid w-full max-w-2xl self-center overflow-hidden">
 			<div class="h-16 flex w-full items-center justify-between space-x-3 p-0 text-xl font-medium">
-				Files (/config)
+				Files /{breadCrumbsString}
 			</div>
 			{#await getState()}
 				<Spinner />
@@ -214,7 +332,18 @@
 						class="btn btn-primary text-primary-content btn-md absolute -top-14 right-16"
 						on:click={() => {
 							if (checkItemList()) {
-								addItem();
+								addFile();
+								showEditor = true;
+							}
+						}}
+					>
+						<Add class="h-6 w-6" /></button
+					>
+					<button
+						class="btn btn-primary text-primary-content btn-md absolute -top-14 right-1"
+						on:click={() => {
+							if (checkItemList()) {
+								addFolder();
 								showEditor = true;
 							}
 						}}
@@ -226,22 +355,35 @@
 						class="overflow-x-auto space-y-1"
 						transition:slide|local={{ duration: 300, easing: cubicOut }}
 					>
-						<DragDropList
-							id="files"
-							type={VerticalDropZone}
-							itemSize={60}
-							itemCount={itemsList.length}
-							on:drop={onDrop}
-							let:index
-						>
+						{#each folderList as item, index}
+
 							<!-- svelte-ignore a11y-click-events-have-key-events -->
 							<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
 								<div class="mask mask-hexagon bg-primary h-auto w-10 shrink-0">
-									<FilesIcon class="text-primary-content h-auto w-full scale-75" />
+									{#if item.isFile}
+										<FileIcon class="text-primary-content h-auto w-full scale-75" />
+									{:else}
+										<FolderIcon class="text-primary-content h-auto w-full scale-75" />
+									{/if}
 								</div>
 								<div>
-									<div class="font-bold">{itemsList[index].name}</div>
+									{#if breadCrumbs.length > 0 && item.name === breadCrumbs[breadCrumbs.length-1]}
+										<div>..</div>
+									{:else}
+										<div class="font-bold">{item.name}</div>
+										{#if item.isFile}
+											<div>{item.size/1000} kb {new Intl.DateTimeFormat('en-GB', {
+												dateStyle: 'short',
+												timeStyle: 'short',
+												timeZone: 'UTC'
+											}).format(item.time)}
+											</div>
+										{:else}
+											<div>{item.files.length} files/folders</div>
+										{/if}
+									{/if}
 								</div>
+								
 								{#if !$page.data.features.security || $user.admin}
 									<div class="flex-grow" />
 									<div class="space-x-0 px-0 mx-0">
@@ -253,18 +395,22 @@
 										>
 											<Edit class="h-6 w-6" /></button
 										>
-										<button
-											class="btn btn-ghost btn-sm"
-											on:click={() => {
-												confirmDelete(index);
-											}}
-										>
-											<Delete class="text-error h-6 w-6" />
-										</button>
+										{#if !(breadCrumbs.length > 0 && item.name === breadCrumbs[breadCrumbs.length-1])}
+											<button
+												class="btn btn-ghost btn-sm"
+												on:click={() => {
+													confirmDelete(index);
+												}}
+											>
+												<Delete class="text-error h-6 w-6" />
+											</button>
+										{:else}
+											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										{/if}
 									</div>
 								{/if}
 							</div>
-						</DragDropList>
+						{/each}
 					</div>
 				</div>
 
@@ -282,36 +428,47 @@
 						{#if showEditor}
 							<div class="divider my-0" />
 							<div class="h-16 flex w-full items-center justify-between space-x-3 p-0 text-xl font-medium">
-								Edit
+								{newItem ? 'Add ' + (editableFile.isFile?"file":"folder") : 'Edit ' + editableFile.name}
 							</div>
 
-								<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-									<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
-										<FilesIcon class="text-primary-content h-auto w-full scale-75" />
-									</div>
-									<div>
-										<div class="font-bold">File</div>
-										<div class="text-sm opacity-75">
-											{editableItem.path} {editableItem.size} 
-										</div>
-									</div>
-								</div>
-			
+							<div>
+								<Text
+									label="Name" 
+									bind:value={editableFile.name} 
+								></Text>
+								<label class="label" for="name">
+									<span class="label-text-alt text-error {formErrors.name ? '' : 'hidden'}"
+										>Name must be between 3 and 32 characters long</span
+									>
+								</label>
+							</div>
+							{#if editableFile.isFile}
 								<div>
 									<Textarea 
 										label="Contents" 
-										bind:value={editableItem.contents} 
-									></Textarea>
+										bind:value={editableFile.contents} 
+										onChange={(event) => {
+											editableFile.contents = event.target.value;
+										}}
+								></Textarea>
 								</div>
+								{#if newItem}
+									<div>
+										<File 
+											label="Upload" 
+											onChange={(event) => {
+												uploadFile(event);
+											}}
+										></File>
+									</div>
+								{/if}
+							{/if}
 						{/if}
 
 						<div class="divider mb-2 mt-0" />
 						<div class="mx-4 mb-4 flex flex-wrap justify-end gap-2">
 							<button class="btn btn-primary" type="submit" disabled={!showEditor}
-								>{newItem ? 'Add' : 'Update'}</button
-							>
-							<button class="btn btn-primary" type="button" on:click={validateItem}
-								>Apply</button
+								>Save</button
 							>
 						</div>
 					</form>

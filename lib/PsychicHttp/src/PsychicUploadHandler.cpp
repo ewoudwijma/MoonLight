@@ -98,6 +98,7 @@ esp_err_t PsychicUploadHandler::_basicUploadHandler(PsychicRequest *request)
     /* Receive the file part by part into a buffer */
     if ((received = httpd_req_recv(request->request(), buf, min(remaining, FILE_CHUNK_SIZE))) <= 0)
     {
+      ESP_LOGI(PH_TAG, "received : %d", received, HTTPD_SOCK_ERR_TIMEOUT);
       /* Retry if timeout occurred */
       if (received == HTTPD_SOCK_ERR_TIMEOUT)
         continue;
@@ -166,6 +167,7 @@ esp_err_t PsychicUploadHandler::_multipartUploadHandler(PsychicRequest *request)
     /* Receive the file part by part into a buffer */
     if ((received = httpd_req_recv(request->request(), buf, min(remaining, FILE_CHUNK_SIZE))) <= 0)
     {
+      ESP_LOGI(PH_TAG, "received : %d", received, HTTPD_SOCK_ERR_TIMEOUT);
       /* Retry if timeout occurred */
       if (received == HTTPD_SOCK_ERR_TIMEOUT)
         continue;

@@ -24,10 +24,10 @@
 	import { socket } from '$lib/stores/socket';
 	import type { StarState } from '$lib/types/models';
 
-	let itemState: EffectsState;
+	let effectsState: EffectsState;
 	let starState: StarState;
-	let itemsList: EffectsState[] = [];
-	let editableItem: EffectsState = {
+	let effectsList: EffectsState[] = [];
+	let editableEffect: EffectsState = {
 		name: '',
 		effect: -1,
 		projection: -1,
@@ -54,10 +54,10 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			itemState = await response.json();
-			console.log("itemState", itemState);
-			if (itemState.nodes) //sometimes error null...
-				itemsList = itemState.nodes;
+			effectsState = await response.json();
+			console.log("effectsState", effectsState);
+			if (effectsState.nodes) //sometimes error null...
+				effectsList = effectsState.nodes;
 			dataLoaded = true;
 		} catch (error) {
 			console.error('Error:', error);
@@ -77,10 +77,10 @@
 		} catch (error) {
 			console.error('Error:', error);
 		}
-		return itemState;
+		return effectsState;
 	}
 
-	async function postSettings(data: EffectsState) {
+	async function postEffectsState(data: EffectsState) {
 		try {
 			const response = await fetch('/rest/effectsState', {
 				method: 'POST',
@@ -92,7 +92,7 @@
 			});
 			if (response.status == 200) {
 				notifications.success('Settings updated.', 3000);
-				itemState = await response.json();
+				effectsState = await response.json();
 			} else {
 				notifications.error('User not authorized.', 3000);
 			}
@@ -102,15 +102,15 @@
 	}
 
 	function validateItem() {
-		if (itemState.name.length < 3 || itemState.name.length > 32) {
+		if (effectsState.name.length < 3 || effectsState.name.length > 32) {
 			formErrorFilename = true;
 		} else {
 			formErrorFilename = false;
-			// Update global itemState object
-			itemState.nodes = itemsList;
+			// Update global effectsState object
+			effectsState.nodes = effectsList;
 			// Post to REST API
-			postSettings(itemState);
-			console.log(itemState);
+			postEffectsState(effectsState);
+			console.log(effectsState);
 		}
 	}
 
@@ -118,7 +118,7 @@
 		let valid = true;
 
 		// Validate Name
-		if (editableItem.name.length < 3 || editableItem.name.length > 32) {
+		if (editableEffect.name.length < 3 || editableEffect.name.length > 32) {
 			valid = false;
 			formErrors.name = true;
 		} else {
@@ -128,19 +128,19 @@
 		// Submit JSON to REST API
 		if (valid) {
 			if (newItem) {
-				itemsList.push(editableItem);
+				effectsList.push(editableEffect);
 			} else {
-				itemsList.splice(itemsList.indexOf(editableItem), 1, editableItem);
+				effectsList.splice(effectsList.indexOf(editableEffect), 1, editableEffect);
 			}
 			addItem();
-			itemsList = [...itemsList]; //Trigger reactivity
+			effectsList = [...effectsList]; //Trigger reactivity
 			showEditor = false;
 		}
 	}
 
 	function addItem() {
 		newItem = true;
-		editableItem = {
+		editableEffect = {
 			name: '',
 			effect: -1,
 			projection: -1,
@@ -151,25 +151,25 @@
 	function handleEdit(index: number) {
 		newItem = false;
 		showEditor = true;
-		editableItem = itemsList[index];
+		editableEffect = effectsList[index];
 	}
 
 	function confirmDelete(index: number) {
 		openModal(ConfirmDialog, {
 			title: 'Delete item',
-			message: 'Are you sure you want to delete ' + itemsList[index].name + '?',
+			message: 'Are you sure you want to delete ' + effectsList[index].name + '?',
 			labels: {
 				cancel: { label: 'Cancel', icon: Cancel },
 				confirm: { label: 'Delete', icon: Delete }
 			},
 			onConfirm: () => {
 				// Check if item is currently been edited and delete as well
-				if (itemsList[index].name === editableItem.name) {
+				if (effectsList[index].name === editableEffect.name) {
 					addItem();
 				}
 				// Remove item from array
-				itemsList.splice(index, 1);
-				itemsList = [...itemsList]; //Trigger reactivity
+				effectsList.splice(index, 1);
+				effectsList = [...effectsList]; //Trigger reactivity
 				showEditor = false;
 				closeModal();
 			}
@@ -177,7 +177,7 @@
 	}
 
 	function checkItemList() {
-		if (itemsList.length >= 10) {
+		if (effectsList.length >= 10) {
 			openModal(InfoDialog, {
 				title: 'Reached Maximum items',
 				message:
@@ -198,13 +198,13 @@
 			return;
 		}
 
-		itemsList = reorder(itemsList, from.index, to.index);
-		console.log(itemsList);
+		effectsList = reorder(effectsList, from.index, to.index);
+		console.log(effectsList);
 	}
 
 	onMount(() => {
 		socket.on<EffectsState>('effects', (data) => {
-			itemState = data;
+			effectsState = data;
 			dataLoaded = true;
 		});
 		socket.on<StarState>('stars', (data) => {
@@ -221,9 +221,9 @@
 	});
 
 	function sendSocket() {
-		console.log("sendSocket", itemState);
+		console.log("sendSocket", effectsState);
 		if (dataLoaded) 
-			socket.sendEvent('effects', itemState)
+			socket.sendEvent('effects', effectsState)
 	}
 
 </script>
@@ -240,14 +240,14 @@
 				<Spinner />
 			{:then nothing}
 				<div>
-					<Select label="Effect" bind:value={itemState.effect} onChange={sendSocket}>
+					<Select label="Effect" bind:value={effectsState.effect} onChange={sendSocket}>
 						{#each starState.effects as effect, i}
 							<option value={i}>
 								{effect}
 							</option>
 						{/each}
 					</Select>
-					<Select label="Projection" bind:value={itemState.projection} onChange={sendSocket}>
+					<Select label="Projection" bind:value={effectsState.projection} onChange={sendSocket}>
 						{#each starState.projections as projection, i}
 							<option value={i}>
 								{projection}
@@ -280,7 +280,7 @@
 							id="effects"
 							type={VerticalDropZone}
 							itemSize={60}
-							itemCount={itemsList.length}
+							itemCount={effectsList.length}
 							on:drop={onDrop}
 							let:index
 						>
@@ -290,7 +290,7 @@
 									<EffectsIcon class="text-primary-content h-auto w-full scale-75" />
 								</div>
 								<div>
-									<div class="font-bold">{itemsList[index].name}</div>
+									<div class="font-bold">{effectsList[index].name}</div>
 								</div>
 								{#if !$page.data.features.security || $user.admin}
 									<div class="flex-grow" />
@@ -347,7 +347,7 @@
 										class="input input-bordered invalid:border-error w-full invalid:border-2 {formErrors.name
 											? 'border-error border-2'
 											: ''}"
-										bind:value={editableItem.name}
+										bind:value={editableEffect.name}
 										id="name"
 										min="2"
 										max="32"
@@ -360,7 +360,7 @@
 									</label>
 								</div>
 								<div>
-									<Select label="Source" bind:value={editableItem.effect} onChange={()=>{}}>
+									<Select label="Source" bind:value={editableEffect.effect} onChange={()=>{}}>
 										{#each starState.projections as projection, i}
 											<option value={i}>
 												{projection}

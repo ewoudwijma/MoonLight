@@ -7,7 +7,8 @@
  *
  *   Copyright (C) 2018 - 2023 rjwats
  *   Copyright (C) 2023 - 2024 theelims
- *file
+ *   Copyright (C) 2025 - 2025 ewowi
+ *
  *   All Rights Reserved. This software may be modified and distributed under
  *   the terms of the LGPL v3 license. See the LICENSE file for details.
  **/

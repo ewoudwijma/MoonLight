@@ -26,6 +26,82 @@
 	let temperatureChartElement: HTMLCanvasElement;
 	let temperatureChart: Chart;
 
+	function initPsramChart() {
+		psramChart = new Chart(psramChartElement, {
+			type: 'line',
+			data: {
+				labels: $analytics.uptime,
+				datasets: [
+					{
+						label: 'Total PSRAM',
+						borderColor: daisyColor('--p'),
+						backgroundColor: daisyColor('--p', 50),
+						borderWidth: 2,
+						data: $analytics.psram_size,
+						yAxisID: 'y'
+					},
+					{
+						label: 'Used PSRAM',
+						borderColor: daisyColor('--s'),
+						backgroundColor: daisyColor('--s', 50),
+						borderWidth: 2,
+						data: $analytics.used_psram,
+						yAxisID: 'y'
+					}
+				]
+			},
+			options: {
+				maintainAspectRatio: false,
+				responsive: true,
+				plugins: {
+					legend: {
+						display: true
+					},
+					tooltip: {
+						mode: 'index',
+						intersect: false
+					}
+				},
+				elements: {
+					point: {
+						radius: 1
+					}
+				},
+				scales: {
+					x: {
+						grid: {
+							color: daisyColor('--bc', 10)
+						},
+						ticks: {
+							color: daisyColor('--bc')
+						},
+						display: false
+					},
+					y: {
+						type: 'linear',
+						title: {
+							display: true,
+							text: 'PSRAM [kb]',
+							color: daisyColor('--bc'),
+							font: {
+								size: 16,
+								weight: 'bold'
+							}
+						},
+						position: 'left',
+						min: 0,
+						max: Math.round($analytics.psram_size[0]),
+						grid: { color: daisyColor('--bc', 10) },
+						ticks: {
+							color: daisyColor('--bc')
+						},
+						border: { color: daisyColor('--bc', 10) }
+					}
+				}
+			}
+		});
+	} //initPsramChart
+	
 	onMount(() => {
 		cpuChart = new Chart(cpuChartElement, {
 			type: 'line',
@@ -172,83 +248,7 @@
 					}
 				}
 			}
-		}); //heapChart
-		// psramFound
-		if ($analytics.psram_size[0]) {
-			psramChart = new Chart(psramChartElement, {
-				type: 'line',
-				data: {
-					labels: $analytics.uptime,
-					datasets: [
-						{
-							label: 'Total PSRAM',
-							borderColor: daisyColor('--p'),
-							backgroundColor: daisyColor('--p', 50),
-							borderWidth: 2,
-							data: $analytics.psram_size,
-							yAxisID: 'y'
-						},
-						{
-							label: 'Used PSRAM',
-							borderColor: daisyColor('--s'),
-							backgroundColor: daisyColor('--s', 50),
-							borderWidth: 2,
-							data: $analytics.used_psram,
-							yAxisID: 'y'
-						}
-					]
-				},
-				options: {
-					maintainAspectRatio: false,
-					responsive: true,
-					plugins: {
-						legend: {
-							display: true
-						},
-						tooltip: {
-							mode: 'index',
-							intersect: false
-						}
-					},
-					elements: {
-						point: {
-							radius: 1
-						}
-					},
-					scales: {
-						x: {
-							grid: {
-								color: daisyColor('--bc', 10)
-							},
-							ticks: {
-								color: daisyColor('--bc')
-							},
-							display: false
-						},
-						y: {
-							type: 'linear',
-							title: {
-								display: true,
-								text: 'PSRAM [kb]',
-								color: daisyColor('--bc'),
-								font: {
-									size: 16,
-									weight: 'bold'
-								}
-							},
-							position: 'left',
-							min: 0,
-							max: Math.round($analytics.psram_size[0]),
-							grid: { color: daisyColor('--bc', 10) },
-							ticks: {
-								color: daisyColor('--bc')
-							},
-							border: { color: daisyColor('--bc', 10) }
-						}
-					}
-				}
-			});//psram chart
-		}
+		});
 		filesystemChart = new Chart(filesystemChartElement, {
 			type: 'line',
 			data: {
@@ -397,11 +397,16 @@
 
 		// psramFound
 		if ($analytics.psram_size[0]) {
+
+			if (!psramChart) { //init in updateData instead of onMount as psram needs to init first before data is received
+				initPsramChart();
+			}
+
 			psramChart.data.labels = $analytics.uptime;
 			psramChart.data.datasets[0].data = $analytics.psram_size;
 			psramChart.data.datasets[1].data = $analytics.used_psram;
 			psramChart.update('none');
-		}
+		} //psram chart
 
 		filesystemChart.data.labels = $analytics.uptime;
 		filesystemChart.data.datasets[0].data = $analytics.fs_used;
