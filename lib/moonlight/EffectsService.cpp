@@ -48,9 +48,8 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
 
         Variable("layers", "effect").setValue(state.effect, 0);
         Variable("layers", "effect").setValue(state.effect, 0); //twice to init var["value"]correctly - workaround !!!
-
-        Variable("Model", "saveModel").setValue(true);
     }
+
     if (state.projection != root["projection"]) {
         state.projection = root["projection"]; changed = true;
 

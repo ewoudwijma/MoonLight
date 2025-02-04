@@ -162,12 +162,14 @@ export type FilesState = {
 export type StarState = {
 	effects: string[];
 	projections: string[];
+	fixtures: string[];
 };
 
 export type FixtureState = {
 	name: string;
 	lightsOn:boolean;
 	brightness: number;
+	fixture: number;
 	width: number;
 	height: number;
 	depth: number;

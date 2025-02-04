@@ -21,8 +21,10 @@
 
 void FixtureState::read(FixtureState &state, JsonObject &root)
 {
+    ppf("FixtureState::read\n");
     root["lightsOn"] = state.lightsOn;
-    root["brightness"] = state.brightness;
+    root["brightness"] = state.brightness = Variable("Fixture", "brightness").getValue();
+    root["fixture"] = state.fixture;
     root["width"] = state.width;
     root["height"] = state.height;
     root["depth"] = state.depth;
@@ -49,6 +51,16 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
 
         Serial.printf("Fixture.brightness.update %d\n", state.brightness);
     }
+    if (state.fixture != root["fixture"]) {
+        state.fixture = root["fixture"]; changed = true;
+
+        ppf("Fixture.fixture.update task: %s", pcTaskGetTaskName(nullptr));
+        ppf(" e:%d\n", state.fixture);
+
+        Variable("Fixture", "fixture").setValue(state.fixture);
+        Variable("Fixture", "fixture").setValue(state.fixture); //twice to init var["value"]correctly - workaround !!!
+    }
+
     if (state.width != root["width"]) {
         state.width = root["width"]; changed = true;
         sizeChanged = true;
@@ -81,15 +93,20 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
         Serial.printf("FixtureState::sizeChanged %dx%dx%d\n", state.width, state.height, state.depth);
 
         if (state.width > 0 && state.height > 0 && state.depth > 0) {
-            fix->fixSize.x = state.width;
-            fix->fixSize.y = state.height;
-            fix->fixSize.z = state.depth;
+            // Coord3D fixSize = {state.width, state.height, state.depth};
+            // Variable("Fixture", "fixture").setValue(fixSize);
+
+            // fix->fixSize.x = state.width;
+            // fix->fixSize.y = state.height;
+            // fix->fixSize.z = state.depth;
         }
     }
 
     if (sizeChanged || pinChanged) {
         fix->mappingStatus = 1; // ask starlight to recalculate mapping (including pins)
     }
+    if (changed)
+        Variable("Model", "saveModel").setValue(true);
 
     return changed?StateUpdateResult::CHANGED:StateUpdateResult::UNCHANGED;
 }

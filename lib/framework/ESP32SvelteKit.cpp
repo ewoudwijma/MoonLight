@@ -273,11 +273,10 @@ void ESP32SvelteKit::_loop()
             _analyticsService.loopsPerSecond = loopsPerSecond;
             // _systemStatus.cpuPerc = _analyticsService.cpuPerc;
             // _systemStatus.loopsPerSecond = _analyticsService.loopsPerSecond;
-            Serial.printf("Cycles: %d - %d / %d -> %d lps:%d\n", cycles/1000000, cyclesPerSecond/1000000, ESP.getCpuFreqMHz(), _analyticsService.cpuPerc, _analyticsService.loopsPerSecond);
+            // Serial.printf("Cycles: %d - %d / %d -> %d lps:%d\n", cycles/1000000, cyclesPerSecond/1000000, ESP.getCpuFreqMHz(), _analyticsService.cpuPerc, _analyticsService.loopsPerSecond);
 
             cyclesPerSecond = 0;
             loopsPerSecond = 0;
-
         }
 
         vTaskDelay(1 / portTICK_PERIOD_MS); // feed the watchdog (this sets the loop to a max of 1000 loops per second!), otherwise 10000 fps measured (but watchdog crash)

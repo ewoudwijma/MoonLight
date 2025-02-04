@@ -17,21 +17,17 @@
 
 #include "Sys/SysModModel.h"
 
+#include "ESPFS.h"
+
 void StarState::read(StarState &settings, JsonObject &root)
 {
+    root["fixtures"] = Variable("Fixture", "fixture").getOptions();
     root["effects"] = Variable("layers", "effect").getOptions();
     root["projections"] = Variable("layers", "projection").getOptions();
 }
 
 StateUpdateResult StarState::update(JsonObject &root, StarState &state)
 {
-    //this must be changed to make it files specific
-    boolean newState = root["xxx"];
-    if (state.filesOn != newState)
-    {
-        state.filesOn = newState;
-        return StateUpdateResult::CHANGED;
-    }
     return StateUpdateResult::UNCHANGED;
 }
 
@@ -70,6 +66,37 @@ void StarService::begin()
     _httpEndpoint.begin();
     _eventEndpoint.begin();
     onConfigUpdated();
+
+    _server->on("/rest/fixdef", HTTP_GET, [&](PsychicRequest *request) {
+        PsychicJsonResponse response = PsychicJsonResponse(request, false);
+        JsonObject root = response.getRoot();
+
+        //get filenames
+        JsonDocument doc;
+        doc["fixtures"] = Variable("Fixture", "fixture").getOptions();
+        JsonArray fixArray = doc["fixtures"].as<JsonArray>();
+
+        //get file name from request file index
+        StarString path;
+        path = "/";
+        int index = request->getParam("f")->value().toInt();
+        ppf("fixdef index %d\n", index);
+        if (index >= 0 && index < fixArray.size()) {
+            path += fixArray[index];
+
+            File file = ESPFS.open(path.getString(), "r");
+            root["contents"] = file.readString();
+            file.close();
+
+            ppf("fixdef url %s %s\n", request->url().c_str(), request->uri().c_str());
+        }
+
+        // createJSON(root);
+        return response.send(); 
+    });
+
+    ESP_LOGV("FeaturesService", "Registered GET endpoint: %s", FEATURES_SERVICE_PATH);
+
 
 }
 

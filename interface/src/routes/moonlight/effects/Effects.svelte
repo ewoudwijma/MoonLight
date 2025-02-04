@@ -25,7 +25,9 @@
 	import type { StarState } from '$lib/types/models';
 
 	let effectsState: EffectsState;
+	let dataLoaded = false;
 	let starState: StarState;
+	let starLoaded = false;
 	let effectsList: EffectsState[] = [];
 	let editableEffect: EffectsState = {
 		name: '',
@@ -42,9 +44,6 @@
 	};
 	let formErrorFilename = false;
 
-	let dataLoaded = false;
-	let starLoaded = false;
-
 	async function getState() {
 		try {
 			const response = await fetch('/rest/effectsState', {
@@ -55,7 +54,7 @@
 				}
 			});
 			effectsState = await response.json();
-			console.log("effectsState", effectsState);
+			console.log("getState Effects.effectsState", effectsState);
 			if (effectsState.nodes) //sometimes error null...
 				effectsList = effectsState.nodes;
 			dataLoaded = true;
@@ -72,7 +71,7 @@
 				}
 			});
 			starState = await response.json();
-			console.log("starState", starState);
+			console.log("getState Effects.starState", starState);
 			starLoaded = true;
 		} catch (error) {
 			console.error('Error:', error);
@@ -202,26 +201,32 @@
 		console.log(effectsList);
 	}
 
+	const handleEffectsState = (data: EffectsState) => {
+		effectsState = data;
+		console.log("socket.on Effects.effects", data);
+		dataLoaded = true;
+	};
+	const handleStarState = (data: StarState) => {
+		console.log("socket.on Effects.star", data);
+		starState = data;
+		starLoaded = true;
+	};
+
 	onMount(() => {
-		socket.on<EffectsState>('effects', (data) => {
-			effectsState = data;
-			dataLoaded = true;
-		});
-		socket.on<StarState>('stars', (data) => {
-			console.log("star", data);
-			starState = data;
-			starLoaded = true;
-		});
+		console.log("onMount Effects");
+		socket.on("effects", handleEffectsState);
+		socket.on("stars", handleStarState);
 		// getState(); //done in settingscard
 	});
 
 	onDestroy(() => {
-		socket.off("effects");
-		socket.off("stars");
+		console.log("onDestroy Effects");
+		socket.off("effects", handleEffectsState);
+		socket.off("stars", handleStarState);
 	});
 
 	function sendSocket() {
-		console.log("sendSocket", effectsState);
+		console.log("sendSocket Effects.effects", effectsState);
 		if (dataLoaded) 
 			socket.sendEvent('effects', effectsState)
 	}

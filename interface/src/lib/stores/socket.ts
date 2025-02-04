@@ -6,8 +6,8 @@ function createWebSocket() {
 	const { subscribe, set } = writable(false);
 	const socketEvents = ['open', 'close', 'error', 'message', 'unresponsive'] as const;
 	type SocketEvent = (typeof socketEvents)[number];
-	let unresponsiveTimeoutId: number;
-	let reconnectTimeoutId: number;
+	let unresponsiveTimeoutId:  NodeJS.Timeout;
+	let reconnectTimeoutId:  NodeJS.Timeout;
 	let ws: WebSocket;
 	let socketUrl: string | URL;
 	let event_use_json = false;
@@ -52,7 +52,7 @@ function createWebSocket() {
 				return;
 			}
 			listeners.get('json')?.forEach((listener) => listener(payload));
-			const { event, data } = payload;
+			const { event, data } = payload; //no event if monitor data
 			if (event) listeners.get(event)?.forEach((listener) => listener(data));
 			else listeners.get("monitor")?.forEach((listener) => listener(new Uint8Array(message.data))); //if no event, assume monitor data (see emitEvent char * output)
 		};

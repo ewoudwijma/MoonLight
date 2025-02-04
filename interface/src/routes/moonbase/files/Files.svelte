@@ -63,7 +63,7 @@
 				}
 			});
 			filesState = await response.json();
-			console.log("filesState", filesState);
+			// console.log("filesState", filesState);
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -178,7 +178,7 @@
 				return;
 			}
 		}
-		console.log("folderListFromBreadCrumbs", filesState, breadCrumbs, folderList)
+		// console.log("folderListFromBreadCrumbs", filesState, breadCrumbs, folderList)
 	}
 
 	async function handleEdit(index: number) {
@@ -271,17 +271,19 @@
         }
 	}
 
+	const handleFilesState = (data: FilesState) => {
+		console.log("socket update received");
+		filesState = data;
+		folderListFromBreadCrumbs();
+		// dataLoaded = true;
+	};
+
 	onMount(() => {
-		socket.on<FilesState>('files', (data) => {
-			console.log("socket update received");
-			filesState = data;
-			folderListFromBreadCrumbs();
-			// dataLoaded = true;
-		});
+		socket.on('files', handleFilesState);
 		// getState(); //done in settingscard
 	});
 
-	onDestroy(() => socket.off('files'));
+	onDestroy(() => socket.off('files', handleFilesState));
 
 	//uitility function...
 	function setCookie(name: string, value: string, days: number) {
@@ -401,6 +403,7 @@
 												on:click={() => {
 													confirmDelete(index);
 												}}
+												disabled={item.files && item.files.length>0}
 											>
 												<Delete class="text-error h-6 w-6" />
 											</button>

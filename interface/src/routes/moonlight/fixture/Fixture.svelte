@@ -11,12 +11,15 @@
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import Number from '$lib/components/Number.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
+	import Select from '$lib/components/Select.svelte';
+	import type { StarState } from '$lib/types/models';
 
 	let fixtureState: FixtureState;
-
 	//fixtureState is now via socket and not rest api ...
 	let dataLoaded = false;
-	
+	let starState: StarState;
+	let starLoaded = false;
+
 	async function getState() {
 		try {
 			const response = await fetch('/rest/fixtureState', {
@@ -27,26 +30,49 @@
 				}
 			});
 			fixtureState = await response.json();
+			console.log("getState Fixture.fixtureState", fixtureState);
 			dataLoaded = true;
+		} catch (error) {
+			console.error('Error:', error);
+		}
+		try {
+			const response = await fetch('/rest/starState', {
+				method: 'GET',
+				headers: {
+					Authorization: $page.data.features.security ? 'Bearer ' + $user.bearer_token : 'Basic',
+					'Content-Type': 'application/json'
+				}
+			});
+			starState = await response.json();
+			console.log("getState Fixture.starState", starState);
+			starLoaded = true;
 		} catch (error) {
 			console.error('Error:', error);
 		}
 		return;
 	}
 
+	const handleFixtureState = (data: FixtureState) => {
+		console.log("socket.on Fixture.fixture", data);
+		fixtureState = data;
+		dataLoaded = true;
+	};
+
 	onMount(() => {
-		socket.on<FixtureState>('fixture', (data) => {
-			fixtureState = data;
-			dataLoaded = true;
-		});
+		console.log("onMount Fixture");
+		socket.on("fixture", handleFixtureState);
 		// getState(); //done in settingscard
 	});
 
-	onDestroy(() => socket.off('fixture'));
+	onDestroy(() => {
+		console.log("onDestroy Fixture");
+		socket.off("fixture", handleFixtureState);
+	});
 
 	function sendSocket() {
+		console.log("sendSocket Fixture.fixture", fixtureState);
 		if (dataLoaded) 
-			socket.sendEvent('fixture', fixtureState)
+			socket.sendEvent("fixture", fixtureState)
 	}
 
 	async function postFixtureState() {
@@ -91,6 +117,13 @@
 			step={1}
 			onChange={sendSocket}
 		></Slider>
+		<Select label="Fixture" bind:value={fixtureState.fixture} onChange={sendSocket}>
+			{#each starState.fixtures as fixture, i}
+				<option value={i}>
+					{fixture}
+				</option>
+			{/each}
+		</Select>
 		<Number 
 			label="Width" 
 			bind:value={fixtureState.width} 
