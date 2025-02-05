@@ -53,11 +53,8 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			effectsState = await response.json();
-			console.log("getState Effects.effectsState", effectsState);
-			if (effectsState.nodes) //sometimes error null...
-				effectsList = effectsState.nodes;
-			dataLoaded = true;
+			console.log("getState Effects.effectsState");
+			handleEffectsState(await response.json());
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -70,9 +67,8 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			starState = await response.json();
-			console.log("getState Effects.starState", starState);
-			starLoaded = true;
+			console.log("getState Effects.starState");
+			handleStarState(await response.json());
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -203,11 +199,13 @@
 
 	const handleEffectsState = (data: EffectsState) => {
 		effectsState = data;
-		console.log("socket.on Effects.effects", data);
+		if (effectsState.nodes) //sometimes error null...
+			effectsList = effectsState.nodes;
+		console.log("Effects.handleEffectsState", data);
 		dataLoaded = true;
 	};
 	const handleStarState = (data: StarState) => {
-		console.log("socket.on Effects.star", data);
+		console.log("Effects.handleStarState", data);
 		starState = data;
 		starLoaded = true;
 	};
@@ -215,14 +213,14 @@
 	onMount(() => {
 		console.log("onMount Effects");
 		socket.on("effects", handleEffectsState);
-		socket.on("stars", handleStarState);
+		// socket.on("stars", handleStarState); //no updates of effect and projection expected
 		// getState(); //done in settingscard
 	});
 
 	onDestroy(() => {
 		console.log("onDestroy Effects");
 		socket.off("effects", handleEffectsState);
-		socket.off("stars", handleStarState);
+		// socket.off("stars", handleStarState);
 	});
 
 	function sendSocket() {

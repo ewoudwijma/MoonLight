@@ -166,6 +166,6 @@ void FixtureService::onConfigUpdated()
 void FixtureService::loop50ms()
 {
     if (_state.monitorOn)
-        _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, min(_state.width*_state.height*_state.depth, STARLIGHT_MAXLEDS) * sizeof(CRGB));
+        _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, min(fix->fixSize.x * fix->fixSize.y * fix->fixSize.z, STARLIGHT_MAXLEDS) * sizeof(CRGB));
     //ran by httpd, is that okay or better to run in other task?
 }

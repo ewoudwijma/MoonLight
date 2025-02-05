@@ -17,12 +17,12 @@
 	let done = false; //temp to show one instance of monitor data receiced
 
 	const handleFixtureState = (data: FixtureState) => {
-		console.log("socket.on Monitor.fixture", data.fixture, fixtureState.fixture);
+		console.log("Monitor.handleFixtureState", data.fixture, fixtureState.fixture);
 
 		//check if fixture has changed
 		if (data.fixture != fixture) {
 			//rest api fixture definition
-			console.log("socket.on Monitor new fixture", data.fixture);
+			// console.log("Monitor.handleFixtureState", data.fixture);
 			//get data of fixture
 			const loadFixtureDefinition = async () => {
 				// try {
@@ -33,7 +33,7 @@
 						}
 					});
 					let fixtureDefinitionState = await response.json();
-					console.log("socket.on Monitor fixdef", fixtureDefinitionState);
+					console.log("Monitor.handleFixtureState", fixtureDefinitionState, socket);
 					if (fixtureDefinitionState.contents) {
 
 						fixtureDefinitionState = JSON.parse(fixtureDefinitionState.contents);
@@ -90,24 +90,12 @@
 
 	const handleMonitor = (data: Uint8Array) => {
 		if (!done)
-			console.log("socket.on Monitor.monitor", data);
+			console.log("Monitor.handleMonitor", data);
 
-		let index2:any = 0	
-		for (let x = 0; x < width; x++) {
-			for (let y = 0; y < height; y++) {
-				for (let z = 0; z < depth; z++) {
-					let index = x + y * width + z * width * height;
-
-					// if (!done) console.log("rgb", data[index2], data[index2+1], data[index2+2]);
-
-					if (index2+2 < data.length)
-						colorLed(index, data[index2]/255, data[index2+1]/255, data[index2+2]/255);
-					else
-						colorLed(index, 0,0,0);
-					index2 += 3;
-				}
-			}
+		for (let index = 0; index < data.length; index +=3) {
+			colorLed(index/3, data[index]/255, data[index+1]/255, data[index+2]/255);
 		}
+
 		done = true;
 	};
 

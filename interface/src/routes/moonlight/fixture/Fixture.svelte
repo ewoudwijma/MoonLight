@@ -29,9 +29,8 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			fixtureState = await response.json();
-			console.log("getState Fixture.fixtureState", fixtureState);
-			dataLoaded = true;
+			console.log("getState Fixture.fixtureState");
+			handleFixtureState(await response.json());
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -43,9 +42,8 @@
 					'Content-Type': 'application/json'
 				}
 			});
-			starState = await response.json();
-			console.log("getState Fixture.starState", starState);
-			starLoaded = true;
+			console.log("getState Fixture.starState");
+			handleStarState(await response.json());
 		} catch (error) {
 			console.error('Error:', error);
 		}
@@ -53,10 +51,16 @@
 	}
 
 	const handleFixtureState = (data: FixtureState) => {
-		console.log("socket.on Fixture.fixture", data);
+		console.log("Fixture handleFixtureState", data);
 		fixtureState = data;
 		dataLoaded = true;
 	};
+	const handleStarState = (data: StarState) => {
+		console.log("Effects.handleStarState", data);
+		starState = data;
+		starLoaded = true;
+	};
+
 
 	onMount(() => {
 		console.log("onMount Fixture");
