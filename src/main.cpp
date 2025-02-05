@@ -17,6 +17,11 @@
 #include <LightStateService.h>
 #include <PsychicHttpServer.h>
 
+#include <StarService.h>
+#include <FilesService.h>
+#include <FixtureService.h>
+#include <EffectsService.h>
+
 #define SERIAL_BAUD_RATE 115200
 
 PsychicHttpServer server;
@@ -31,6 +36,11 @@ LightStateService lightStateService = LightStateService(&server,
                                                         &lightMqttSettingsService);
 
 
+StarService starService = StarService(&server, &esp32sveltekit);
+FilesService filesService = FilesService(&server, &esp32sveltekit);
+FixtureService fixtureService = FixtureService(&server, &esp32sveltekit);
+EffectsService effectsService = EffectsService(&server, &esp32sveltekit, &fixtureService);
+
 #include "mainStar.h"
 
 void setup()
@@ -44,6 +54,11 @@ void setup()
 
     // start ESP32-SvelteKit
     esp32sveltekit.begin();
+
+    starService.begin();
+    filesService.begin();
+    fixtureService.begin(); //before effectservice!
+    effectsService.begin();
 
     // load the initial light settings
     lightStateService.begin();
@@ -68,5 +83,17 @@ void loop()
     // Delete Arduino loop task, as it is not needed in this example
     // vTaskDelete(NULL);
 
+    uint32_t cycles = ESP.getCycleCount();
+    esp32sveltekit.loopsPerSecond++;
+
+    static int fiftyMsMillis = 0;
+    if (millis() - fiftyMsMillis >= 50) {
+        fiftyMsMillis = millis();
+
+        fixtureService.loop50ms();
+    }
+
     loopStar();
+
+    esp32sveltekit.cyclesPerSecond += (ESP.getCycleCount() - cycles); //add the new cycles to the total cpu time
 }

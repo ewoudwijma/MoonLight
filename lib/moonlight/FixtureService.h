@@ -22,6 +22,7 @@
 #include <WebSocketServer.h>
 #include <PsychicHttp.h>
 #include <FSPersistence.h>
+#include <ESP32SvelteKit.h>
 
 class FixtureState
 {
@@ -48,8 +49,7 @@ class FixtureService : public StatefulService<FixtureState>
 {
 public:
     FixtureService(PsychicHttpServer *server,
-                      EventSocket *socket,
-                      SecurityManager *securityManager, FS *fs);
+                      ESP32SvelteKit *sveltekit);
 
     void begin();
     void loop50ms();

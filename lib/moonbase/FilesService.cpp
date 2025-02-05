@@ -183,27 +183,26 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
 }
 
 FilesService::FilesService(PsychicHttpServer *server,
-                                     EventSocket *socket,
-                                     SecurityManager *securityManager) : _httpEndpoint(FilesState::read,
+                                     ESP32SvelteKit *sveltekit) : _httpEndpoint(FilesState::read,
                                                                                                          FilesState::update,
                                                                                                          this,
                                                                                                          server,
                                                                                                          "/rest/filesState",
-                                                                                                         securityManager,
+                                                                                                         sveltekit->getSecurityManager(),
                                                                                                          AuthenticationPredicates::IS_AUTHENTICATED),
                                                                                            _eventEndpoint(FilesState::read,
                                                                                                           FilesState::update,
                                                                                                           this,
-                                                                                                          socket,
+                                                                                                          sveltekit->getSocket(),
                                                                                                           "files"),
                                                                                            _webSocketServer(FilesState::read,
                                                                                                             FilesState::update,
                                                                                                             this,
                                                                                                             server,
                                                                                                             "/ws/filesState",
-                                                                                                            securityManager,
+                                                                                                            sveltekit->getSecurityManager(),
                                                                                                             AuthenticationPredicates::IS_AUTHENTICATED),
-                                                                                            _socket(socket),
+                                                                                            _socket(sveltekit->getSocket()),
                                                                                              _server(server)
 {
 

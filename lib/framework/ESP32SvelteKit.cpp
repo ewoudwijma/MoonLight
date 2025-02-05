@@ -53,11 +53,7 @@ ESP32SvelteKit::ESP32SvelteKit(PsychicHttpServer *server, unsigned int numberEnd
 #endif
                                                                                           _restartService(server, &_securitySettingsService),
                                                                                           _factoryResetService(server, &ESPFS, &_securitySettingsService),
-                                                                                          _systemStatus(server, &_securitySettingsService),
-                                                                                          _starService(server, &_socket, &_securitySettingsService),
-                                                                                          _filesService(server, &_socket, &_securitySettingsService),
-                                                                                          _fixtureService(server, &_socket, &_securitySettingsService, &ESPFS),
-                                                                                          _effectsService(server, &_socket, &_securitySettingsService, &ESPFS, &_fixtureService)
+                                                                                          _systemStatus(server, &_securitySettingsService)
 {
 }
 
@@ -85,9 +81,7 @@ void ESP32SvelteKit::begin()
                 response.setCode(200);
                 response.setContentType(contentType.c_str());
                 response.addHeader("Content-Encoding", "gzip");
-                // commented cache control to avoid caching (temp should be develop mode)
-                // response.addHeader("Cache-Control", "public, immutable, max-age=31536000");
-                // response.addHeader("Cache-Control", "public, immutable, max-age=300");
+                response.addHeader("Cache-Control", "public, immutable, max-age=31536000");
                 response.setContent(content, len);
                 return response.send();
             };
@@ -182,11 +176,6 @@ void ESP32SvelteKit::begin()
     _batteryService.begin();
 #endif
 
-    _starService.begin();
-    _filesService.begin();
-    _fixtureService.begin(); //before effectservice!
-    _effectsService.begin();
-
     // Start the loop task
     ESP_LOGV("ESP32SvelteKit", "Starting loop task");
     xTaskCreatePinnedToCore(
@@ -210,66 +199,52 @@ void ESP32SvelteKit::_loop()
     while (1)
     {
         uint32_t cycles = ESP.getCycleCount();
-        loopsPerSecond++;
+        // loopsPerSecond++; //comment here as it is also counted in the main loop
 
-        //every 20ms
-        if (millis() - twentyMsMillis >= 20) {
-            twentyMsMillis = millis();
+        _wifiSettingsService.loop(); // 30 seconds
+        _apSettingsService.loop();   // 10 seconds
+#if FT_ENABLED(FT_MQTT)
+        _mqttSettingsService.loop(); // 5 seconds
+#endif
+        // Query the connectivity status
+        wifi = _wifiStatus.isConnected();
+        ap = _apStatus.isActive();
+        event = _socket.getConnectedClients() > 0;
+#if FT_ENABLED(FT_MQTT)
+        mqtt = _mqttStatus.isConnected();
+#endif
 
-            _wifiSettingsService.loop(); // 30 seconds
-            _apSettingsService.loop();   // 10 seconds
-    #if FT_ENABLED(FT_MQTT)
-            _mqttSettingsService.loop(); // 5 seconds
-    #endif
-            // Query the connectivity status
-            wifi = _wifiStatus.isConnected();
-            ap = _apStatus.isActive();
-            event = _socket.getConnectedClients() > 0;
-    #if FT_ENABLED(FT_MQTT)
-            mqtt = _mqttStatus.isConnected();
-    #endif
-
-            // Update the system status
-            if (wifi && mqtt)
-            {
-                _connectionStatus = ConnectionStatus::STA_MQTT;
-            }
-            else if (wifi)
-            {
-                _connectionStatus = event ? ConnectionStatus::STA_CONNECTED : ConnectionStatus::STA;
-            }
-            else if (ap)
-            {
-                _connectionStatus = event ? ConnectionStatus::AP_CONNECTED : ConnectionStatus::AP;
-            }
-            else
-            {
-                _connectionStatus = ConnectionStatus::OFFLINE;
-            }
-
-            // iterate over all loop functions
-            for (auto &function : _loopFunctions)
-            {
-                function();
-            }
-
+        // Update the system status
+        if (wifi && mqtt)
+        {
+            _connectionStatus = ConnectionStatus::STA_MQTT;
+        }
+        else if (wifi)
+        {
+            _connectionStatus = event ? ConnectionStatus::STA_CONNECTED : ConnectionStatus::STA;
+        }
+        else if (ap)
+        {
+            _connectionStatus = event ? ConnectionStatus::AP_CONNECTED : ConnectionStatus::AP;
+        }
+        else
+        {
+            _connectionStatus = ConnectionStatus::OFFLINE;
         }
 
-        //every 50ms, 20 lps
-        if (millis() - fiftyMsMillis >= 50) {
-            fiftyMsMillis = millis();
-
-            _fixtureService.loop50ms();
+        // iterate over all loop functions
+        for (auto &function : _loopFunctions)
+        {
+            function();
         }
 
-        cycles =  (ESP.getCycleCount() - cycles); //add the new cycles (converted to ms) to the total cpu time
-        cyclesPerSecond += cycles;
+        cyclesPerSecond += (ESP.getCycleCount() - cycles); //add the new cycles to the total cpu time
 
-        //every second (add analytics here instead of a seperate task with its own stack ?)
-        if (millis() - oneSecondMillis >= 1000) {
-            oneSecondMillis = millis();
-
-            _analyticsService.cpuPerc = cyclesPerSecond / (ESP.getCpuFreqMHz() * 10000); //1 sec
+        static int lastTime = 0;
+        if (millis() - lastTime > 1000)
+        {
+            lastTime = millis();
+            _analyticsService.cpuPerc = cyclesPerSecond / (ESP.getCpuFreqMHz() * 10000); //(converted to ms) 1 sec
             _analyticsService.loopsPerSecond = loopsPerSecond;
             // _systemStatus.cpuPerc = _analyticsService.cpuPerc;
             // _systemStatus.loopsPerSecond = _analyticsService.loopsPerSecond;
@@ -278,9 +253,7 @@ void ESP32SvelteKit::_loop()
             cyclesPerSecond = 0;
             loopsPerSecond = 0;
         }
-
-        vTaskDelay(1 / portTICK_PERIOD_MS); // feed the watchdog (this sets the loop to a max of 1000 loops per second!), otherwise 10000 fps measured (but watchdog crash)
-        //can be removed if there is always enough to do in this loop
-
-    } //while 1
+#
+        vTaskDelay(20 / portTICK_PERIOD_MS);
+    }
 }

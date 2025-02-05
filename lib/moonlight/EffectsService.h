@@ -40,8 +40,7 @@ class EffectsService : public StatefulService<EffectsState>
 {
 public:
     EffectsService(PsychicHttpServer *server,
-                      EventSocket *socket,
-                      SecurityManager *securityManager, FS *fs, FixtureService *fixtureService);
+                      ESP32SvelteKit *sveltekit, FixtureService *fixtureService);
 
     void begin();
 

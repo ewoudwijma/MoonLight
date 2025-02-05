@@ -21,6 +21,7 @@
 #include <EventEndpoint.h>
 #include <WebSocketServer.h>
 #include <PsychicHttp.h>
+#include <ESP32SvelteKit.h>
 
 class FilesState
 {
@@ -37,8 +38,7 @@ class FilesService : public StatefulService<FilesState>
 {
 public:
     FilesService(PsychicHttpServer *server,
-                      EventSocket *socket,
-                      SecurityManager *securityManager);
+                      ESP32SvelteKit *sveltekit);
 
     void begin();
 

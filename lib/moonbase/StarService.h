@@ -21,6 +21,7 @@
 #include <EventEndpoint.h>
 #include <WebSocketServer.h>
 #include <PsychicHttp.h>
+#include <ESP32SvelteKit.h>
 
 class StarState
 {
@@ -37,8 +38,7 @@ class StarService : public StatefulService<StarState>
 {
 public:
     StarService(PsychicHttpServer *server,
-                      EventSocket *socket,
-                      SecurityManager *securityManager);
+                      ESP32SvelteKit *sveltekit);
 
     void begin();
 

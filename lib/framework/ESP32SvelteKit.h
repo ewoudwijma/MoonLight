@@ -45,11 +45,6 @@
 #include <PsychicHttp.h>
 #include <vector>
 
-#include <StarService.h>
-#include <FilesService.h>
-#include <FixtureService.h>
-#include <EffectsService.h>
-
 #ifdef EMBED_WWW
 #include <WWWData.h>
 #endif
@@ -87,6 +82,9 @@ enum class ConnectionStatus
 class ESP32SvelteKit
 {
 public:
+    uint32_t cyclesPerSecond = 0;
+    uint16_t loopsPerSecond = 0;
+
     ESP32SvelteKit(PsychicHttpServer *server, unsigned int numberEndpoints = 115);
 
     void begin();
@@ -240,20 +238,7 @@ private:
 
     String _appName = APP_NAME;
 
-    StarService _starService;
-    FilesService _filesService;
-    FixtureService _fixtureService;
-    EffectsService _effectsService;
-
 protected:
-
-    uint32_t cyclesPerSecond = 0;
-    uint16_t loopsPerSecond = 0;
-    unsigned long twentyMsMillis = millis() - random(1000); //random so not all 1s are fired at once
-    unsigned long fiftyMsMillis = millis() - random(1000); //random so not all 1s are fired at once
-    unsigned long oneSecondMillis = millis() - random(1000); //random so not all 1s are fired at once
-    unsigned long tenSecondMillis = millis() - random(10000); //random within a second
-
     static void _loopImpl(void *_this) { static_cast<ESP32SvelteKit *>(_this)->_loop(); }
     void _loop();
 
