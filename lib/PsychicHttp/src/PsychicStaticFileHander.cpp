@@ -184,7 +184,7 @@ esp_err_t PsychicStaticFileHandler::handleRequest(PsychicRequest *request)
       }
 
       _file.close();
-
+      
       return response.send();
     }
   } else {
