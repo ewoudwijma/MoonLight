@@ -352,69 +352,6 @@
 					>
 						<Add class="h-6 w-6" /></button
 					>
-
-					<div
-						class="overflow-x-auto space-y-1"
-						transition:slide|local={{ duration: 300, easing: cubicOut }}
-					>
-						{#each folderList as item, index}
-
-							<!-- svelte-ignore a11y-click-events-have-key-events -->
-							<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
-								<div class="mask mask-hexagon bg-primary h-auto w-10 shrink-0">
-									{#if item.isFile}
-										<FileIcon class="text-primary-content h-auto w-full scale-75" />
-									{:else}
-										<FolderIcon class="text-primary-content h-auto w-full scale-75" />
-									{/if}
-								</div>
-								<div>
-									{#if breadCrumbs.length > 0 && item.name === breadCrumbs[breadCrumbs.length-1]}
-										<div>..</div>
-									{:else}
-										<div class="font-bold">{item.name}</div>
-										{#if item.isFile}
-											<div>{item.size/1000} kb {new Intl.DateTimeFormat('en-GB', {
-												dateStyle: 'short',
-												timeStyle: 'short',
-												timeZone: 'UTC'
-											}).format(item.time)}
-											</div>
-										{:else}
-											<div>{item.files.length} files/folders</div>
-										{/if}
-									{/if}
-								</div>
-								
-								{#if !$page.data.features.security || $user.admin}
-									<div class="flex-grow" />
-									<div class="space-x-0 px-0 mx-0">
-										<button
-											class="btn btn-ghost btn-sm"
-											on:click={() => {
-												handleEdit(index);
-											}}
-										>
-											<Edit class="h-6 w-6" /></button
-										>
-										{#if !(breadCrumbs.length > 0 && item.name === breadCrumbs[breadCrumbs.length-1])}
-											<button
-												class="btn btn-ghost btn-sm"
-												on:click={() => {
-													confirmDelete(index);
-												}}
-												disabled={item.files && item.files.length>0}
-											>
-												<Delete class="text-error h-6 w-6" />
-											</button>
-										{:else}
-											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										{/if}
-									</div>
-								{/if}
-							</div>
-						{/each}
-					</div>
 				</div>
 
 				<div
@@ -466,15 +403,78 @@
 									</div>
 								{/if}
 							{/if}
+							<div class="divider mb-2 mt-0" />
+							<div class="mx-4 mb-4 flex flex-wrap justify-end gap-2">
+								<button class="btn btn-primary" type="submit" disabled={!showEditor}
+									>Save</button
+								>
+							</div>
 						{/if}
 
-						<div class="divider mb-2 mt-0" />
-						<div class="mx-4 mb-4 flex flex-wrap justify-end gap-2">
-							<button class="btn btn-primary" type="submit" disabled={!showEditor}
-								>Save</button
-							>
-						</div>
 					</form>
+				</div>
+
+				<div
+					class="overflow-x-auto space-y-1"
+					transition:slide|local={{ duration: 300, easing: cubicOut }}
+				>
+					{#each folderList as item, index}
+
+						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+							<div class="mask mask-hexagon bg-primary h-auto w-10 shrink-0">
+								{#if item.isFile}
+									<FileIcon class="text-primary-content h-auto w-full scale-75" />
+								{:else}
+									<FolderIcon class="text-primary-content h-auto w-full scale-75" />
+								{/if}
+							</div>
+							<div>
+								{#if breadCrumbs.length > 0 && item.name === breadCrumbs[breadCrumbs.length-1]}
+									<div>..</div>
+								{:else}
+									<div class="font-bold">{item.name}</div>
+									{#if item.isFile}
+										<div>{item.size/1000} kb {new Intl.DateTimeFormat('en-GB', {
+											dateStyle: 'short',
+											timeStyle: 'short',
+											timeZone: 'UTC'
+										}).format(item.time)}
+										</div>
+									{:else}
+										<div>{item.files.length} files/folders</div>
+									{/if}
+								{/if}
+							</div>
+							
+							{#if !$page.data.features.security || $user.admin}
+								<div class="flex-grow" />
+								<div class="space-x-0 px-0 mx-0">
+									<button
+										class="btn btn-ghost btn-sm"
+										on:click={() => {
+											handleEdit(index);
+										}}
+									>
+										<Edit class="h-6 w-6" /></button
+									>
+									{#if !(breadCrumbs.length > 0 && item.name === breadCrumbs[breadCrumbs.length-1])}
+										<button
+											class="btn btn-ghost btn-sm"
+											on:click={() => {
+												confirmDelete(index);
+											}}
+											disabled={item.files && item.files.length>0}
+										>
+											<Delete class="text-error h-6 w-6" />
+										</button>
+									{:else}
+										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+									{/if}
+								</div>
+							{/if}
+						</div>
+					{/each}
 				</div>
 			{/await}
 		</div>

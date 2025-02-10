@@ -61,7 +61,7 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
     }
 
     if (changed)
-        Serial.printf("EffectsState::update");
+        ESP_LOGI("", "EffectsState::update");
 
     return changed?StateUpdateResult::CHANGED:StateUpdateResult::UNCHANGED;
 }
@@ -113,5 +113,5 @@ void EffectsService::begin()
 
 void EffectsService::onConfigUpdated()
 {
-    Serial.printf("EffectsService::onConfigUpdated\n");
+    ESP_LOGI("", "EffectsService::onConfigUpdated");
 }

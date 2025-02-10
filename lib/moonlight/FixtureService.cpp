@@ -21,7 +21,7 @@
 
 void FixtureState::read(FixtureState &state, JsonObject &root)
 {
-    ppf("FixtureState::read\n");
+    ESP_LOGI("", "FixtureState::read");
     root["lightsOn"] = state.lightsOn;
     root["brightness"] = state.brightness = Variable("Fixture", "brightness").getValue();
     root["fixture"] = state.fixture;
@@ -49,13 +49,12 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
         state.brightness = root["brightness"]; changed = true;
         Variable("Fixture", "brightness").setValue(state.brightness);
 
-        Serial.printf("Fixture.brightness.update %d\n", state.brightness);
+        ESP_LOGI("", "Fixture.brightness.update %d\n", state.brightness);
     }
     if (state.fixture != root["fixture"]) {
         state.fixture = root["fixture"]; changed = true;
 
-        ppf("Fixture.fixture.update task: %s", pcTaskGetTaskName(nullptr));
-        ppf(" e:%d\n", state.fixture);
+        ESP_LOGI("", "Fixture.fixture.update task: %s e:%d", pcTaskGetTaskName(nullptr), state.fixture);
 
         Variable("Fixture", "fixture").setValue(state.fixture);
         Variable("Fixture", "fixture").setValue(state.fixture); //twice to init var["value"]correctly - workaround !!!
@@ -165,7 +164,10 @@ void FixtureService::onConfigUpdated()
 
 void FixtureService::loop50ms()
 {
-    if (_state.monitorOn)
-        _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, min(fix->fixSize.x * fix->fixSize.y * fix->fixSize.z, STARLIGHT_MAXLEDS) * sizeof(CRGB));
+    if (_state.monitorOn && fix->mappingStatus == 0 ) {
+        if (fix->ledsP[0].b == 100) ESP_LOGI("", "New fixture!");
+        _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, MIN(fix->nrOfLeds, STARLIGHT_MAXLEDS) * sizeof(CRGB));
+        if (fix->ledsP[0].b == 100) fix->ledsP[0].b = 0; //reset fixChange
+    }
     //ran by httpd, is that okay or better to run in other task?
 }

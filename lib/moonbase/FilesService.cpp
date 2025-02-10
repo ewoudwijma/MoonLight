@@ -68,7 +68,7 @@ void FilesState::read(FilesState &state, JsonObject &root)
     addFolder(folder, root["files"].to<JsonArray>());
     folder.close();
     // print->printJson("FilesState::read", root);
-    ESP_LOGD("Files", "FilesState::read");
+    ESP_LOGI("", "FilesState::read");
 }
 
 //utility function
@@ -91,7 +91,7 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     JsonArray deletes = root["deletes"].as<JsonArray>();
     if (!deletes.isNull()) {
         for (JsonObject var : deletes) {
-            ESP_LOGD("Files", "delete %s %s \n", var["name"].as<const char*>(), var["isFile"]?"File":"Folder");
+            ESP_LOGI("", "delete %s %s \n", var["name"].as<const char*>(), var["isFile"]?"File":"Folder");
             // print->printJson("new file", var);
             if (var["isFile"])
                 ESPFS.remove(var["path"].as<const char*>());
@@ -105,14 +105,14 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     JsonArray news = root["news"].as<JsonArray>();
     if (!news.isNull()) {
         for (JsonObject var : news) {
-            ESP_LOGD("Files", "new %s %s \n", var["name"].as<const char*>(), var["isFile"]?"File":"Folder");
+            ESP_LOGI("", "new %s %s \n", var["name"].as<const char*>(), var["isFile"]?"File":"Folder");
             // print->printJson("new file", var);
             if (var["isFile"]) {
                 File file = ESPFS.open(var["path"].as<const char*>(), FILE_WRITE);
                 const char *contents = var["contents"];
                 if (strlen(contents)) {
                     if (!file.write((byte *)contents, strlen(contents))) { //changed not true as contents is not part of the state
-                        Serial.println("Write failed");
+                        ESP_LOGE("", "Write failed");
                     }
                 }
                 file.close();
@@ -126,16 +126,16 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     JsonArray updates = root["updates"].as<JsonArray>();
     if (!updates.isNull()) {
         for (JsonObject var : updates) {
-            ESP_LOGD("Files", "update %s %s \n", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
+            ESP_LOGI("", "update %s %s \n", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
             // print->printJson("update file", var);
             File file = ESPFS.open(var["path"].as<const char*>(), FILE_WRITE);
             if (!file) {
-                Serial.println("Failed to open file");
+                ESP_LOGE("", "Failed to open file");
             }
             else {
                 const char *contents = var["contents"];
                 if (!file.write((byte *)contents, strlen(contents))) { //changed not true as contents is not part of the state
-                    Serial.println("Write failed");
+                    ESP_LOGE("", "Write failed");
                 }
                 file.close();
 
@@ -144,7 +144,7 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
                 strcat(newPath, "/");
                 strcat(newPath, var["name"]);
 
-                ESP_LOGD("Files", "rename %s to %s\n", var["path"].as<const char*>(), newPath);
+                ESP_LOGI("", "rename %s to %s\n", var["path"].as<const char*>(), newPath);
 
                 if (strcmp(var["path"], newPath) != 0) {
                     ESPFS.rename(var["path"].as<const char*>(), newPath);
@@ -168,7 +168,7 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     //     }, root, "files");
 
     //     if (foundVar.isNull()) {
-    //         ESP_LOGD("Files", "delete %s as not found in root\n", varState["path"].as<const char*>());
+    //         ESP_LOGD("", "delete %s as not found in root\n", varState["path"].as<const char*>());
     //         ESPFS.remove(varState["path"].as<const char*>());
     //         changed = true;
     //     }
@@ -177,7 +177,7 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     // }, fileState.as<JsonObject>(), "files");
 
     // print->printJson("FilesState::update", root);
-    ESP_LOGD("Files", "FilesState:update %d\n", changed);
+    ESP_LOGI("", "FilesState:update %d\n", changed);
 
     return changed?StateUpdateResult::CHANGED:StateUpdateResult::UNCHANGED;
 }
@@ -275,5 +275,5 @@ void FilesService::begin()
 
 void FilesService::onConfigUpdated()
 {
-    Serial.printf("FilesService::onConfigUpdated\n");
+    ESP_LOGI("", "FilesService::onConfigUpdated");
 }

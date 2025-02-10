@@ -34,6 +34,7 @@
 		} catch (error) {
 			console.error('Error:', error);
 		}
+		console.log("getState Fixture.starState");
 		try {
 			const response = await fetch('/rest/starState', {
 				method: 'GET',
@@ -128,6 +129,7 @@
 				</option>
 			{/each}
 		</Select>
+		{#if false}
 		<Number 
 			label="Width" 
 			bind:value={fixtureState.width} 
@@ -143,6 +145,7 @@
 			bind:value={fixtureState.depth} 
 			onChange={sendSocket}
 		></Number>
+		{/if}
 		<Checkbox 
 			label="Driver on" 
 			bind:value={fixtureState.driverOn}

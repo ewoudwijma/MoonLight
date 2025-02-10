@@ -16,95 +16,89 @@
 
 	let done = false; //temp to show one instance of monitor data receiced
 
+	const loadFixtureDefinition = async () => {
+		// try {
+			const response = await fetch('/rest/starAPI?{map:true}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			});
+			const arrayBuffer = await response.json();
+			console.log("Monitor.starAPI map", arrayBuffer);
+			// handleFixtureDefinition(new Uint8Array(arrayBuffer));
+		// } catch (error) {
+		// 	console.error('Error:', error);
+		// }
+	}
+	loadFixtureDefinition();
+
 	const handleFixtureState = (data: FixtureState) => {
 		console.log("Monitor.handleFixtureState", data.fixture, fixtureState.fixture);
-
-		//check if fixture has changed
-		if (data.fixture != fixture) {
-			//rest api fixture definition
-			// console.log("Monitor.handleFixtureState", data.fixture);
-			//get data of fixture
-			const loadFixtureDefinition = async () => {
-				// try {
-					const response = await fetch('/rest/fixdef?f=' + data.fixture, {
-						method: 'GET',
-						headers: {
-							'Content-Type': 'application/json'
-						}
-					});
-					let fixtureDefinitionState = await response.json();
-					console.log("Monitor.handleFixtureState", fixtureDefinitionState, socket);
-					if (fixtureDefinitionState.contents) {
-
-						fixtureDefinitionState = JSON.parse(fixtureDefinitionState.contents);
-					
-						//rebuild scene
-						createScene(el);
-
-						width = 0;
-						height = 0;
-						depth = 0;
-						
-						//parse 1
-						fixtureDefinitionState.outputs.forEach((output:any) => {
-							output.leds.forEach((led: any) => {
-								// console.log(led);
-								// console.log(led.x / fixtureDefinitionState.factor - width/2, led.y / fixtureDefinitionState.factor - height/2, led.z / fixtureDefinitionState.factor - depth/2);
-								let x = led[0] / fixtureDefinitionState.factor;
-								let y = led[1] / fixtureDefinitionState.factor;
-								let z = led[2] / fixtureDefinitionState.factor;
-
-								if (x > width) width = x;
-								if (y > height) height = y;
-								if (z > depth) depth = z;
-
-							});
-						});
-						width = Math.ceil(width) + 1;
-						height = Math.ceil(height) + 1;
-						depth = Math.ceil(depth) + 1;
-						console.log(width, height, depth);
-						//parse 2
-						fixtureDefinitionState.outputs.forEach((output:any) => {
-							output.leds.forEach((led: any) => {
-								// console.log(led);
-								// console.log(led.x / fixtureDefinitionState.factor - width/2, led.y / fixtureDefinitionState.factor - height/2, led.z / fixtureDefinitionState.factor - depth/2);
-								let x = led[0] / fixtureDefinitionState.factor;
-								let y = led[1] / fixtureDefinitionState.factor;
-								let z = led[2] / fixtureDefinitionState.factor;
-
-								addLed(0.3, x - width/2, y - height/2, z - depth/2);
-							});
-						});
-					}
-				// } catch (error) {
-				// 	console.error('Error:', error);
-				// }
-			}
-			loadFixtureDefinition();
-			fixture = data.fixture;
-		}
 
 		fixtureState = data;
 	};
 
 	const handleMonitor = (data: Uint8Array) => {
-		if (!done)
-			console.log("Monitor.handleMonitor", data);
 
+		//fixChange
+		if (data[2] == 100) {
+			console.log("Monitor.handleMonitor new fixture", data);
+			handleFixtureDefinition(data);
+		} else {
+			if (!done)
+				console.log("Monitor.handleMonitor", data);
+			for (let index = 0; index < data.length; index +=3) {
+				colorLed(index/3, data[index]/255, data[index+1]/255, data[index+2]/255);
+			}
+			done = true;
+		}
+	};
+
+	const handleFixtureDefinition = (data: Uint8Array) => {
+		console.log("Monitor.handleFixtureDefinition", data, data.length);
+		// data.forEach((value, index) => {
+    	//     console.log(`Index ${index}: ${value}`);
+	    // });
+
+		//rebuild scene
+		createScene(el);
+
+		width = 0;
+		height = 0;
+		depth = 0;
+		let factor: number = data[0]; //ledsP[0].r is factor
+		data[0]=0; data[1]=0; data[2]=0;
+
+		//parse 1
 		for (let index = 0; index < data.length; index +=3) {
-			colorLed(index/3, data[index]/255, data[index+1]/255, data[index+2]/255);
+			// console.log(data[index], data[index+1], data[index+2]);
+			let x = data[index] / factor;
+			let y = data[index+1] / factor;
+			let z = data[index+2] / factor;
+
+			if (x > width) width = x;
+			if (y > height) height = y;
+			if (z > depth) depth = z;
 		}
 
-		done = true;
-	};
+		width = Math.ceil(width) + 1;
+		height = Math.ceil(height) + 1;
+		depth = Math.ceil(depth) + 1;
+		console.log(width, height, depth);
+		//parse 2
+		for (let index = 0; index < data.length; index +=3) {
+			let x = data[index] / factor;
+			let y = data[index+1] / factor;
+			let z = data[index+2] / factor;
+			addLed(0.3, x - width/2, y - height/2, z - depth/2);
+		}
+	}
 
 	onMount(() => {
 		console.log("onMount Monitor", el)
 		
 		socket.on("fixture", handleFixtureState);
-
-		//on receive data
 		socket.on('monitor', handleMonitor);
 	});
 
