@@ -1,7 +1,7 @@
 site_name: MoonLight
 
 nav:
-  - Home: moonIndex.md
+  - Home: index.md
   - "MoonBase":
       - moonBaseFiles.md
       - moonBaseInstances.md
@@ -9,7 +9,7 @@ nav:
       - moonLightFixture.md
       - moonLightEffects.md
   - "ESP32 SveleteKit": 
-      - index.md
+      - eskIndex.md
   - "Build Tools":
       - gettingstarted.md
       - buildprocess.md
