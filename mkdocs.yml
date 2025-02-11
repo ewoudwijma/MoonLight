@@ -1,7 +1,15 @@
 site_name: MoonLight
 
 nav:
-  - Home: index.md
+  - Home: moonIndex.md
+  - "MoonBase":
+      - moonBaseFiles.md
+      - moonBaseInstances.md
+  - "MoonLight":
+      - moonLightFixture.md
+      - moonLightEffects.md
+  - "ESP32 SveleteKit": 
+      - index.md
   - "Build Tools":
       - gettingstarted.md
       - buildprocess.md
@@ -13,12 +21,6 @@ nav:
   - "Back End":
       - statefulservice.md
       - restfulapi.md
-  - "MoonBase":
-      - moonBaseFiles.md
-      - moonBaseInstances.md
-  - "MoonLight":
-      - moonLightFixture.md
-      - moonLightEffects.md
 
 site_author: elims
 site_description: >-

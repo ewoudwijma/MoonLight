@@ -1,9 +1,3 @@
----
-hide:
-  - navigation
-  - toc
----
-
 # ESP32 SvelteKit - Create Amazing IoT Projects
 
 <div style="flex">

@@ -1,4 +1,4 @@
-# Fixture
+# Effects
 
 ## Prerequisites
 
