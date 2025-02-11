@@ -13,6 +13,12 @@ nav:
   - "Back End":
       - statefulservice.md
       - restfulapi.md
+  - "MoonBase":
+      - moonBaseFiles.md
+      - moonBaseInstances.md
+  - "MoonLight":
+      - moonLightFixture.md
+      - moonLightEffects.md
 
 site_author: elims
 site_description: >-
