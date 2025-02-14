@@ -151,11 +151,13 @@
 			bind:value={fixtureState.driverOn}
 			onChange={sendSocket}
 		></Checkbox>
+		{#if  $page.data.features.monitor}
 		<Checkbox 
 			label="Monitor on" 
 			bind:value={fixtureState.monitorOn}
 			onChange={sendSocket}
 		></Checkbox>
+		{/if}
 		<Number 
 			label="Pin" 
 			bind:value={fixtureState.pin} 

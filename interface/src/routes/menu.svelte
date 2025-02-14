@@ -52,7 +52,7 @@
 		{
 			title: 'MoonLight',
 			icon: StarIcon,
-			feature: true,
+			feature: $page.data.features.moonlight,
 			submenu: [
 				{
 					title: 'Fixture',
@@ -71,19 +71,13 @@
 		{
 			title: 'MoonBase',
 			icon: MoonIcon,
-			feature: true,
+			feature: $page.data.features.filemanager,
 			submenu: [
 				{
 					title: 'Files',
 					icon: FilesIcon,
 					href: '/moonbase/files',
-					feature: true,
-				},
-				{
-					title: 'Demo App',
-					icon: ControlIcon,
-					href: '/moonbase/demo',
-					feature: true,
+					feature: $page.data.features.filemanager,
 				},
 			]
 		},
@@ -164,7 +158,13 @@
 							$page.data.features.upload_firmware ||
 							$page.data.features.download_firmware) &&
 						(!$page.data.features.security || $user.admin),
-				}
+				},
+				{
+					title: 'Demo App',
+					icon: ControlIcon,
+					href: '/system/demo',
+					feature: true,
+				},
 			]
 		}
 	] as menuItem[];

@@ -157,6 +157,8 @@ export type FilesState = {
 	time: number;
 	contents: string;
 	files: FilesState[];
+	fs_total: number;
+	fs_used: number;
 };
 
 export type StarState = {

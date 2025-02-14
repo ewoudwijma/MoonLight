@@ -113,4 +113,23 @@ void FeaturesService::createJSON(JsonObject &root)
     {
         root[element.feature.c_str()] = element.enabled;
     }
+
+#if FT_ENABLED(FT_MONITOR)
+    root["monitor"] = true;
+#else
+    root["monitor"] = false;
+#endif
+
+#if FT_ENABLED(FT_FILEMANAGER)
+    root["filemanager"] = true;
+#else
+    root["filemanager"] = false;
+#endif
+
+#if FT_ENABLED(FT_MOONLIGHT)
+    root["moonlight"] = true;
+#else
+    root["moonlight"] = false;
+#endif
 }
+

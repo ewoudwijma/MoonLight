@@ -12,6 +12,8 @@
  *   the terms of the LGPL v3 license. See the LICENSE file for details.
  **/
 
+#define ESP_LOGD(tag, format, ...) ppf(format, ##__VA_ARGS__)
+
 #include <ESP32SvelteKit.h>
 #include <LightMqttSettingsService.h>
 #include <LightStateService.h>
@@ -36,12 +38,15 @@ LightStateService lightStateService = LightStateService(&server,
                                                         &lightMqttSettingsService);
 
 
-StarService starService = StarService(&server, &esp32sveltekit);
-FilesService filesService = FilesService(&server, &esp32sveltekit);
-FixtureService fixtureService = FixtureService(&server, &esp32sveltekit);
-EffectsService effectsService = EffectsService(&server, &esp32sveltekit, &fixtureService);
-
-#include "mainStar.h"
+#if FT_ENABLED(FT_FILEMANAGER)
+    FilesService filesService = FilesService(&server, &esp32sveltekit);
+#endif
+#if FT_ENABLED(FT_MOONLIGHT)
+    StarService starService = StarService(&server, &esp32sveltekit);
+    FixtureService fixtureService = FixtureService(&server, &esp32sveltekit);
+    EffectsService effectsService = EffectsService(&server, &esp32sveltekit, &fixtureService);
+    #include "mainStar.h"
+#endif
 
 void setup()
 {
@@ -50,15 +55,21 @@ void setup()
 
     // delay(500); //see WLED/StarLight / Serial needs time to init ..., add ifdef?
 
-    setupStar(); //before ESK as ESK loop uses star stuff
+    #if FT_ENABLED(FT_MOONLIGHT)
+        setupStar(); //before ESK as ESK loop uses star stuff
+    #endif
 
     // start ESP32-SvelteKit
     esp32sveltekit.begin();
 
-    starService.begin();
+#if FT_ENABLED(FT_FILEMANAGER)
     filesService.begin();
+#endif
+#if FT_ENABLED(FT_MOONLIGHT)
+    starService.begin();
     fixtureService.begin(); //before effectservice!
     effectsService.begin();
+#endif
 
     // load the initial light settings
     lightStateService.begin();
@@ -86,6 +97,7 @@ void loop()
     uint32_t cycles = ESP.getCycleCount();
     esp32sveltekit.loopsPerSecond++;
 
+#if FT_ENABLED(FT_MOONLIGHT)
     static int fiftyMsMillis = 0;
     if (millis() - fiftyMsMillis >= 50) {
         fiftyMsMillis = millis();
@@ -94,6 +106,7 @@ void loop()
     }
 
     loopStar();
+#endif
 
     esp32sveltekit.cyclesPerSecond += (ESP.getCycleCount() - cycles); //add the new cycles to the total cpu time
 }

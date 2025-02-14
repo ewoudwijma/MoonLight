@@ -29,7 +29,9 @@ void FixtureState::read(FixtureState &state, JsonObject &root)
     root["height"] = state.height;
     root["depth"] = state.depth;
     root["driverOn"] = state.driverOn;
-    root["monitorOn"] = state.monitorOn;
+    #if FT_ENABLED(FT_MONITOR)
+        root["monitorOn"] = state.monitorOn;
+    #endif
     root["pin"] = state.pin;
 }
 
@@ -76,20 +78,22 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
         state.driverOn = root["driverOn"]; changed = true;
         fix->showDriver = state.driverOn;
     }
-    if (state.monitorOn != root["monitorOn"]) {state.monitorOn = root["monitorOn"]; changed = true;}
+    #if FT_ENABLED(FT_MONITOR)
+        if (state.monitorOn != root["monitorOn"]) {state.monitorOn = root["monitorOn"]; changed = true;}
+    #endif
     if (state.pin != root["pin"]) {
         state.pin = root["pin"]; changed = true;
         pinChanged = true;
         fix->doAllocPins = true;
         fix->currPin = state.pin;
-        Serial.printf("Fixture.pin.update %d\n", state.pin);
+        ESP_LOGI("", "Fixture.pin.update %d", state.pin);
     }
 
     // if (changed)
-    //     Serial.printf("FixtureState::update o:%d b:%d\n", state.lightsOn, state.brightness);
+    //     ESP_LOGI("", "FixtureState::update o:%d b:%d", state.lightsOn, state.brightness);
 
     if (sizeChanged) {
-        Serial.printf("FixtureState::sizeChanged %dx%dx%d\n", state.width, state.height, state.depth);
+        ESP_LOGI("", "FixtureState::sizeChanged %dx%dx%d", state.width, state.height, state.depth);
 
         if (state.width > 0 && state.height > 0 && state.depth > 0) {
             // Coord3D fixSize = {state.width, state.height, state.depth};
@@ -159,15 +163,20 @@ void FixtureService::begin()
 
 void FixtureService::onConfigUpdated()
 {
-    Serial.printf("FixtureService::onConfigUpdated o:%d b:%d\n", _state.lightsOn, _state.brightness);
+    ESP_LOGI("", "FixtureService::onConfigUpdated o:%d b:%d", _state.lightsOn, _state.brightness);
 }
 
 void FixtureService::loop50ms()
 {
-    if (_state.monitorOn && fix->mappingStatus == 0 ) {
-        if (fix->ledsP[0].b == 100) ESP_LOGI("", "New fixture!");
-        _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, MIN(fix->nrOfLeds, STARLIGHT_MAXLEDS) * sizeof(CRGB));
-        if (fix->ledsP[0].b == 100) fix->ledsP[0].b = 0; //reset fixChange
+
+    #if FT_ENABLED(FT_MONITOR)
+        if (_state.monitorOn && fix->mappingStatus == 0 ) {
+            _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, MIN(fix->nrOfLeds, STARLIGHT_MAXLEDS) * sizeof(CRGB));
+        }
+    #endif
+    if (fix->ledsP[0].b == 100) {
+        ESP_LOGI("", "New fixture!");
+        fix->ledsP[0].b = 0; //reset fixChange
     }
     //ran by httpd, is that okay or better to run in other task?
 }

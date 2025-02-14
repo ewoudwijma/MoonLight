@@ -154,7 +154,7 @@
 			<Statusbar />
 
 			<!-- Don't show if captive portal -->
-			{#if (!window.location.href.includes("192.168.4.1"))}
+			{#if (!window.location.href.includes("192.168.4.1") && $page.data.features.monitor)}
 				<br>
 				<Monitor />
 			{/if}

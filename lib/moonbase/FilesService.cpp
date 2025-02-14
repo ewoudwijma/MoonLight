@@ -24,6 +24,23 @@
 
 #include <ESPFS.h>
 
+//WIP
+// void walkThroughFiles(File folder, std::function<void(File, File)> fun) {
+// 	folder.rewindDirectory();
+// 	while (true)
+// 	{
+// 		File file = folder.openNextFile();
+//         if (!file) break;
+
+//         fun(folder, file);
+        
+//         if (file.isDirectory()) {
+//             walkThroughFiles(file, fun);
+//         }
+//         file.close();
+//     }
+// }
+
 //recursively fill a fileArray with all files and folders on the FS
 void addFolder(File folder, JsonArray fileArray)
 {
@@ -41,7 +58,7 @@ void addFolder(File folder, JsonArray fileArray)
             fileObject["name"] = (char *)file.name(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
             fileObject["path"] = (char *)file.path(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
             fileObject["isFile"] = !file.isDirectory();
-            // Serial.printf("file %s (%d)\n", file.path(), file.size());
+            // ESP_LOGI("", "file %s (%d)\n", file.path(), file.size());
 			if (file.isDirectory())
 			{
 				addFolder(file, fileObject["files"].to<JsonArray>());
@@ -52,7 +69,6 @@ void addFolder(File folder, JsonArray fileArray)
                 fileObject["time"] = file.getLastWrite();
 			}
             // serializeJson(fileObject, Serial);
-            // Serial.printf("\n");
             file.close();
 		}
 	}
@@ -62,8 +78,8 @@ void FilesState::read(FilesState &state, JsonObject &root)
 {
     root["name"] = "/";
     //crashes for some reason: ???
-    // root["fs_total"] = ESPFS.totalBytes() / 1000;
-    // root["fs_used"] = ESPFS.usedBytes() / 1000;
+    root["fs_total"] = ESPFS.totalBytes() / 1000;
+    root["fs_used"] = ESPFS.usedBytes() / 1000;
     File folder = ESPFS.open("/");
     addFolder(folder, root["files"].to<JsonArray>());
     folder.close();
@@ -224,10 +240,10 @@ void FilesService::begin()
     //     File file;
     //     String path = "/" + filename;
 
-    //     Serial.printf("Writing %d/%d bytes to: %s\n", (int)index+(int)len, request->contentLength(), path.c_str());
+    //     ESP_LOGI("", "Writing %d/%d bytes to: %s", (int)index+(int)len, request->contentLength(), path.c_str());
 
     //     if (last) {
-    //         Serial.printf("%s is finished. Total bytes: %d\n", path.c_str(), (int)index+(int)len);
+    //         ESP_LOGI("", "%s is finished. Total bytes: %d", path.c_str(), (int)index+(int)len);
     //         update([&](FilesState& state) {
     //             return StateUpdateResult::CHANGED; // notify StatefulService by returning CHANGED
     //         }, "timer");
@@ -240,12 +256,12 @@ void FilesService::begin()
     //         file = ESPFS.open(path, FILE_APPEND);
         
     //     if(!file) {
-    //         Serial.println("Failed to open file");
+    //         ESP_LOGI("", "Failed to open file");
     //         return ESP_FAIL;
     //     }
 
     //     if(!file.write(data, len)) {
-    //         Serial.println("Write failed");
+    //         ESP_LOGI("", "Write failed");
     //         return ESP_FAIL;
     //     }
 
@@ -258,13 +274,13 @@ void FilesService::begin()
     //     String url = "/" + request->getFilename();
     //     String output = "<a href=\"" + url + "\">" + url + "</a>";
 
-    //     Serial.printf("uploadHandler->onRequest\n", output.c_str());
+    //     ESP_LOGI("", "uploadHandler->onRequest\n", output.c_str());
 
     //     return request->reply(output.c_str());
     // });
 
-    // Serial.printf("server->on upload %d\n", _server->count());
-    // Serial.printf("server->on upload\n");
+    // ESP_LOGI("", "server->on upload %d", _server->count());
+    // ESP_LOGI("", "server->on upload");
 
     // //serve uploads
     // _server->on("/rest/upload/*", HTTP_POST, uploadHandler);

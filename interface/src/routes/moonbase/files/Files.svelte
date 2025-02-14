@@ -34,7 +34,9 @@
 		size: 0,
 		time: 0,
 		contents: '',
-		files: []
+		files: [],
+		fs_total: 0,
+		fs_used: 0,
 	};
 	let breadCrumbs:string[] = [];
 	let breadCrumbsString:string = ""; //as breadCrumbs.join("/") is not reactive for some reason
@@ -143,7 +145,9 @@
 			size: 0,
 			time: 0,
 			contents: '',
-			files: []
+			files: [],
+			fs_total: 0,
+			fs_used: 0,
 		};
 	}
 	function addFolder() {
@@ -156,7 +160,9 @@
 			size: 0,
 			time: 0,
 			contents: '',
-			files: []
+			files: [],
+			fs_total: 0,
+			fs_used: 0,
 		};
 	}
 
@@ -475,6 +481,27 @@
 							{/if}
 						</div>
 					{/each}
+				</div>
+				<br>
+				<div class="rounded-box bg-base-100 flex items-center space-x-3 px-4 py-2">
+					<div class="mask mask-hexagon bg-primary h-auto w-10 flex-none">
+						<FolderIcon class="text-primary-content h-auto w-full scale-75" />
+					</div>
+					<div>
+						<div class="font-bold">File System Size</div>
+						<div class="flex flex-wrap justify-start gap-1 text-sm opacity-75">
+							<span>
+								{((filesState.fs_used / filesState.fs_total) * 100).toFixed(1)} % of {(filesState.fs_total / 1000).toFixed(0)} KB used
+							</span>
+
+							<span>({(
+									(filesState.fs_total - filesState.fs_used) /
+									1000
+								).toFixed(0)}
+								KB free)</span
+							>
+						</div>
+					</div>
 				</div>
 			{/await}
 		</div>

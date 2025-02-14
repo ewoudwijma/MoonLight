@@ -62,4 +62,19 @@
 #define EVENT_USE_JSON 0
 #endif
 
+//Files on by default
+#ifndef FT_FILEMANAGER
+#define FT_FILEMANAGER 1
+#endif
+
+//Monitor on by default
+#ifndef FT_MONITOR
+#define FT_MONITOR 1
+#endif
+
+//MoonLight on by default
+#ifndef FT_MOONLIGHT
+#define FT_MOONLIGHT 1
+#endif
+
 #endif
