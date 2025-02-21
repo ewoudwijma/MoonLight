@@ -44,6 +44,7 @@
 			><Hamburger class="h-6 w-auto" /></label
 		>
 		<span class="px-2 text-xl font-bold lg:text-2xl">{$page.data.title}</span>
+		<a href="https://moonmodules.org{window.location.pathname}">?</a>
 	</div>
 	<div class="indicator flex-none">
 		<UpdateIndicator />

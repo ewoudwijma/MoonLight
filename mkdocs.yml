@@ -3,11 +3,11 @@ site_name: MoonLight
 nav:
   - Home: index.md
   - "MoonBase":
-      - moonBaseFiles.md
-      - moonBaseInstances.md
+      - moonbase/files.md
+      - moonbase/instances.md
   - "MoonLight":
-      - moonLightFixture.md
-      - moonLightEffects.md
+      - moonlight/fixture.md
+      - moonlight/effects.md
   - "ESP32 SveleteKit": 
       - eskIndex.md
   - "Build Tools":
