@@ -158,12 +158,13 @@
 			onChange={sendSocket}
 		></Checkbox>
 		{/if}
+		{#if false}
 		<Number 
 			label="Pin" 
 			bind:value={fixtureState.pin} 
 			onChange={sendSocket}
 		></Number>
-	
+		{/if}
 	</div>
 	{/await}
 </SettingsCard>

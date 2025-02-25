@@ -31,15 +31,14 @@ public:
     bool lightsOn;
     uint8_t brightness = UINT8_MAX;
     uint16_t fixture = UINT8_MAX;
-    // Coord3D size = {0,0,0};
-    uint16_t width = UINT16_MAX;
-    uint16_t height = UINT16_MAX;
-    uint16_t depth = UINT16_MAX;
+    // uint16_t width = UINT16_MAX;
+    // uint16_t height = UINT16_MAX;
+    // uint16_t depth = UINT16_MAX;
     bool driverOn;
     #if FT_ENABLED(FT_MONITOR)
         bool monitorOn;
     #endif
-    uint8_t pin = UINT8_MAX;
+    // uint8_t pin = UINT8_MAX;
 
     static void read(FixtureState &state, JsonObject &root);
 

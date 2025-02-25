@@ -81,7 +81,7 @@ void ESP32SvelteKit::begin()
                 response.setCode(200);
                 response.setContentType(contentType.c_str());
                 response.addHeader("Content-Encoding", "gzip");
-                response.addHeader("Cache-Control", "public, immutable, max-age=31536000");
+                // response.addHeader("Cache-Control", "public, immutable, max-age=31536000");
                 response.setContent(content, len);
                 return response.send();
             };

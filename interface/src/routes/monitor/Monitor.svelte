@@ -39,24 +39,30 @@
 		fixtureState = data;
 	};
 
-	const handleMonitor = (data: Uint8Array) => {
+	const handleMonitor = (ledsPExtended: Uint8Array) => {
+        const headerLength = 3; // Define the length of the header
+        const header = ledsPExtended.slice(0, headerLength);
+        const ledsP = ledsPExtended.slice(headerLength);
 
+		
+		let type:number = header[0];
+		
 		//fixChange
-		if (data[2] == 100) {
-			console.log("Monitor.handleMonitor new fixture", data);
-			handleFixtureDefinition(data);
+		if (type == 1) {
+			// console.log("Monitor.handleMonitor", ledsPExtended);
+			handleFixtureDefinition(header, ledsP);
 		} else {
 			if (!done)
-				console.log("Monitor.handleMonitor", data);
-			for (let index = 0; index < data.length; index +=3) {
-				colorLed(index/3, data[index]/255, data[index+1]/255, data[index+2]/255);
+				console.log("Monitor.handleMonitor", ledsP);
+			for (let index = 0; index < ledsP.length; index +=3) {
+				colorLed(index/3, ledsP[index]/255, ledsP[index+1]/255, ledsP[index+2]/255);
 			}
 			done = true;
 		}
 	};
 
-	const handleFixtureDefinition = (data: Uint8Array) => {
-		console.log("Monitor.handleFixtureDefinition", data, data.length);
+	const handleFixtureDefinition = (header: Uint8Array, ledsP: Uint8Array) => {
+		console.log("Monitor.handleFixtureDefinition", header, ledsP);
 		// data.forEach((value, index) => {
     	//     console.log(`Index ${index}: ${value}`);
 	    // });
@@ -67,15 +73,16 @@
 		width = 0;
 		height = 0;
 		depth = 0;
-		let factor: number = data[0]; //ledsP[0].r is factor
-		data[0]=0; data[1]=0; data[2]=0;
+		let ledFactor: number = header[1];
+		let ledSize: number = header[2];
+		// data[3]=0; data[4]=0; data[5]=0;
 
 		//parse 1
-		for (let index = 0; index < data.length; index +=3) {
+		for (let index = 0; index < ledsP.length; index +=3) {
 			// console.log(data[index], data[index+1], data[index+2]);
-			let x = data[index] / factor;
-			let y = data[index+1] / factor;
-			let z = data[index+2] / factor;
+			let x = ledsP[index] / ledFactor;
+			let y = ledsP[index+1] / ledFactor;
+			let z = ledsP[index+2] / ledFactor;
 
 			if (x > width) width = x;
 			if (y > height) height = y;
@@ -85,12 +92,12 @@
 		width = Math.ceil(width) + 1;
 		height = Math.ceil(height) + 1;
 		depth = Math.ceil(depth) + 1;
-		console.log(width, height, depth);
+		console.log("dimensions", width, height, depth);
 		//parse 2
-		for (let index = 0; index < data.length; index +=3) {
-			let x = data[index] / factor;
-			let y = data[index+1] / factor;
-			let z = data[index+2] / factor;
+		for (let index = 0; index < ledsP.length; index +=3) {
+			let x = ledsP[index] / ledFactor;
+			let y = ledsP[index+1] / ledFactor;
+			let z = ledsP[index+2] / ledFactor;
 			addLed(0.3, x - width/2, y - height/2, z - depth/2);
 		}
 	}

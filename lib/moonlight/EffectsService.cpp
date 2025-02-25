@@ -15,7 +15,7 @@
 
 #include <EffectsService.h>
 
-#include "App/LedModEffects.h" // set processEffectNr
+#include "Sys/SysModModel.h" // use Variable
 
 void EffectsState::read(EffectsState &state, JsonObject &root)
 {
@@ -38,23 +38,23 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
 {
     bool changed = false;
 
-    print->printJson("EffectsState::update", root);
+    ESP_LOGD("", "EffectsState::update");
 
     if (state.effect != root["effect"]) {
         state.effect = root["effect"]; changed = true;
 
-        ppf("Effects.effect.update task: %s", pcTaskGetTaskName(nullptr));
-        ppf(" e:%d\n", state.effect);
+        ESP_LOGD("", "Effects.effect.update %d", state.effect);
 
-        Variable("layers", "effect").setValue(state.effect, 0);
-        Variable("layers", "effect").setValue(state.effect, 0); //twice to init var["value"]correctly - workaround !!!
+        // if (!sys->safeMode && false) {
+            Variable("layers", "effect").setValue(state.effect, 0);
+            Variable("layers", "effect").setValue(state.effect, 0); //twice to init var["value"]correctly - workaround !!!
+        // }
     }
 
     if (state.projection != root["projection"]) {
         state.projection = root["projection"]; changed = true;
 
-        ppf("Effects.projection.update task: %s", pcTaskGetTaskName(nullptr));
-        ppf(" e:%d\n", state.projection);
+        ESP_LOGD("", "Effects.projection.update %d", state.projection);
 
         Variable("layers", "projection").setValue(state.projection, 0);
         Variable("layers", "projection").setValue(state.projection, 0); //twice to init var["value"]correctly - workaround !!!

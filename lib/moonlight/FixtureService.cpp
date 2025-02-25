@@ -15,7 +15,7 @@
 
 #include <FixtureService.h>
 
-#include "App/LedModFixture.h" // use fix->
+#include "App/LedModFixture.h" // use fix-> (and Variable)
 
 #define EVENT_MONITOR "monitor"
 
@@ -25,21 +25,21 @@ void FixtureState::read(FixtureState &state, JsonObject &root)
     root["lightsOn"] = state.lightsOn;
     root["brightness"] = state.brightness = Variable("Fixture", "brightness").getValue();
     root["fixture"] = state.fixture;
-    root["width"] = state.width;
-    root["height"] = state.height;
-    root["depth"] = state.depth;
+    // root["width"] = state.width;
+    // root["height"] = state.height;
+    // root["depth"] = state.depth;
     root["driverOn"] = state.driverOn;
     #if FT_ENABLED(FT_MONITOR)
         root["monitorOn"] = state.monitorOn;
     #endif
-    root["pin"] = state.pin;
+    // root["pin"] = state.pin;
 }
 
 StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
 {
     bool changed = false;
-    bool sizeChanged = false;
-    bool pinChanged = false;
+    // bool sizeChanged = false;
+    // bool pinChanged = false;
 
     print->printJson("FixtureState::update", root);
 
@@ -58,22 +58,24 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
 
         ESP_LOGI("", "Fixture.fixture.update task: %s e:%d", pcTaskGetTaskName(nullptr), state.fixture);
 
-        Variable("Fixture", "fixture").setValue(state.fixture);
-        Variable("Fixture", "fixture").setValue(state.fixture); //twice to init var["value"]correctly - workaround !!!
+        // if (!sys->safeMode && false) {
+            Variable("Fixture", "fixture").setValue(state.fixture);
+            // Variable("Fixture", "fixture").setValue(state.fixture); //twice to init var["value"]correctly - workaround !!!
+        // }
     }
 
-    if (state.width != root["width"]) {
-        state.width = root["width"]; changed = true;
-        sizeChanged = true;
-    }
-    if (state.height != root["height"]) {
-        state.height = root["height"]; changed = true;
-        sizeChanged = true;
-    }
-    if (state.depth != root["depth"]) {
-        state.depth = root["depth"]; changed = true;
-        sizeChanged = true;
-    }
+    // if (state.width != root["width"]) {
+    //     state.width = root["width"]; changed = true;
+    //     sizeChanged = true;
+    // }
+    // if (state.height != root["height"]) {
+    //     state.height = root["height"]; changed = true;
+    //     sizeChanged = true;
+    // }
+    // if (state.depth != root["depth"]) {
+    //     state.depth = root["depth"]; changed = true;
+    //     sizeChanged = true;
+    // }
     if (state.driverOn != root["driverOn"]) {
         state.driverOn = root["driverOn"]; changed = true;
         fix->showDriver = state.driverOn;
@@ -81,33 +83,30 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
     #if FT_ENABLED(FT_MONITOR)
         if (state.monitorOn != root["monitorOn"]) {state.monitorOn = root["monitorOn"]; changed = true;}
     #endif
-    if (state.pin != root["pin"]) {
-        state.pin = root["pin"]; changed = true;
-        pinChanged = true;
-        fix->doAllocPins = true;
-        fix->currPin = state.pin;
-        ESP_LOGI("", "Fixture.pin.update %d", state.pin);
-    }
+    // if (state.pin != root["pin"]) {
+    //     state.pin = root["pin"]; changed = true;
+    //     pinChanged = true;
+    //     fix->doAllocPins = true;
+    //     fix->currPin = state.pin;
+    //     ESP_LOGI("", "Fixture.pin.update %d", state.pin);
+    // }
 
-    // if (changed)
-    //     ESP_LOGI("", "FixtureState::update o:%d b:%d", state.lightsOn, state.brightness);
+    // if (sizeChanged) {
+    //     ESP_LOGI("", "FixtureState::sizeChanged %dx%dx%d", state.width, state.height, state.depth);
 
-    if (sizeChanged) {
-        ESP_LOGI("", "FixtureState::sizeChanged %dx%dx%d", state.width, state.height, state.depth);
+    //     if (state.width > 0 && state.height > 0 && state.depth > 0) {
+    //         // Coord3D fixSize = {state.width, state.height, state.depth};
+    //         // Variable("Fixture", "fixture").setValue(fixSize);
 
-        if (state.width > 0 && state.height > 0 && state.depth > 0) {
-            // Coord3D fixSize = {state.width, state.height, state.depth};
-            // Variable("Fixture", "fixture").setValue(fixSize);
+    //         fix->fixSize.x = state.width;
+    //         fix->fixSize.y = state.height;
+    //         fix->fixSize.z = state.depth;
+    //     }
+    // }
 
-            // fix->fixSize.x = state.width;
-            // fix->fixSize.y = state.height;
-            // fix->fixSize.z = state.depth;
-        }
-    }
-
-    if (sizeChanged || pinChanged) {
-        fix->mappingStatus = 1; // ask starlight to recalculate mapping (including pins)
-    }
+    // if (sizeChanged || pinChanged) {
+    //     fix->mappingStatus = 1; // ask starlight to recalculate mapping (including pins)
+    // }
     if (changed)
         Variable("Model", "saveModel").setValue(true);
 
@@ -168,15 +167,14 @@ void FixtureService::onConfigUpdated()
 
 void FixtureService::loop50ms()
 {
-
     #if FT_ENABLED(FT_MONITOR)
         if (_state.monitorOn && fix->mappingStatus == 0 ) {
-            _socket->emitEvent(EVENT_MONITOR, (char *)fix->ledsP, MIN(fix->nrOfLeds, STARLIGHT_MAXLEDS) * sizeof(CRGB));
+            _socket->emitEvent(EVENT_MONITOR, (char *)(&fix->ledsPExtended), MIN(fix->nrOfLeds, STARLIGHT_MAXLEDS) * sizeof(CRGB) + 3); //3 bytes for type and factor and ...
         }
     #endif
-    if (fix->ledsP[0].b == 100) {
+    if (fix->ledsPExtended.type == 1) {
         ESP_LOGI("", "New fixture!");
-        fix->ledsP[0].b = 0; //reset fixChange
+        fix->ledsPExtended.type = 0; //reset fixChange
     }
     //ran by httpd, is that okay or better to run in other task?
 }

@@ -12,8 +12,6 @@
  *   the terms of the LGPL v3 license. See the LICENSE file for details.
  **/
 
-#define ESP_LOGD(tag, format, ...) ppf(format, ##__VA_ARGS__)
-
 #include <ESP32SvelteKit.h>
 #include <LightMqttSettingsService.h>
 #include <LightStateService.h>
@@ -48,12 +46,24 @@ LightStateService lightStateService = LightStateService(&server,
     #include "mainStar.h"
 #endif
 
+// #define ESP_LOGD(tag, format, ...) ppf(format, ##__VA_ARGS__)
+int my_vprintf(const char *format, va_list args)
+{
+    Serial.print(".");
+    // Implement your logging logic here
+    return 1;//vprintf(format, args);
+}
+
 void setup()
 {
+    // sys->safeMode = true; //e.g. in case of a crash
+
     // start serial and filesystem
     Serial.begin(SERIAL_BAUD_RATE);
 
     // delay(500); //see WLED/StarLight / Serial needs time to init ..., add ifdef?
+
+    esp_log_set_vprintf(my_vprintf); //not working yet ...
 
     #if FT_ENABLED(FT_MOONLIGHT)
         setupStar(); //before ESK as ESK loop uses star stuff
@@ -62,14 +72,14 @@ void setup()
     // start ESP32-SvelteKit
     esp32sveltekit.begin();
 
-#if FT_ENABLED(FT_FILEMANAGER)
-    filesService.begin();
-#endif
-#if FT_ENABLED(FT_MOONLIGHT)
-    starService.begin();
-    fixtureService.begin(); //before effectservice!
-    effectsService.begin();
-#endif
+    #if FT_ENABLED(FT_FILEMANAGER)
+        filesService.begin();
+    #endif
+    #if FT_ENABLED(FT_MOONLIGHT)
+        starService.begin();
+        fixtureService.begin(); //before effectservice!
+        effectsService.begin();
+    #endif
 
     // load the initial light settings
     lightStateService.begin();
@@ -97,16 +107,15 @@ void loop()
     uint32_t cycles = ESP.getCycleCount();
     esp32sveltekit.loopsPerSecond++;
 
-#if FT_ENABLED(FT_MOONLIGHT)
-    static int fiftyMsMillis = 0;
-    if (millis() - fiftyMsMillis >= 50) {
-        fiftyMsMillis = millis();
+    #if FT_ENABLED(FT_MOONLIGHT)
+        static int fiftyMsMillis = 0;
+        if (millis() - fiftyMsMillis >= 50) {
+            fiftyMsMillis = millis();
+            fixtureService.loop50ms();
+        }
 
-        fixtureService.loop50ms();
-    }
-
-    loopStar();
-#endif
+        loopStar();
+    #endif
 
     esp32sveltekit.cyclesPerSecond += (ESP.getCycleCount() - cycles); //add the new cycles to the total cpu time
 }
