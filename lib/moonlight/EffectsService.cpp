@@ -46,8 +46,7 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
         ESP_LOGD("", "Effects.effect.update %d", state.effect);
 
         // if (!sys->safeMode && false) {
-            Variable("layers", "effect").setValue(state.effect, 0);
-            Variable("layers", "effect").setValue(state.effect, 0); //twice to init var["value"]correctly - workaround !!!
+            Variable("layers", "effect")[0] = state.effect;
         // }
     }
 
@@ -56,8 +55,7 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
 
         ESP_LOGD("", "Effects.projection.update %d", state.projection);
 
-        Variable("layers", "projection").setValue(state.projection, 0);
-        Variable("layers", "projection").setValue(state.projection, 0); //twice to init var["value"]correctly - workaround !!!
+        Variable("layers", "projection")[0] = state.projection;
     }
 
     if (changed)

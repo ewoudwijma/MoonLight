@@ -45,11 +45,11 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
 
     if (state.lightsOn != root["lightsOn"]) {
         state.lightsOn = root["lightsOn"]; changed = true;
-        Variable("Fixture", "on").setValue(state.lightsOn);
+        Variable("Fixture", "on") = state.lightsOn;
     }
     if (state.brightness != root["brightness"]) {
         state.brightness = root["brightness"]; changed = true;
-        Variable("Fixture", "brightness").setValue(state.brightness);
+        Variable("Fixture", "brightness") = state.brightness;
 
         ESP_LOGI("", "Fixture.brightness.update %d\n", state.brightness);
     }
@@ -59,8 +59,7 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
         ESP_LOGI("", "Fixture.fixture.update task: %s e:%d", pcTaskGetTaskName(nullptr), state.fixture);
 
         // if (!sys->safeMode && false) {
-            Variable("Fixture", "fixture").setValue(state.fixture);
-            // Variable("Fixture", "fixture").setValue(state.fixture); //twice to init var["value"]correctly - workaround !!!
+            Variable("Fixture", "fixture") = state.fixture;
         // }
     }
 
@@ -96,7 +95,7 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
 
     //     if (state.width > 0 && state.height > 0 && state.depth > 0) {
     //         // Coord3D fixSize = {state.width, state.height, state.depth};
-    //         // Variable("Fixture", "fixture").setValue(fixSize);
+    //         // Variable("Fixture", "fixture") = fixSize;
 
     //         fix->fixSize.x = state.width;
     //         fix->fixSize.y = state.height;
@@ -107,8 +106,8 @@ StateUpdateResult FixtureState::update(JsonObject &root, FixtureState &state)
     // if (sizeChanged || pinChanged) {
     //     fix->mappingStatus = 1; // ask starlight to recalculate mapping (including pins)
     // }
-    if (changed)
-        Variable("Model", "saveModel").setValue(true);
+    // if (changed)
+    //     Variable("Model", "saveModel").setValue(true);
 
     return changed?StateUpdateResult::CHANGED:StateUpdateResult::UNCHANGED;
 }
@@ -168,7 +167,9 @@ void FixtureService::onConfigUpdated()
 void FixtureService::loop50ms()
 {
     #if FT_ENABLED(FT_MONITOR)
-        if (_state.monitorOn && fix->mappingStatus == 0 ) {
+        static int monitorMillis = 0; //max 12000 leds per second
+        if (_state.monitorOn && fix->mappingStatus == 0 && millis() - monitorMillis >= fix->nrOfLeds / 12) {
+            monitorMillis = millis();
             _socket->emitEvent(EVENT_MONITOR, (char *)(&fix->ledsPExtended), MIN(fix->nrOfLeds, STARLIGHT_MAXLEDS) * sizeof(CRGB) + 3); //3 bytes for type and factor and ...
         }
     #endif

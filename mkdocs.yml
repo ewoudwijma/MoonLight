@@ -8,6 +8,9 @@ nav:
   - "MoonLight":
       - moonlight/fixture.md
       - moonlight/effects.md
+  - "System":
+      - system/status.md
+      - system/metrics.md
   - "ESP32 SveleteKit": 
       - eskIndex.md
   - "Build Tools":
@@ -85,7 +88,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/theelims/
+      link: https://github.com/MoonModules/
   consent:
     title: Cookie consent
     description: >-
@@ -96,6 +99,9 @@ extra:
     actions:
       - accept
       - reject
+  analytics:
+    provider: google
+    property: G-R6QYDG0126
 
 plugins:
   - search:
@@ -103,6 +109,6 @@ plugins:
 
 copyright: |
   Copyright &copy; 2024 by <a href="https://github.com/theelims"  target="_blank" rel="noopener">elims</a> -
-  Copyright &copy; 2025 by <a href="https://github.com/ewowi"  target="_blank" rel="noopener">ewowi</a> -
-  Copyright &copy; 2025 by <a href="https://github.com/MoonModules"  target="_blank" rel="noopener">MoonModules</a> -
+  Copyright &copy; 2025 GPL-3.0 by <a href="https://github.com/ewowi"  target="_blank" rel="noopener">ewowi</a> -
+  Copyright &copy; 2025 GPL-3.0 by <a href="https://github.com/MoonModules"  target="_blank" rel="noopener">MoonModules</a> -
   <a href="#__consent">Change cookie settings</a>
