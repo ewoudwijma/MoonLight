@@ -1,6 +1,13 @@
 # Files
 
-## Prerequisites
+## Functional
 
-This project has quite a complicated build chain to prepare the frontend code for the ESP32. You will need to install some tools to make this all work, starting with a powerful code editor.
+## Technical
 
+### Server
+
+[Files.h](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Files.h) and [Files.cpp](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Files.cpp)
+
+### UI
+
+[Files.svelte](https://github.com/MoonModules/MoonLight/blob/main/interface/src/routes/system/status/Files.svelte)

@@ -1,6 +1,13 @@
 # Effects
 
-## Prerequisites
+## Functional
 
-This project has quite a complicated build chain to prepare the frontend code for the ESP32. You will need to install some tools to make this all work, starting with a powerful code editor.
+## Technical
 
+### Server
+
+[Effects.h](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Effects.h) and [Effects.cpp](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Effects.cpp)
+
+### UI
+
+[Effects.svelte](https://github.com/MoonModules/MoonLight/blob/main/interface/src/routes/system/status/Effects.svelte)

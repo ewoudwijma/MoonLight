@@ -8,6 +8,12 @@ nav:
   - "MoonLight":
       - moonlight/fixture.md
       - moonlight/effects.md
+  - "Connections":
+      - connections/mqtt.md
+      - connections/ntp.md
+  - "WiFi":
+      - wifi/sta.md
+      - wifi/ap.md
   - "System":
       - system/status.md
       - system/metrics.md
