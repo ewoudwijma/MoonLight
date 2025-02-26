@@ -1,10 +1,8 @@
-# System Status
+# WiFi - Station
 
 ## Functional
 
 ## Technical
-
-* loops per second: nr of times main loop is executed
 
 ### Server
 

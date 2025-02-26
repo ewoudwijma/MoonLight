@@ -1,10 +1,8 @@
-# System Status
+# NTP
 
 ## Functional
 
 ## Technical
-
-* loops per second: nr of times main loop is executed
 
 ### Server
 
