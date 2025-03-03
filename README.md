@@ -3,11 +3,12 @@
 <img width="500" alt="MoonLight" src="https://github.com/user-attachments/assets/de0ab735-d547-462e-b7e3-c3f819bf9283" />
 
 * MoonLight is a [MoonModules](https://moonmodules.org) project.
-* MoonLight = [ESP32 SvelteKit](https://github.com/theelims/ESP32-sveltekit) + [StarLight as a Service](https://github.com/MoonModules/StarLight/tree/StarAsAService). Check [Discord/StarLight](https://discord.gg/TC8NSUSCdV) to discuss.
+* MoonLight = [ESP32 SvelteKit](https://github.com/theelims/ESP32-sveltekit) + [StarLight as a Service](https://github.com/MoonModules/StarLight/tree/StarAsAService). Check [Discord/MoonLight](https://discord.gg/TC8NSUSCdV) to discuss.
 * MoonLight is an attempt to make a modern alternative to WLED
 * Work in progress is shown in the [Kanban board](https://github.com/users/MoonModules/projects/2). You are more then welcome to add issues, comment on issues or help with issues.
 * See also [ESP32-sveltekit POC](https://github.com/theelims/ESP32-sveltekit/issues/68)
 * Documentation see [MoonLightDocs](https://MoonModules.org/MoonLight/).
+* Developers, testers and users wanted ! Contact us on discord.
 
 [Release 0.5.2](https://github.com/MoonModules/MoonLight/releases/tag/v0.5.2) (Jan 21, 2025): 
 
