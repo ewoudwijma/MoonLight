@@ -45,9 +45,12 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
 
         ESP_LOGD("", "Effects.effect.update %d", state.effect);
 
-        // if (!sys->safeMode && false) {
-            Variable("layers", "effect")[0] = state.effect;
-        // }
+        runInLoopTask.push_back([&] {
+            // if (!sys->safeMode && false) {
+                ESP_LOGD("", "Effects.effect.update %d call set effect", state.effect);
+                Variable("layers", "effect")[0] = state.effect;
+            // }
+        });
     }
 
     if (state.projection != root["projection"]) {
@@ -55,7 +58,13 @@ StateUpdateResult EffectsState::update(JsonObject &root, EffectsState &state)
 
         ESP_LOGD("", "Effects.projection.update %d", state.projection);
 
-        Variable("layers", "projection")[0] = state.projection;
+        runInLoopTask.push_back([&] {
+            // if (!sys->safeMode && false) {
+                ESP_LOGD("", "Effects.projection.update %d call set projection", state.projection);
+                Variable("layers", "projection")[0] = state.projection;
+            // }
+        });
+
     }
 
     if (changed)
@@ -107,6 +116,14 @@ void EffectsService::begin()
     _fsPersistence.readFromFS();
 
     onConfigUpdated();
+
+    Variable("layers", "effect").subscribe(onChange, [&](EventArguments) {
+        ESP_LOGD("", "EffectsState::update publish id:%s [%d] e:%d", variable.id(), rowNr, eventType);
+        print->printJson("  controls", variable.var["n"]);
+        //show the controls
+        //send the controls through ws
+    });
+    
 }
 
 void EffectsService::onConfigUpdated()

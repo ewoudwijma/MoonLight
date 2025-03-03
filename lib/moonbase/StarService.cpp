@@ -15,13 +15,13 @@
 
 #include <StarService.h>
 
-#include "Sys/SysModModel.h"
 #include "App/LedModFixture.h" // use fix->
 
 #include "ESPFS.h"
 
 void StarState::read(StarState &settings, JsonObject &root)
 {
+    ESP_LOGD("", "StarState::read");
     root["fixtures"] = Variable("Fixture", "fixture").getOptions();
     root["effects"] = Variable("layers", "effect").getOptions();
     root["projections"] = Variable("layers", "projection").getOptions();
@@ -76,10 +76,19 @@ void StarService::begin()
 
         ESP_LOGD("", "%s %s %s %s", request->body().c_str(), request->query().c_str(), request->uri().c_str(), request->url().c_str());
 
-        if (doc["map"]) {
-            fix->mappingStatus = 1;
+        if (doc["map"]) { //send by monitor.svelte
+            //
+            runInLoopTask.push_back([&] {
+                fix->mappingStatus = 1; //remap
+            });
             root["ok"] = true;
         }
+        // else if (doc["effects"]) {
+        //     root["effects"] = Variable("layers", "effect").getOptions();
+        // }
+        // else if (doc["projections"]) {
+        //     root["projections"] = Variable("layers", "projection").getOptions();
+        // }
 
         return response.send();
     });

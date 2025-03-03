@@ -35,7 +35,6 @@ LightStateService lightStateService = LightStateService(&server,
                                                         &esp32sveltekit,
                                                         &lightMqttSettingsService);
 
-
 #if FT_ENABLED(FT_FILEMANAGER)
     FilesService filesService = FilesService(&server, &esp32sveltekit);
 #endif
@@ -118,4 +117,12 @@ void loop()
     #endif
 
     esp32sveltekit.cyclesPerSecond += (ESP.getCycleCount() - cycles); //add the new cycles to the total cpu time
+
+    while (!runInLoopTask.empty())
+    {
+        ESP_LOGD("Main", "Running queued function");
+        runInLoopTask.back()(); //calls the last function
+        runInLoopTask.pop_back();
+    }
+
 }

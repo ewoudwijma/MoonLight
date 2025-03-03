@@ -14,6 +14,8 @@
 
 #include <ESP32SvelteKit.h>
 
+std::vector<std::function<void()>> runInLoopTask; //see .h
+
 ESP32SvelteKit::ESP32SvelteKit(PsychicHttpServer *server, unsigned int numberEndpoints) : _server(server),
                                                                                           _numberEndpoints(numberEndpoints),
                                                                                           _featureService(server, &_socket),
@@ -250,7 +252,7 @@ void ESP32SvelteKit::_loop()
         if (millis() - lastTime > 1000)
         {
             lastTime = millis();
-            _analyticsService.cpuPerc = cyclesPerSecond / (ESP.getCpuFreqMHz() * 2 * 10000); //(converted to ms) 1 sec, 2 cores ...
+            _analyticsService.cpuPerc = cyclesPerSecond / (ESP.getCpuFreqMHz() * 10000); //(converted to ms) 1 sec
             _analyticsService.loopsPerSecond = loopsPerSecond;
             // _systemStatus.cpuPerc = _analyticsService.cpuPerc;
             // _systemStatus.loopsPerSecond = _analyticsService.loopsPerSecond;

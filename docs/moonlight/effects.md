@@ -11,3 +11,5 @@
 ### UI
 
 [Effects.svelte](https://github.com/MoonModules/MoonLight/blob/main/interface/src/routes/system/status/Effects.svelte)
+
+* getState(): handleEffectState handleStarState
