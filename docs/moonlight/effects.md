@@ -4,6 +4,8 @@
 
 ## Technical
 
+Using component FileEdit
+
 ### Server
 
 [Effects.h](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Effects.h) and [Effects.cpp](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Effects.cpp)

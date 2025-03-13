@@ -50,6 +50,9 @@
 		<UpdateIndicator />
 	</div>
 	<div class="flex-none">
+		<input type="checkbox" value="synthwave" class="toggle theme-controller" />
+	</div>
+	<div class="flex-none">
 		{#if $telemetry.rssi.disconnected}
 			<WiFiOff class="h-7 w-7" />
 		{:else}

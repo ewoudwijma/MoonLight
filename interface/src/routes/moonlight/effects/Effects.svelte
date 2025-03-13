@@ -1,3 +1,13 @@
+<!--
+   @title     MoonLight
+   @file      Effects.svelte
+   @repo      https://github.com/MoonModules/MoonLight, submit changes to this file as PRs
+   @Authors   https://github.com/MoonModules/MoonLight/commits/main
+   @Copyright © 2025 Github MoonLight Commit Authors
+   @license   GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+   @license   For non GPL-v3 usage, commercial licenses must be purchased. Contact moonmodules@icloud.com
+-->
+
 <svelte:options immutable={true} />
 
 <script lang="ts">
@@ -23,6 +33,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { socket } from '$lib/stores/socket';
 	import type { StarState } from '$lib/types/models';
+	import FileEdit from '$lib/components/FileEdit.svelte';
 
 	let effectsState: EffectsState;
 	let dataLoaded = false;
@@ -43,6 +54,8 @@
 		name: false
 	};
 	let formErrorFilename = false;
+
+	let path = "";
 
 	async function getState() {
 		try {
@@ -72,6 +85,7 @@
 		} catch (error) {
 			console.error('Error:', error);
 		}
+		path = starState.effects[effectsState.effect]
 		return effectsState;
 	}
 
@@ -225,6 +239,7 @@
 
 	function sendSocket() {
 		console.log("sendSocket Effects.effects", effectsState);
+		path = starState.effects[effectsState.effect]
 		if (dataLoaded) 
 			socket.sendEvent('effects', effectsState)
 	}
@@ -250,6 +265,10 @@
 							</option>
 						{/each}
 					</Select>
+					<FileEdit
+						path = {path}
+						showEditor = {false}
+					/>
 					<Select label="Projection" bind:value={effectsState.projection} onChange={sendSocket}>
 						{#each starState.projections as projection, i}
 							<option value={i}>

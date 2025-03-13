@@ -1,17 +1,12 @@
 /**
- *   ESP32 SvelteKit
- *
- *   A simple, secure and extensible framework for IoT projects for ESP32 platforms
- *   with responsive Sveltekit front-end built with TailwindCSS and DaisyUI.
- *   https://github.com/theelims/ESP32-sveltekit
- *
- *   Copyright (C) 2018 - 2023 rjwats
- *   Copyright (C) 2023 - 2024 theelims
- *   Copyright (C) 2025 - 2025 ewowi
- *
- *   All Rights Reserved. This software may be modified and distributed under
- *   the terms of the LGPL v3 license. See the LICENSE file for details.
- **/
+    @title     MoonLight
+    @file      FilesService.cpp
+    @repo      https://github.com/MoonModules/MoonLight, submit changes to this file as PRs
+    @Authors   https://github.com/MoonModules/MoonLight/commits/main
+    @Copyright © 2025 Github MoonLight Commit Authors
+    @license   GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+    @license   For non GPL-v3 usage, commercial licenses must be purchased. Contact moonmodules@icloud.com
+**/
 
 // Error (lowest)
 // Warning
@@ -107,7 +102,7 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     JsonArray deletes = root["deletes"].as<JsonArray>();
     if (!deletes.isNull()) {
         for (JsonObject var : deletes) {
-            ESP_LOGI("", "delete %s %s \n", var["name"].as<const char*>(), var["isFile"]?"File":"Folder");
+            ESP_LOGI("", "delete %s %s \n", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
             // print->printJson("new file", var);
             if (var["isFile"])
                 ESPFS.remove(var["path"].as<const char*>());
@@ -121,7 +116,7 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     JsonArray news = root["news"].as<JsonArray>();
     if (!news.isNull()) {
         for (JsonObject var : news) {
-            ESP_LOGI("", "new %s %s \n", var["name"].as<const char*>(), var["isFile"]?"File":"Folder");
+            ESP_LOGI("", "new %s %s \n", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
             // print->printJson("new file", var);
             if (var["isFile"]) {
                 File file = ESPFS.open(var["path"].as<const char*>(), FILE_WRITE);

@@ -53,6 +53,11 @@ int my_vprintf(const char *format, va_list args)
     return 1;//vprintf(format, args);
 }
 
+WiFiUDP instanceUDP;
+const int instanceUDPPort = 65506;
+
+// AsyncUDP artnetudp;// AsyncUDP so we can just blast packets.
+
 void setup()
 {
     // sys->safeMode = true; //e.g. in case of a crash
@@ -96,6 +101,7 @@ void setup()
     //     ARDUINO_RUNNING_CORE // Pin to application core
     // );
 
+    instanceUDP.begin(instanceUDPPort); //instances
 }
 
 void loop()
@@ -108,9 +114,41 @@ void loop()
 
     #if FT_ENABLED(FT_MOONLIGHT)
         static int fiftyMsMillis = 0;
+
+        int packetSize = 0;
         if (millis() - fiftyMsMillis >= 50) {
             fiftyMsMillis = millis();
+
             fixtureService.loop50ms();
+
+            if (false) {
+                //send udp broadcast packet
+                packetSize = instanceUDP.parsePacket();
+                instanceUDP.remoteIP();
+                if (packetSize > 0) {
+                    byte *udpIn = (byte *)malloc(packetSize);
+                    instanceUDP.read(udpIn, packetSize);
+                    // free(udpIn);
+                }
+
+                if (instanceUDP.beginPacket(IPAddress(255, 255, 255, 255), instanceUDPPort)) {  // WLEDMM beginPacket == 0 --> error
+                    JsonDocument message;
+                    message["pid"] = "pid";
+                    message["id"] = "id";
+                    message["value"] = "value";
+            
+                    size_t len = measureJson(message);
+            
+                    char buffer[len];
+            
+                    serializeJson(message, buffer, len);
+            
+                    instanceUDP.write((byte *)buffer, len);
+                    instanceUDP.endPacket();
+                }
+
+                // if (!artnetudp.writeTo(packet_buffer, packetSize+18, targetIp, ARTNET_DEFAULT_PORT)) {
+            }
         }
 
         loopStar();

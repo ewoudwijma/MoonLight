@@ -1,3 +1,13 @@
+<!--
+   @title     MoonLight
+   @file      Files.svelte
+   @repo      https://github.com/MoonModules/MoonLight, submit changes to this file as PRs
+   @Authors   https://github.com/MoonModules/MoonLight/commits/main
+   @Copyright © 2025 Github MoonLight Commit Authors
+   @license   GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+   @license   For non GPL-v3 usage, commercial licenses must be purchased. Contact moonmodules@icloud.com
+-->
+
 <svelte:options immutable={true} />
 
 <script lang="ts">
@@ -18,15 +28,13 @@
 	import Delete from '~icons/tabler/trash';
 	import Cancel from '~icons/tabler/x';
 	import type { FilesState } from '$lib/types/models';
-	import Text from '$lib/components/Text.svelte';
-	import Textarea from '$lib/components/Textarea.svelte';
-	import File from '$lib/components/File.svelte';
 	import { onMount, onDestroy } from 'svelte';
 	import { socket } from '$lib/stores/socket';
 	import { tick } from 'svelte';
+	import FileEdit from '$lib/components/FileEdit.svelte';
 
 	let filesState: FilesState;
-	let folderList: FilesState[] = [];
+	let folderList: FilesState[] = []; //all files in a folder
 	let editableFile: FilesState = {
 		name: '',
 		path: '',
@@ -43,10 +51,7 @@
 
 	let newItem: boolean = true;
 	let showEditor: boolean = false;
-	let formField: any;
-	let formErrors = {
-		name: false
-	};
+	let path: string = "";
 
 	const cookieValue = getCookie('breadCrumbs');
 	console.log("cookie", cookieValue);
@@ -73,7 +78,7 @@
 		return filesState;
 	}
 
-	async function postFilesState(data: any) {
+	async function postFilesState(data: any) { //export needed to call from other components
 		try {
 			const response = await fetch('/rest/filesState', {
 				method: 'POST',
@@ -94,50 +99,10 @@
 		}
 	}
 
-	function validateForm() {
-		console.log("validateForm", editableFile.isFile)
-		let valid = true;
-
-		// Validate Name
-		if (editableFile.name.length < 3 || editableFile.name.length > 32) {
-			valid = false;
-			formErrors.name = true;
-		} else {
-			formErrors.name = false;
-		}
-
-		// Submit JSON to REST API
-		if (valid) {
-			if (newItem) {
-				folderList.push(editableFile);
-				//order by name ...
-
-				//send newfile or folder to server
-
-				editableFile.path = "/" + breadCrumbs.join("/") + "/" + editableFile.name;
-				let response:any = {};
-				response.news = [];
-				response.news.push(editableFile);
-				console.log("new item", response)
-				//send the new itemstate to server
-				postFilesState(response);
-
-			} else {
-				console.log("update item", editableFile)
-				folderList.splice(folderList.indexOf(editableFile), 1, editableFile);
-
-				let response:any = {};
-				response.updates = [];
-				response.updates.push(editableFile);
-				postFilesState(response);
-			}
-			showEditor = false;
-		}
-	}
-
 	function addFile() {
 		console.log("addFile")
 		newItem = true;
+		path = "/" + breadCrumbsString
 		editableFile = {
 			name: '',
 			path: '',
@@ -153,6 +118,7 @@
 	function addFolder() {
 		console.log("addFolder")
 		newItem = true;
+		path = "/" + breadCrumbsString
 		editableFile = {
 			name: '',
 			path: '',
@@ -169,6 +135,7 @@
 	function folderListFromBreadCrumbs() {
 		folderList = filesState.files;
 		for (let indexF = 0; indexF < breadCrumbs.length; indexF++) {
+			//find the parent folder
 			let found = false;
 			for (let indexI = 0; indexI < folderList.length; indexI++) {
 				if (folderList[indexI].name === breadCrumbs[indexF]) {
@@ -190,6 +157,7 @@
 	async function handleEdit(index: number) {
 		newItem = false;
 		editableFile = folderList[index];
+		path = editableFile.path
 
 		if (breadCrumbs.length > 0 && editableFile.name === breadCrumbs[breadCrumbs.length-1]) { //if parent folder
 			breadCrumbs.pop(); //remove last folder
@@ -200,17 +168,7 @@
 			showEditor = false;
 			console.log("handleEdit parent", folderList, breadCrumbs)
 		} else if (editableFile.isFile) { //if file
-			try {
-				const response = await fetch('/rest/file/' + editableFile.path, {
-						method: 'GET',
-					headers: {'Content-Type': 'text/plain'}
-				});
-				editableFile.contents = await response.text();
-			} catch (error) {
-				console.error('Error:', error);
-			}
-			console.log("handleEdit file", editableFile.contents)
-
+			console.log("handleEdit file", editableFile, path)
 			showEditor = false; await tick(); showEditor = true; //Trigger reactivity
 		} else { //if folder, go to folder
 			breadCrumbs.push(editableFile.name);
@@ -235,9 +193,9 @@
 			},
 			onConfirm: () => {
 				// Check if item is currently been edited and delete as well
-				if (folderList[index].name === editableFile.name) {
-					// addFile();
-				}
+				// if (folderList[index].name === editableFile.name) {
+				// 	addFile();
+				// }
 
 				//update filesState
 				let response:any = {};
@@ -251,30 +209,6 @@
 				closeModal();
 			}
 		});
-	}
-
-	function checkItemList() {
-		return true;
-	}
-
-	function uploadFile(event: any) {
-		let fileNode = event.target;
-        let file = fileNode.files[0]; // the first file uploaded (multiple files not supported yet)
-		// console.log("uploadFile", event, file)
-		if (file) {
-			// let fileContents: string | ArrayBuffer | null = null;
-
-            const reader = new FileReader();
-			reader.onload = async (e) => {
-				const contents = e.target?.result;
-				editableFile.name = file.name;
-				editableFile.contents = typeof contents === 'string' ? contents : '';			
-
-				showEditor = false; await tick(); showEditor = true; //Trigger reactivity (folderList = [...folderList]; is not doing it)
-				console.log("uploadFileWithText", editableFile.contents)
-			};
-            reader.readAsText(file);
-        }
 	}
 
 	const handleFilesState = (data: FilesState) => {
@@ -339,10 +273,8 @@
 					<button
 						class="btn btn-primary text-primary-content btn-md absolute -top-14 right-16"
 						on:click={() => {
-							if (checkItemList()) {
-								addFile();
-								showEditor = true;
-							}
+							addFile();
+							showEditor = true;
 						}}
 					>
 						<Add class="h-6 w-6" /></button
@@ -350,10 +282,8 @@
 					<button
 						class="btn btn-primary text-primary-content btn-md absolute -top-14 right-1"
 						on:click={() => {
-							if (checkItemList()) {
-								addFolder();
-								showEditor = true;
-							}
+							addFolder();
+							showEditor = true;
 						}}
 					>
 						<Add class="h-6 w-6" /></button
@@ -364,60 +294,13 @@
 					class="flex flex-col gap-2 p-0"
 					transition:slide|local={{ duration: 300, easing: cubicOut }}
 				>
-					<form
-						class=""
-						on:submit|preventDefault={validateForm}
-						novalidate
-						bind:this={formField}
-					>
-
-						{#if showEditor}
-							<div class="divider my-0" />
-							<div class="h-16 flex w-full items-center justify-between space-x-3 p-0 text-xl font-medium">
-								{newItem ? 'Add ' + (editableFile.isFile?"file":"folder") : 'Edit ' + editableFile.name}
-							</div>
-
-							<div>
-								<Text
-									label="Name" 
-									bind:value={editableFile.name} 
-								></Text>
-								<label class="label" for="name">
-									<span class="label-text-alt text-error {formErrors.name ? '' : 'hidden'}"
-										>Name must be between 3 and 32 characters long</span
-									>
-								</label>
-							</div>
-							{#if editableFile.isFile}
-								<div>
-									<Textarea 
-										label="Contents" 
-										bind:value={editableFile.contents} 
-										onChange={(event) => {
-											editableFile.contents = event.target.value;
-										}}
-								></Textarea>
-								</div>
-								{#if newItem}
-									<div>
-										<File 
-											label="Upload" 
-											onChange={(event) => {
-												uploadFile(event);
-											}}
-										></File>
-									</div>
-								{/if}
-							{/if}
-							<div class="divider mb-2 mt-0" />
-							<div class="mx-4 mb-4 flex flex-wrap justify-end gap-2">
-								<button class="btn btn-primary" type="submit" disabled={!showEditor}
-									>Save</button
-								>
-							</div>
-						{/if}
-
-					</form>
+					{#if showEditor}
+						<FileEdit
+							newItem={newItem}
+							path = {path}
+							isFile = {editableFile.isFile}
+						/>-
+					{/if}
 				</div>
 
 				<div

@@ -1,3 +1,13 @@
+<!--
+   @title     MoonLight
+   @file      Fixture.svelte
+   @repo      https://github.com/MoonModules/MoonLight, submit changes to this file as PRs
+   @Authors   https://github.com/MoonModules/MoonLight/commits/main
+   @Copyright © 2025 Github MoonLight Commit Authors
+   @license   GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
+   @license   For non GPL-v3 usage, commercial licenses must be purchased. Contact moonmodules@icloud.com
+-->
+
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { user } from '$lib/stores/user';
@@ -13,6 +23,7 @@
 	import Spinner from '$lib/components/Spinner.svelte';
 	import Select from '$lib/components/Select.svelte';
 	import type { StarState } from '$lib/types/models';
+	import FileEdit from '$lib/components/FileEdit.svelte';
 
 	let fixtureState: FixtureState;
 	//fixtureState is now via socket and not rest api ...
@@ -129,6 +140,10 @@
 				</option>
 			{/each}
 		</Select>
+		<FileEdit
+			path = {starState.fixtures[fixtureState.fixture]}
+			showEditor = {false}
+		/>
 		{#if false}
 		<Number 
 			label="Width" 

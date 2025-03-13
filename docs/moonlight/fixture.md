@@ -10,6 +10,8 @@ Examples can be found here:
 
 ## Technical
 
+Using component FileEdit
+
 ### Server
 
 [FixtureService.h](https://github.com/MoonModules/MoonLight/blob/main/lib/moonlight/FixtureService.h) and [FixtureService.cpp](https://github.com/MoonModules/MoonLight/blob/main/lib/moonlight/FixtureService.cpp)

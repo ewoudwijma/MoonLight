@@ -18,7 +18,14 @@ hide:
 
 <img src="https://github.com/user-attachments/assets/c655d610-53eb-4dd3-8e9e-0cfa23b97bb4"/>
 
+## Customizing upstream
+
+* Add esp32-s3-devkitc-1-n16r8v in pio.ini (including boards folder)
+* Set target: 'http://192.168.1.156' in vite.config.ts
+* Add free_psram, used_psram and psram_size in Analytics (models.ts) and analytics_data (analytics.ts) and show in UI (SystemMetrics.svelte)
+* Send psram data only if psramFound (SystemStatus.svelte, AnalyticsService.h, SystemStatus.cpp)
+
 ## License
 
 MoonLight: GPL-v3
-ESP32 SvelteKit see ...
+ESP32 SvelteKit see [ESP32 SvelteKit license](https://github.com/theelims/ESP32-sveltekit?tab=License-1-ov-file#)

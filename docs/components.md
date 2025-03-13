@@ -155,3 +155,26 @@ openModal(ConfirmDialog, {
 ```
 
 This modal is based on [svelte-modals](https://svelte-modals.mattjennings.io/) where you can find further information.
+
+## MoonBase components
+
+### Button, Checkbox, Number, Select, Slider, Text, TextArea
+
+### File and FileEdit
+
+#### File
+Input type="file""
+
+#### FileEdit
+
+Arguments
+* path: file or folder to edit
+* showEditor: collapsed or not
+* newItem
+* isFile: or folder
+
+Functions
+* postFilesState / uploadFile
+* getFileContents
+* $: if (editableFile.path != path): reactive
+* onSave (->postFilesState)
