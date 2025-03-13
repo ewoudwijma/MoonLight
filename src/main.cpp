@@ -102,6 +102,19 @@ void setup()
     // );
 
     instanceUDP.begin(instanceUDPPort); //instances
+
+    update_handler_id_t _updateHandlerId = filesService.addUpdateHandler([&](const String &originId)
+    { 
+        ESP_LOGD("", "FilesService::updateHandler %s", originId.c_str());
+        filesService.read([&](FilesState &state) {
+            for (auto changedFile : state.changedFiles) {
+                ESP_LOGD("", "FilesService::updateHandler changedFiles %s", changedFile.c_str());
+            }
+        });
+     });
+
+
+
 }
 
 void loop()

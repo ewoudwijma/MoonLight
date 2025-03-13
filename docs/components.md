@@ -163,17 +163,20 @@ This modal is based on [svelte-modals](https://svelte-modals.mattjennings.io/) w
 ### File and FileEdit
 
 #### File
-Input type="file""
+
+Input type="file"
 
 #### FileEdit
 
 Arguments
+
 * path: file or folder to edit
 * showEditor: collapsed or not
 * newItem
 * isFile: or folder
 
 Functions
+
 * postFilesState / uploadFile
 * getFileContents
 * $: if (editableFile.path != path): reactive

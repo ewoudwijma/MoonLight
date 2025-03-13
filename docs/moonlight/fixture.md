@@ -10,7 +10,7 @@ Examples can be found here:
 
 ## Technical
 
-Using component FileEdit
+Using component FileEdit, see [Components](https://moonmodules.org/MoonLight/components/#fileedit)
 
 ### Server
 

@@ -4,14 +4,14 @@
 
 ## Technical
 
-Using component FileEdit
+Using component FileEdit, see [Components](https://moonmodules.org/MoonLight/components/#fileedit)
 
 ### Server
 
-[Effects.h](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Effects.h) and [Effects.cpp](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Effects.cpp)
+[EffectsService.h](https://github.com/MoonModules/MoonLight/blob/main/lib/moonlight/EffectsService.h) and [EffectsService.cpp](https://github.com/MoonModules/MoonLight/blob/main/lib/moonlight/EffectsService.cpp)
 
 ### UI
 
-[Effects.svelte](https://github.com/MoonModules/MoonLight/blob/main/interface/src/routes/system/status/Effects.svelte)
+[Effects.svelte](https://github.com/MoonModules/MoonLight/blob/main/interface/src/routes/moonlight/effects/Effects.svelte)
 
 * getState(): handleEffectState handleStarState

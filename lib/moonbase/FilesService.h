@@ -21,7 +21,7 @@
 class FilesState
 {
 public:
-    bool filesOn = false;
+    std::vector<String> changedFiles;
 
     static void read(FilesState &settings, JsonObject &root);
 

@@ -53,7 +53,7 @@ void addFolder(File folder, JsonArray fileArray)
             fileObject["name"] = (char *)file.name(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
             fileObject["path"] = (char *)file.path(); //enforces copy, solved in latest arduinojson!, see https://arduinojson.org/news/2024/12/29/arduinojson-7-3/
             fileObject["isFile"] = !file.isDirectory();
-            // ESP_LOGI("", "file %s (%d)\n", file.path(), file.size());
+            // ESP_LOGI("", "file %s (%d)", file.path(), file.size());
 			if (file.isDirectory())
 			{
 				addFolder(file, fileObject["files"].to<JsonArray>());
@@ -97,26 +97,26 @@ void extractPath(const char *filepath, char *path) {
 
 StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
 {
-    bool changed = false;
+    state.changedFiles.clear();
 
     JsonArray deletes = root["deletes"].as<JsonArray>();
     if (!deletes.isNull()) {
         for (JsonObject var : deletes) {
-            ESP_LOGI("", "delete %s %s \n", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
+            ESP_LOGI("", "delete %s %s", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
             // print->printJson("new file", var);
             if (var["isFile"])
                 ESPFS.remove(var["path"].as<const char*>());
             else
                 ESPFS.rmdir(var["path"].as<const char*>());
-
-            changed = true;
+            
+            state.changedFiles.push_back(var["path"].as<const char*>());
         }
     }
 
     JsonArray news = root["news"].as<JsonArray>();
     if (!news.isNull()) {
         for (JsonObject var : news) {
-            ESP_LOGI("", "new %s %s \n", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
+            ESP_LOGI("", "new %s %s", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
             // print->printJson("new file", var);
             if (var["isFile"]) {
                 File file = ESPFS.open(var["path"].as<const char*>(), FILE_WRITE);
@@ -130,14 +130,14 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
             } else {
                 ESPFS.mkdir(var["path"].as<const char*>());
             }
-            changed = true;
+            state.changedFiles.push_back(var["path"].as<const char*>());
         }
     }
 
     JsonArray updates = root["updates"].as<JsonArray>();
     if (!updates.isNull()) {
         for (JsonObject var : updates) {
-            ESP_LOGI("", "update %s %s \n", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
+            ESP_LOGI("", "update %s %s", var["path"].as<const char*>(), var["isFile"]?"File":"Folder");
             // print->printJson("update file", var);
             File file = ESPFS.open(var["path"].as<const char*>(), FILE_WRITE);
             if (!file) {
@@ -155,12 +155,12 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
                 strcat(newPath, "/");
                 strcat(newPath, var["name"]);
 
-                ESP_LOGI("", "rename %s to %s\n", var["path"].as<const char*>(), newPath);
+                ESP_LOGI("", "rename %s to %s", var["path"].as<const char*>(), newPath);
 
                 if (strcmp(var["path"], newPath) != 0) {
                     ESPFS.rename(var["path"].as<const char*>(), newPath);
                 }
-                changed = true;
+                state.changedFiles.push_back(var["path"].as<const char*>());
             }
         }
     }
@@ -179,7 +179,7 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     //     }, root, "files");
 
     //     if (foundVar.isNull()) {
-    //         ESP_LOGD("", "delete %s as not found in root\n", varState["path"].as<const char*>());
+    //         ESP_LOGD("", "delete %s as not found in root", varState["path"].as<const char*>());
     //         ESPFS.remove(varState["path"].as<const char*>());
     //         changed = true;
     //     }
@@ -188,9 +188,9 @@ StateUpdateResult FilesState::update(JsonObject &root, FilesState &state)
     // }, fileState.as<JsonObject>(), "files");
 
     // print->printJson("FilesState::update", root);
-    ESP_LOGI("", "FilesState:update %d\n", changed);
+    ESP_LOGI("", "FilesState:update %d", state.changedFiles.size());
 
-    return changed?StateUpdateResult::CHANGED:StateUpdateResult::UNCHANGED;
+    return state.changedFiles.size()?StateUpdateResult::CHANGED:StateUpdateResult::UNCHANGED;
 }
 
 FilesService::FilesService(PsychicHttpServer *server,
@@ -269,7 +269,7 @@ void FilesService::begin()
     //     String url = "/" + request->getFilename();
     //     String output = "<a href=\"" + url + "\">" + url + "</a>";
 
-    //     ESP_LOGI("", "uploadHandler->onRequest\n", output.c_str());
+    //     ESP_LOGI("", "uploadHandler->onRequest", output.c_str());
 
     //     return request->reply(output.c_str());
     // });

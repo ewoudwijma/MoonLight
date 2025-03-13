@@ -19,12 +19,12 @@
 * confirmDelete: when delete button pressed
 * socket files / handleFileState (->folderListFromBreadCrumbs)
 
-Using component FileEdit, see [Components]()
+Using component FileEdit, see [Components](https://moonmodules.org/MoonLight/components/#fileedit)
 
 ### Server
 
-[Files.h](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Files.h) and [Files.cpp](https://github.com/MoonModules/MoonLight/blob/main/lib/framework/Files.cpp)
+[FilesService.h](https://github.com/MoonModules/MoonLight/blob/main/lib/moonbase/FilesService.h) and [FilesService.cpp](https://github.com/MoonModules/MoonLight/blob/main/lib/moonbase/FilesService.cpp)
 
 ### UI
 
-[Files.svelte](https://github.com/MoonModules/MoonLight/blob/main/interface/src/routes/system/status/Files.svelte)
+[Files.svelte](https://github.com/MoonModules/MoonLight/blob/main/interface/src/routes/moonbase/files/Files.svelte)

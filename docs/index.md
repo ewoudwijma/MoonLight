@@ -24,6 +24,9 @@ hide:
 * Set target: 'http://192.168.1.156' in vite.config.ts
 * Add free_psram, used_psram and psram_size in Analytics (models.ts) and analytics_data (analytics.ts) and show in UI (SystemMetrics.svelte)
 * Send psram data only if psramFound (SystemStatus.svelte, AnalyticsService.h, SystemStatus.cpp)
+* Add File manager
+* Add Monitor
+* Add MoonLight specific functionality (Currently fixtures and effects)
 
 ## License
 
