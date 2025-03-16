@@ -162,7 +162,7 @@
 </script>
 
 {#if path[0] === '/'}
-	<Collapsible open={showEditor} class="shadow-lg" on:closed={console.log}>
+	<Collapsible open={showEditor} class="shadow-lg">
 		<span slot="title">{newItem ? 'Add ' + (isFile?"file":"folder") : 'Edit ' + editableFile.name}</span>
 		<div class="divider my-0" />
 

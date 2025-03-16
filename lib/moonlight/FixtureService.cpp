@@ -13,7 +13,9 @@
 
 #include "App/LedModFixture.h" // use fix-> (and Variable)
 
-#define EVENT_MONITOR "monitor"
+#if FT_ENABLED(FT_MONITOR)
+    #define EVENT_MONITOR "monitor"
+#endif
 
 void FixtureState::read(FixtureState &state, JsonObject &root)
 {
@@ -152,7 +154,9 @@ void FixtureService::begin()
 
     onConfigUpdated();
 
-    _socket->registerEvent(EVENT_MONITOR);
+    #if FT_ENABLED(FT_MONITOR)
+        _socket->registerEvent(EVENT_MONITOR);
+    #endif
 }
 
 void FixtureService::onConfigUpdated()
@@ -163,8 +167,8 @@ void FixtureService::onConfigUpdated()
 void FixtureService::loop50ms()
 {
     #if FT_ENABLED(FT_MONITOR)
-        static int monitorMillis = 0; //max 12000 leds per second
-        if (_state.monitorOn && fix->mappingStatus == 0 && millis() - monitorMillis >= fix->nrOfLeds / 12) {
+        static int monitorMillis = 0;
+        if (_state.monitorOn && fix->mappingStatus == 0 && millis() - monitorMillis >= fix->nrOfLeds / 12) { //max 12000 leds per second
             monitorMillis = millis();
             _socket->emitEvent(EVENT_MONITOR, (char *)(&fix->ledsPExtended), MIN(fix->nrOfLeds, STARLIGHT_MAXLEDS) * sizeof(CRGB) + 3); //3 bytes for type and factor and ...
         }
