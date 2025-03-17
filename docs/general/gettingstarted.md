@@ -4,7 +4,7 @@
 
 * Open GitKraken Press + / New tab and select Clone a Repo (Or another git management tool)
 * Select the folder on your local drive where to copy to (e.g. /github/MoonModules)
-* Copy [MoonLight.git](https://github.com/MoonModules/MoonLight.git) (or [ESP32-svelte-live-mm.git](https://github.com/ewowi/ESP32-svelte-live-mm)) and paste in the URL field of GitKraken
+* Copy [MoonLight.git](https://github.com/MoonModules/MoonLight.git) (or [ESP32-svelte-live-mm.git](https://github.com/ewowi/ESP32-svelte-live-mm.git)) and paste in the URL field of GitKraken
 * Press clone the repo
 * Open VSCode
 * Install the PlatformIO IDE extension
@@ -27,6 +27,13 @@
 * The board will reconnect to your Wifi Network
 * Go back to your Wifi Network on your computer
 * Find out the new IP of the board, or in your Wifi Network settings or by looking at the log in the Serial Monitor (see above)
+
+## Developing
+
+* Read the [ESP32 Sveltekit docs](https://moonmodules.org/MoonLight/eskIndex/) (Latest version (Svelte 5) here [ESP32 Sveltekit docs](https://theelims.github.io/ESP32-sveltekit/))
+* Read [Customizing Sveltekit](https://moonmodules.org/MoonLight/general/customizingsveltekit/), this things have normally been done (ESP32-Svelte-Live-MM WIP)
+* UI dev: configure vite.config.ts, go to interface folder, npm install, npm run dev. A local webserver starts on localhost. UI changes will directly be shown via this webserver
+* Want to make changes: fork the repo and submit pull requests
 
 ## ESP32-Svelte-Live-MM specific
 

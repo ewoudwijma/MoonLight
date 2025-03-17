@@ -55,6 +55,10 @@
     * interface/src/routes/custom
     * interface/src/lib/components/custom
     * interface/src/lib/types/model_custom.ts
+* Github repo
+    * change license
+    * change description
+    * change webhook
 
 ### Other improvements
 
