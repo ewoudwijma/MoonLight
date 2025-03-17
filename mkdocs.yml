@@ -2,6 +2,9 @@ site_name: MoonLight
 
 nav:
   - Home: index.md
+  - General:
+      - general/gettingstarted.md
+      - general/customizingsveltekit.md
   - "MoonBase":
       - moonbase/files.md
       - moonbase/instances.md
