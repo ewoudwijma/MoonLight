@@ -34,8 +34,8 @@
 * Search for FastLED.addLeds in the code and update to the pin you use to drive LEDS, reflash the code to the board
 * Go to the UI in the browser
 * Go to Custom / Files and create or upload Live scripts 
-* Go to Custom / Live Animation and select the 'hardcoded animations' (Random, Rainbow)
-* Select any of the Live scripts you uploaded, check the Serial Output for results.
+* Go to Custom / Live Animation and select the 'hardcoded animations' (Random, Rainbow), you should see it on your panel
+* Select any of the Live scripts you uploaded, check the Serial Output for results. (No led output in current version, see below)
 * Open the Edit area and change things in the code, see the Serial Output for results
 * To do
     * Find a way to present feedback to the UI (e.g. error messages as comments in the sc file)
@@ -44,15 +44,18 @@
 
 ### Current script supported
 
+```
 void setup() {
   printf("Run Live Script good afternoon\n");
 }
 void main() {
   setup();
 }
+```
 
 ### Homework assignment
 
+```
 void setup() {
   printf("Run Live Script good morning\n");
 }
@@ -67,3 +70,4 @@ void main() {
     sync(); //or show??
   }
 }
+```

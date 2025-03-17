@@ -49,7 +49,7 @@
 * README.md
     *  Custom intro
 * vite.config.ts
-    * Set target: 'http://192.168.1.156'
+    * Set target: 'http://192.168.1.xxx'
 * setup custom code
     * src/custom
     * interface/src/routes/custom
@@ -72,7 +72,7 @@
 * interface/source/routes/+layout.svelte
     * Don't show if captive portal: {#if (!window.location.href.includes("192.168.4.1") && $page.data.features.monitor)}
 * interface/source/routes/statusbar.svelte
-    * show help: <a href="https://moonmodules.org{window.location.pathname} target="_blank">?</a>
+    * show help: ```<a href="https://moonmodules.org{window.location.pathname} target="_blank">?</a>```
 * main.cpp: esp_log_set_vprintf(my_vprintf); WIP
 * ci pio
 * run in loopTask to avoid stack size crashes in httpd
