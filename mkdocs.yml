@@ -7,8 +7,8 @@ nav:
       - general/customizingsveltekit.md
   - "Custom":
       - custom/modules.md
-      - custom/animations.md
-      - custom/demo.md
+      - custom/module/animations.md
+      - custom/module/demo.md
       - custom/files.md
   - "MoonLight":
       - moonlight/fixture.md
