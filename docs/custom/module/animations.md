@@ -4,6 +4,14 @@
 
 ## Functional
 
+* On: lights on or off
+* Brightness: brightness of the LEDs when on
+* driverOn: sends LED output to ESP32 gpio pins.
+    * Switch off to see the effect framerate in System Status/Metrics
+    * Switch on to see the effect framerate throttled by a LED driver in System Status/Metrics (800KHz, 256 leds, 24 bits is 130 fps theoretically - 120 practically)
+* Nodes: One or more processes, can be fixture definitions, mappings, effects, projections. Currently all nodes are effects.
+* Scrips: Running Live scripts (WIP)
+
 ## Technical
 
 * See [Modules](https://moonmodules.org/MoonLight/custom/modules/)
