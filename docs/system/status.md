@@ -4,9 +4,11 @@
 
 ## Functional
 
+* <img width="30" src="https://github.com/user-attachments/assets/b0e8af99-ed76-422a-8bd1-bfbd9e0f4c44"/> Performance: loops per second: nr of times main loop is executed (
+
 ## Technical
 
-* loops per second: nr of times main loop is executed
+* <img width="30" src="https://github.com/user-attachments/assets/b0e8af99-ed76-422a-8bd1-bfbd9e0f4c44"/> Reordered info from dynamic to static
 
 ### Server
 
