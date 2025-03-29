@@ -11,12 +11,11 @@
 * Open the folder created with GitKraken
 * Connect an ESP32 or an ESP32-S3 with USB to your computer
 * On the status bar select the env to flash and the board to flash to
+    * Select esp32dev for a normal ESP32
+    * Select esp32-s3-devkitc-1-n16r8v for an ESP32-S2 ([recommended](https://s.click.aliexpress.com/e/_DBAtJ2H) or similar)
 
    <img width="617" alt="image" src="https://github.com/user-attachments/assets/349af246-30c7-45dd-92ed-4f2b3900557f" />
 
-
-    * Select esp32dev for a normal ESP32
-    * Select esp32-s3-devkitc-1-n16r8v for an ESP32-S2 ([recommended](https://s.click.aliexpress.com/e/_DBAtJ2H) or similar)
 * Press PlaformIO:Upload (->) on the statusbar
 * The formware is now flashed to your board, after flashing the board will reboot
 
