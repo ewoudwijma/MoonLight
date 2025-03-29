@@ -43,6 +43,7 @@
     * Copyright
 * platformio.ini
     * description = {custom}
+    * add [custom] build_flags and lib_deps
     * APP_NAME=\"{custom}\" ;
     * APP_VERSION=\"0.x.0\"
     * CORE_DEBUG_LEVEL=4

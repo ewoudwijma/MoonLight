@@ -4,7 +4,7 @@
 
 * Open GitKraken Press + / New tab and select Clone a Repo (Or another git management tool)
 * Select the folder on your local drive where to copy to (e.g. /github/MoonModules)
-* Copy [MoonLight.git](https://github.com/MoonModules/MoonLight.git) (or [ESP32-svelte-live-mm.git](https://github.com/ewowi/ESP32-svelte-live-mm.git)) and paste in the URL field of GitKraken
+* Copy [MoonLight.git](https://github.com/MoonModules/MoonLight.git) (or [MoonBase.git](https://github.com/ewowi/MoonBase.git)) and paste in the URL field of GitKraken
 * Press clone the repo
 * Open VSCode
 * Install the PlatformIO IDE extension
@@ -31,11 +31,11 @@
 ## Developing
 
 * Read the [ESP32 Sveltekit docs](https://moonmodules.org/MoonLight/eskIndex/) (Latest version (Svelte 5) here [ESP32 Sveltekit docs](https://theelims.github.io/ESP32-sveltekit/))
-* Read [Customizing Sveltekit](https://moonmodules.org/MoonLight/general/customizingsveltekit/), this things have normally been done (ESP32-Svelte-Live-MM WIP)
+* Read [Customizing Sveltekit](https://moonmodules.org/MoonLight/general/customizingsveltekit/), this things have normally been done (MoonBase WIP)
 * UI dev: configure vite.config.ts, go to interface folder, npm install, npm run dev. A local webserver starts on localhost. UI changes will directly be shown via this webserver
 * Want to make changes: fork the repo and submit pull requests
 
-## ESP32-Svelte-Live-MM specific
+## MoonBase specific
 
 * Connect a 256 leds panel to the board
 * Search for FastLED.addLeds in the code and update to the pin you use to drive LEDS, reflash the code to the board

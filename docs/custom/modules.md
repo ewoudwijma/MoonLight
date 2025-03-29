@@ -1,6 +1,14 @@
-# Instances
+# Modules
 
 ## Functional
+
+With Moonbase Modules it is possible to create a new module entirely from one c++ file, e.g. ModuleDemo.h.
+
+* inherits from Module.h
+* implement setupDefinition
+* implement onUpdate
+* add the module in main.cpp
+* add the module in menu.svelte
 
 ## Technical
 

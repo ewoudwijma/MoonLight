@@ -5,9 +5,11 @@ nav:
   - General:
       - general/gettingstarted.md
       - general/customizingsveltekit.md
-  - "MoonBase":
-      - moonbase/files.md
-      - moonbase/instances.md
+  - "Custom":
+      - custom/modules.md
+      - custom/animations.md
+      - custom/demo.md
+      - custom/files.md
   - "MoonLight":
       - moonlight/fixture.md
       - moonlight/effects.md
@@ -21,7 +23,7 @@ nav:
       - system/status.md
       - system/metrics.md
   - "ESP32 SveleteKit": 
-      - eskIndex.md
+      - espsveltekit.md
   - "Build Tools":
       - gettingstarted.md
       - buildprocess.md
