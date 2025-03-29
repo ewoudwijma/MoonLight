@@ -11,9 +11,13 @@
 * Open the folder created with GitKraken
 * Connect an ESP32 or an ESP32-S3 with USB to your computer
 * On the status bar select the env to flash and the board to flash to
+
+   <img width="617" alt="image" src="https://github.com/user-attachments/assets/349af246-30c7-45dd-92ed-4f2b3900557f" />
+
+
     * Select esp32dev for a normal ESP32
     * Select esp32-s3-devkitc-1-n16r8v for an ESP32-S2 ([recommended](https://s.click.aliexpress.com/e/_DBAtJ2H) or similar)
-* Press PlaformIO:Upload on the statusbar
+* Press PlaformIO:Upload (->) on the statusbar
 * The formware is now flashed to your board, after flashing the board will reboot
 
 ## Configuration
@@ -31,7 +35,7 @@
 ## Developing
 
 * Read the [ESP32 Sveltekit docs](https://moonmodules.org/MoonLight/eskIndex/) (Latest version (Svelte 5) here [ESP32 Sveltekit docs](https://theelims.github.io/ESP32-sveltekit/))
-* Read [Customizing Sveltekit](https://moonmodules.org/MoonLight/general/customizingsveltekit/), this things have normally been done (MoonBase WIP)
+* Read [Customizing Sveltekit](https://moonmodules.org/MoonLight/general/customizingsveltekit/)
 * UI dev: configure vite.config.ts, go to interface folder, npm install, npm run dev. A local webserver starts on localhost. UI changes will directly be shown via this webserver
 * Want to make changes: fork the repo and submit pull requests
 
