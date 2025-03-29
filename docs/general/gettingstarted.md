@@ -54,7 +54,7 @@
 
 * To do
     * Find a way to present feedback to the UI (e.g. error messages as comments in the sc file)
-    * Extend the code to support led animations ('homework assignment')
+    * Extend the code in [ModuleAnimations.h](https://github.com/ewowi/MoonBase/blob/main/src/custom/ModuleAnimations.h) to support led animations ('homework assignment')
     * see ModuleAnimation.h (Server)
 
 ### Current script supported
