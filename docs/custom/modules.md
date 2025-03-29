@@ -5,7 +5,8 @@
 ## Functional
 
 With Moonbase Modules it is possible to create new module entirely from one c++ class by only defining a json document describing the data structure and a function catching all the changes in the data. Http endpont and websockets are created automatically. There is no need to create any UI code, it is entirely driven by the json document.
-This is inspired by WLED usermods, further developed in StarBase and MoonBase (using the ESP32-Sveltekit infrastructure)
+
+This is inspired by WLED usermods, further developed in StarBase and now MoonBase (using the ESP32-Sveltekit infrastructure)
 
 See [Demo](https://moonmodules.org/MoonLight/custom/module/demo/) and [Animations](https://moonmodules.org/MoonLight/custom/module/animations/) as examples
 
@@ -13,7 +14,7 @@ See [Demo](https://moonmodules.org/MoonLight/custom/module/demo/) and [Animation
 
 * Create a class which inherits from Module
 * Call the Module constructor with the name of the module.
-    * This name will be used to set up http endpoints and webserver sockets
+    * This name will be used to set up http rest api and webserver sockets
     * See [ModuleDemo.h](https://github.com/ewowi/MoonBase/blob/main/src/custom/ModuleDemo.h)
 
 ```
@@ -31,9 +32,9 @@ ModuleDemo(PsychicHttpServer *server
 ```
 
 * Implement function setupDefinition to create a json document with the datastructure
-    * Stored on the file system
-    * Used to generate the UI
-    * Used to initialy create the module data
+    * Store data on the file system
+    * Generate the UI
+    * Initialy create the module data
 
 ```
 void setupDefinition(JsonArray root) override{
