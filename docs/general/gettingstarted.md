@@ -4,7 +4,7 @@
 
 * Open GitKraken Press + / New tab and select Clone a Repo (Or another git management tool)
 * Select the folder on your local drive where to copy to (e.g. /github/MoonModules)
-* Copy [MoonLight.git](https://github.com/MoonModules/MoonLight.git) (or [MoonBase.git](https://github.com/ewowi/MoonBase.git)) and paste in the URL field of GitKraken
+* Copy [MoonBase.git](https://github.com/ewowi/MoonBase.git) or [MoonLight.git](https://github.com/MoonModules/MoonLight.git) and paste in the URL field of GitKraken
 * Press clone the repo
 * Open VSCode
 * Install the PlatformIO IDE extension
@@ -41,9 +41,13 @@
 * Search for FastLED.addLeds in the code and update to the pin you use to drive LEDS, reflash the code to the board
 * Go to the UI in the browser
 * Go to Custom / Files and create or upload Live scripts 
-* Go to Custom / Live Animation and select the 'hardcoded animations' (Random, Rainbow), you should see it on your panel
+* Go to Custom / Module Animations and select the 'hardcoded animations' (Random, Sinelon, Rainbow), you should see it on your panel
 * Select any of the Live scripts you uploaded, check the Serial Output for results. (No led output in current version, see below)
 * Open the Edit area and change things in the code, see the Serial Output for results
+
+<img width="350" alt="image" src="https://github.com/user-attachments/assets/56bdd019-927b-40cc-9199-9bc6344f8d8b" />
+
+
 * To do
     * Find a way to present feedback to the UI (e.g. error messages as comments in the sc file)
     * Extend the code to support led animations ('homework assignment')
