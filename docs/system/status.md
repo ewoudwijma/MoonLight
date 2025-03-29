@@ -1,5 +1,7 @@
 # System Status
 
+<img width="518" alt="image" src="https://github.com/user-attachments/assets/49e4a72a-ee1e-47a4-afe6-d0dd49573a86" />
+
 ## Functional
 
 ## Technical

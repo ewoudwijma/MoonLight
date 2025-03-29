@@ -47,7 +47,7 @@
 * To do
     * Find a way to present feedback to the UI (e.g. error messages as comments in the sc file)
     * Extend the code to support led animations ('homework assignment')
-    * see LiveAnimation.cpp (Server) and LiveAnimation.svelte (UI)
+    * see ModuleAnimation.h (Server)
 
 ### Current script supported
 

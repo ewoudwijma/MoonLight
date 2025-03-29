@@ -1,5 +1,7 @@
 # Files
 
+<img width="516" alt="image" src="https://github.com/user-attachments/assets/49dda0bb-1905-4e36-9e12-42d73de7490b" />
+
 ## Functional
 
 * Navigate through folders

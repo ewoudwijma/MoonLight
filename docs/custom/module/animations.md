@@ -1,8 +1,12 @@
 # Animations module
 
+<img width="517" alt="image" src="https://github.com/user-attachments/assets/022fde4d-9a3b-456c-ade5-e18219e5a5d5" />
+
 ## Functional
 
 ## Technical
+
+* See [Modules](https://moonmodules.org/MoonLight/custom/modules/)
 
 ### Server
 

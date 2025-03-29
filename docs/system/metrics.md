@@ -1,5 +1,7 @@
 # System Metrics
 
+<img width="532" alt="image" src="https://github.com/user-attachments/assets/7fd9a24f-593b-447f-be6d-f37881ecd32c" />
+
 ## Functional
 
 ## Technical
