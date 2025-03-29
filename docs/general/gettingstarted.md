@@ -19,7 +19,7 @@
 ## Configuration
 
 * Recommended: Press PlatformIO:Serial Monitor to see the debug information produced
-* In case of a newly flashed board, a Wifi access point (AP) will be created. Go to your Wifi settings on your computer and find the new Wifi AP (starts with MoonLight or ESPSvelteKit)
+* In case of a newly flashed board, a Wifi access point (AP) will be created. Go to your Wifi settings on your computer and find the new Wifi AP (starts with MoonBase, MoonLight or ESPSvelteKit)
 * Connect to the AP (no password needed), a captive portal will show with a welcome screen.
 * Go to the menu and select Wifi / Wifi Station
 * Press (+) and enter the SSID and the password of your Wifi Network
