@@ -12,6 +12,9 @@
 * Nodes: One or more processes, can be fixture definitions, mappings, effects, projections. Currently all nodes are effects.
 * Scrips: Running Live scripts (WIP)
 
+<img width="498" alt="Screenshot 2025-03-29 at 14 12 01" src="https://github.com/user-attachments/assets/3a5a3743-c0a4-4456-96cb-f4abd0d01450" />
+
+
 ## Technical
 
 * See [Modules](https://moonmodules.org/MoonLight/custom/modules/)
