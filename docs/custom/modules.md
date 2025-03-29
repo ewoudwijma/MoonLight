@@ -4,13 +4,14 @@
 
 ## Functional
 
-With Moonbase Modules it is possible to create a new module entirely from one c++ file
+With Moonbase Modules it is possible to create new module entirely from one c++ class by only defining a json document describing the data structure and a function catching all the changes in the data. Http endpont and websockets are created automatically. There is no need to create any UI code, it is entirely driven by the json document.
+This is inspired by WLED usermods, further developed in StarBase and MoonBase (using the ESP32-Sveltekit infrastructure)
 
 See [Demo](https://moonmodules.org/MoonLight/custom/module/demo/) and [Animations](https://moonmodules.org/MoonLight/custom/module/animations/) as examples
 
 ## Technical
 
-* Create a class which inherits from Module e.g. class ModuleDemo : public Module
+* Create a class which inherits from Module
 * Call the Module constructor with the name of the module.
     * This name will be used to set up http endpoints and webserver sockets
     * See [ModuleDemo.h](https://github.com/ewowi/MoonBase/blob/main/src/custom/ModuleDemo.h)
@@ -20,11 +21,9 @@ class ModuleDemo : public Module
 {
 public:
 
-ModuleDemo(PsychicHttpServer *server,
-        ESP32SvelteKit *sveltekit
-        #if FT_ENABLED(FT_FILEMANAGER)
-            , FilesService *filesService
-        #endif
+ModuleDemo(PsychicHttpServer *server
+      , ESP32SvelteKit *sveltekit
+      , FilesService *filesService
     ) : Module("demo", server, sveltekit, filesService) {
         ESP_LOGD("", "ModuleDemo::constructor");
     }
@@ -60,7 +59,7 @@ void setupDefinition(JsonArray root) override{
 
 * Implement function onUpdate to define what happens if data changes
     * struct UpdatedItem defines the update (parent property, name of property, value and index (in case of multiple records)
-    * This is run in the httpd / webserver task. To run it in the main (application task use runInLoopTask - see ModuleAnimations)
+    * This is run in the httpd / webserver task. To run it in the main (application task use runInLoopTask - see [ModuleAnimations](https://github.com/ewowi/MoonBase/blob/main/src/custom/ModuleAnimations.h))
 
 ```
 void onUpdate(UpdatedItem updatedItem) override
@@ -100,17 +99,11 @@ submenu: [
 ]
 ```
 
-Implemented by Moonbase-Modules:
+* This is all to create a fully functioning new module
 
-* Module.h will generate all the required server code
-* Module.svelte will deal with the UI
-* MultiInput.svelte is used by Module.svelte to display the right UI widget based on what is defined in the definition json
-* Modifications done in Menu.svelte do identify a module by href and not by title alone
+Moonbase-Modules is implemented in:
 
-### Server
-
-[Module.h](https://github.com/ewowi/MoonBase/blob/main/src/custom/Module.h) and [Module.cpp](https://github.com/ewowi/MoonBase/blob/main/src/custom/Module.h)
-
-### UI
-
-[Module.svelte](https://github.com/ewowi/MoonBase/blob/main/interface/src/routes/custom/module/Module.svelte)
+* [Module.h](https://github.com/ewowi/MoonBase/blob/main/src/custom/Module.h) and [Module.cpp](https://github.com/ewowi/MoonBase/blob/main/src/custom/Module.cpp) will generate all the required server code
+* [Module.svelte](https://github.com/ewowi/MoonBase/blob/main/interface/src/routes/custom/module/Module.svelte) will deal with the UI
+* [MultiInput.svelte](https://github.com/ewowi/MoonBase/blob/main/interface/src/lib/components/custom/MultiInput.svelte) is used by Module.svelte to display the right UI widget based on what is defined in the definition json
+* Modifications done in [menu.svelte](https://github.com/ewowi/MoonBase/blob/main/interface/src/routes/menu.svelte) do identify a module by href and not by title alone
