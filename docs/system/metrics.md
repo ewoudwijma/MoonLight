@@ -4,6 +4,11 @@
 
 ## Functional
 
+Shows system info on a timeline
+
+* <img width="30" src="https://github.com/ewowi/MoonBase/blob/main/docs/media/moonlight-logo.png"/> Performance: show the loops per second of the main application loop. In case of running LEDs this is the Frames Per Second displayed on led fixtures.
+* <img width="30" src="https://github.com/ewowi/MoonBase/blob/main/docs/media/moonlight-logo.png"/> PSRAM: Shows the used size of PSRAM, if present
+
 ## Technical
 
 ### Server
