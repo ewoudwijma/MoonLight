@@ -23,7 +23,9 @@
 ## Installation - End user
 
 [install](https://moonmodules.org/MoonLight/general/index.html)
-(release 0.5.4, for latest build follow installation developer)
+
+* release 0.5.4, for latest build follow installation developer
+* This is WIP, looks like issue with erasing the board and setting the partitions right ...
 
 ## Configuration
 
