@@ -8,7 +8,7 @@
     {
       "chipFamily": "ESP32-S3",
       "parts": [
-        { "path": "./MoonBase_esp32-s3-devkitc-1-n16r8v_0-5-4.bin", "offset": 0 }
+        { "path": "./esp32-s3-devkitc-1-n16r8v.bin", "offset": 0 }
       ]
     }
   ]
