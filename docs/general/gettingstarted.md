@@ -1,6 +1,6 @@
 # Getting started
 
-## Installation
+## Installation - Developer
 
 * Open GitKraken Press + / New tab and select Clone a Repo (Or another git management tool)
 * Select the folder on your local drive where to copy to (e.g. /github/MoonModules)
@@ -17,11 +17,15 @@
    <img width="617" alt="image" src="https://github.com/user-attachments/assets/349af246-30c7-45dd-92ed-4f2b3900557f" />
 
 * Press PlaformIO:Upload (->) on the statusbar
-* The formware is now flashed to your board, after flashing the board will reboot
+* The firmware is now flashed to your board, after flashing the board will reboot
+* Recommended: Press PlatformIO:Serial Monitor to see the debug information produced
+
+## Installation - End user
+
+[install](https://moonmodules.org/MoonLight/general/index.html)
 
 ## Configuration
 
-* Recommended: Press PlatformIO:Serial Monitor to see the debug information produced
 * In case of a newly flashed board, a Wifi access point (AP) will be created. Go to your Wifi settings on your computer and find the new Wifi AP (starts with MoonBase, MoonLight or ESPSvelteKit)
 * Connect to the AP (no password needed), a captive portal will show with a welcome screen.
 * Go to the menu and select Wifi / Wifi Station
