@@ -23,6 +23,7 @@
 ## Installation - End user
 
 [install](https://moonmodules.org/MoonLight/general/index.html)
+(release 0.5.4, for latest build follow installation developer)
 
 ## Configuration
 
