@@ -8,7 +8,7 @@
     {
       "chipFamily": "ESP32-S3",
       "parts": [
-        { "path": "https://github.com/MoonModules/MoonLight/releases/download/v0.5.2/MoonBase_esp32-s3-devkitc-1_0-5-2.bin", "offset": 0 }
+        { "path": "./MoonBase_esp32-s3-devkitc-1_0-5-2.bin", "offset": 0 }
       ]
     }
   ]
