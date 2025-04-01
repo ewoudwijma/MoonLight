@@ -26,18 +26,21 @@
 
 * release 0.5.4, for latest build follow installation developer
 * This is WIP, looks like issue with erasing the board and setting the partitions right ...
+* Made using [esp-web-tools](https://esphome.github.io/esp-web-tools/)
 
 ## Configuration
 
 * In case of a newly flashed board, a Wifi access point (AP) will be created. Go to your Wifi settings on your computer and find the new Wifi AP (starts with MoonBase, MoonLight or ESPSvelteKit)
     * If the board AP is not showing up in your WiFi list it might be helpful to fully erase the board (vscode 👽, Erase flash)
 * Connect to the AP (no password needed), a captive portal will show with a welcome screen.
+    * There seems to be an issue in the captive portal showing Connection to device lost repeatedly. In that case, close the captive portal and open the app in a brower using 192.168.4.1
 * Go to the menu and select Wifi / Wifi Station
 * Press (+) and enter the SSID and the password of your Wifi Network
 * Press Add Network and Apply settings
 * The board will reconnect to your Wifi Network
 * Go back to your Wifi Network on your computer
 * Find out the new IP of the board, or in your Wifi Network settings or by looking at the log in the Serial Monitor (see above)
+* (sometimes it takes a while to load pages for the first time, might be related to caching of javascript, on the issuelist)
 
 ## Developing
 
