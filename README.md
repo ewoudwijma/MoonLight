@@ -1,5 +1,11 @@
 # MoonBase / MoonLight
 
+April 2025: 
+
+**Development has moved to [MoonModules/MoonLight](https://github.com/MoonModules/MoonLight)**. 
+**See [Star-Mod-Base-Light-Moon-Svelte-Live](https://moonmodules.org/Star-Mod-Base-Light-Moon-Svelte-Live)**
+
+
 <img width="500" alt="MoonLight" src="https://github.com/user-attachments/assets/de0ab735-d547-462e-b7e3-c3f819bf9283" />
 
 * MoonBase and MoonLight are [MoonModules](https://moonmodules.org) projects.
